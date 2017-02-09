@@ -1,0 +1,259 @@
+<html >
+	<head>
+		<title>API CIUM </title>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<meta name="charset" content="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<!-- Latest compiled and minified CSS -->
+		  
+			<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css">
+			<link rel="stylesheet" href="./css/styles.css" />  
+			<link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+				
+					<script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+			<script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+			<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+			<!-- Latest compiled and minified JavaScript -->
+			<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/js/bootstrap.min.js"></script>
+			<script charset="utf-8">
+			$(document).ready(function () {
+			  $("body").on("click",".btn-main-menu",function(e) {
+				e.preventDefault();
+				$("#wrapper").toggleClass("toggled");
+			  });
+			  $(".btn-datagrid-row-mostrar-opciones").on('click', function(e){
+				e.preventDefault();
+
+				$(this).toggleClass('btn-primary');
+				$(this).parent().find('.btn-group').eq(0).toggleClass('hidden-xs');
+			  });
+			});
+			</script>
+		
+		<link rel="shortcut icon" href="./images/favicon-cium.ico" />
+	</head>
+	<body>
+	
+
+	<nav class="navbar navbar-default navbar-fixed-top top-bar">
+    <div class="container-fluid">
+      <div class="navbar-header" style="margin-right:20pt;width: 208px;">
+		<a href="./index.html" class="navbar-brand"><img alt="Home" src="./images/icono-cium-blue.png" style="top:0px; margin-top:-5px; height:34px; float:left; ">API CIUM</a>
+      </div>
+      <ul class="nav navbar-nav">
+		<li class="">
+		  <a>Manual de usuario <i class="fa fa-caret-right"></i></a>
+		</li>
+		<li class="active">
+		  <a href="">Introducción</a>
+		</li>
+	  </ul>
+      <ul class="nav navbar-nav navbar-right">
+        				<li><a  href="./index.html">&larr; Anterior </a></li>
+			
+							<li><a href="./capitulo-2.html">Siguiente &rarr; </a></li>
+			      </ul>
+    </div>
+  </nav>
+
+	<div id="wrapper" class="" >
+	
+		
+<!-- Sidebar -->
+    <aside id="sidebar-wrapper">
+      <ul class="sidebar-nav nav">
+        
+        <li>
+          <a href="index.html"><i class="fa fa-dashboard"></i> Dashboard</a>
+        </li>
+															
+				<li class="active">
+					<a href="./capitulo-1.html" ><i class="fa fa-book"></i> Introducción </a>				  
+					<ul id="chunk_toc" class='nav collapse submenu in'  aria-expanded="true">		
+						
+																																												<li><a href="./capitulo-1.html#objetivo"><i class="fa fa-file"></i> Objetivo</a></li>
+																															<li><a href="./capitulo-1.html#obtencion-del-token"><i class="fa fa-file"></i> Obtención del token</a></li>
+																															<li><a href="./capitulo-1.html#cabeceras-headers"><i class="fa fa-file"></i> Cabeceras (Headers)</a></li>
+																						
+												
+													
+					</ul>
+					
+				</li>
+													
+				<li class="">
+					<a href="./capitulo-2.html" ><i class="fa fa-book"></i> Catálogos </a>				  
+					<ul id="chunk_toc" class='nav collapse submenu in'  aria-expanded="true">		
+						
+												
+													
+					</ul>
+					
+				</li>
+													
+				<li class="">
+					<a href="./capitulo-3.html" ><i class="fa fa-book"></i> Sistema </a>				  
+					<ul id="chunk_toc" class='nav collapse submenu in'  aria-expanded="true">		
+						
+												
+													
+					</ul>
+					
+				</li>
+													
+				<li class="">
+					<a href="./capitulo-4.html" ><i class="fa fa-book"></i> Evaluaciones </a>				  
+					<ul id="chunk_toc" class='nav collapse submenu in'  aria-expanded="true">		
+						
+												
+													
+					</ul>
+					
+				</li>
+		 
+				  
+        
+      </ul>
+	  
+    </aside>
+<!-- /#sidebar-wrapper -->
+		
+    <!-- Page Content -->
+    <div id="page-content-wrapper">
+      <div class="container-fluid">
+        <div class="row">
+          <div class="col-lg-12">
+            <br>
+            <div class="panel panel-default">
+              <div class="panel-heading">
+                <h1 class="panel-title"><i class="fa fa-bookmark"></i> <span>Capítulo 1</span>  </h1>
+              </div>
+              <div class="panel-body" >
+                
+				
+    <h1 id="introduccion"> Introducción</h1>
+    <p style="text-align: justify;">Actualmente, las API REST están realmente de moda: parece que cualquier aplicación deba proporcionar su “API REST”. Pero...¿qué significa realmente una API REST?
+
+REST deriva de "REpresentational State Transfer", que traducido vendría a ser “transferencia de representación de estado”, lo que tampoco aclara mucho, pero contiene la clave de lo que significa. Porque la clave de REST es que un servicio REST no tiene estado (es stateless), lo que quiere decir que, entre dos llamadas cualesquiera, el servicio pierde todos sus datos. Esto es, que no se puede llamar a un servicio REST y pasarle unos datos (p. ej. un usuario y una contraseña) y esperar que “nos recuerde” en la siguiente petición. De ahí el nombre: el estado lo mantiene el cliente y por lo tanto es el cliente quien debe pasar el estado en cada llamada. Si quiero que un servicio REST me recuerde, debo pasarle quien soy en cada llamada. Eso puede ser un usuario y una contraseña, un token o cualquier otro tipo de credenciales, pero debo pasarlas en cada llamada. Y lo mismo aplica para el resto de información.
+</p>
+
+<h2 id="objetivo">1.1 Objetivo</h2>
+
+<p style="text-align: justify;">
+El siguiente manual es para explicar el uso y el llamado de cada método con el cuerpo (datos) y cabeceras explicitas en cada petición para lograr una repuesta de parte del servidor.
+
+El servicio API es consumido tanto por la aplicación web como los dispositivos Android o IOS.
+</p>
+
+<div class="figure" id="figure-1-1">
+    <img src="images/esquema_api.gif" alt="" />
+
+</div>
+
+
+<h2 id="obtencion-del-token">1.2 Obtención del token</h2>
+
+<p style="text-align: justify;">
+La API está protegido por el servidor de credenciales de la secretaria de salud SALUID por lo que la aplicación necesita estar registrada para poder acceder a los recursos y contar con un usuario dueño de la aplicación para poder obtener el token de acceso, este token es muy importante ya que sin él no podremos tener acceso a ningún recurso de la aplicación API por lo que siempre en primer lugar debemos de obtenerlo.
+
+Ejemplo de obtención del token via CURL de php.</p>
+
+<p>Petición:</p>
+
+<pre><code>&lt;?php
+
+    $curl = curl_init();
+
+    $post_request = ‘grant_type=password’
+    .’&amp;client_id=’.’CLIENT_ID’
+    .’&amp;client_secret=’.’CLIENT_SECRET’
+    .’&amp;username=’.’email’
+    .’&amp;password=’.’password’;
+
+    curl_setopt_array($curl, array(
+        CURLOPT_URL =&gt; “http://187.217.219.54/oauth/access_token“,
+        CURLOPT_RETURNTRANSFER =&gt; true,
+        CURLOPT_ENCODING =&gt; “”,
+        CURLOPT_MAXREDIRS =&gt; 10,
+        CURLOPT_TIMEOUT =&gt; 30,
+        CURLOPT_HTTP_VERSION =&gt; CURL_HTTP_VERSION_1_1,
+        CURLOPT_CUSTOMREQUEST =&gt;$post_request,
+    ));
+    response=curl_exec(curl);
+    err=curl_error(curl);
+    curl_close($curl);
+    if ($err) {
+        echo “cURL Error #:” . $err;
+    } else {
+        echo $response;
+    }
+
+?&gt;
+</code></pre>
+
+<p>Respuesta:</p>
+
+<pre><code>{
+    "access_token": "yTl379mxyVpGgmjREZs6UF9p6VILca4e33WN8wtd",
+    "token_type": "Bearer",
+    "expires_in": 604800,
+    "refresh_token": "CJwknO1nGnqjKG82VaYkr4XU3sqXQ8ARUj1VxX7I"
+}
+</code></pre>
+
+<p style="text-align: justify;">
+El access_token se necesita para todas las peticiones a la API, el refresh\_token se utilizara para obtener un nuevo token en un dado caso el que obtuvimos primero caduque.
+</p>
+
+<h2 id="cabeceras-headers">1.3 Cabeceras (Headers)</h2>
+
+<p style="text-align: justify;">
+Para la comunicación entre la API y el CLIENTE en cada petición se necesita las cabeceras siguientes para identificar el usuario y los permisos de acceso a métodos y a servicios.
+</p>
+
+<p>Authorization : Bearer access_token</p>
+
+<p>X-Usuario: [<em>email@usuario.com</em>]</p>
+
+<blockquote>
+  <p><strong>Ejemplo:</strong>
+  <code><br/>
+      Authorization : Bearer yTl379mxyVpGgmjREZs6UF9p6VILca4e33WN8wtd</code>
+      <code><br/>X-Usuario: ramirez.esquinca@gmail.com
+  </code></p>
+</blockquote>
+
+<p style="text-align: justify;">
+Con el token y las cabeceras ya estamos listos para empezar el llamado a los métodos de las rutas de la API.<br/>
+En los siguientes capitulos se explican las rutas y las llamadas a sus métodos respectivos.
+</p>
+
+
+	
+			
+              </div>
+              
+            </div>
+          </div>
+        </div>
+      </div>
+      <footer class="app-footer">
+        <div class="container-fluid">
+          <div class="row">
+            <div class="col-xs-4"><img src="./images/secretaria-de-salud.png"  height="30px" alt="" /></div>
+            <div class="col-xs-4">
+              <p class="hidden-xs">
+                Secretaría de Salud, Gobierno del Estado de Chiapas | CIUM
+              </p>
+            </div>
+            <div class="col-xs-4" align="right"><img src="./images/chiapas-nos-une.png"  height="30px" alt="" /></div>
+          </div>
+        </div>
+      </footer>
+    </div>
+    <!-- /#page-content-wrapper -->
+
+  </div>
+</body>
+</html>

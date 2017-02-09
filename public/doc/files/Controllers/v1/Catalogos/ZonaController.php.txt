@@ -1,0 +1,296 @@
+<?php
+/**
+ * Controlador Zona
+ * 
+ * @package    CIUM API
+ * @subpackage Controlador
+ * @author     Eliecer Ramirez Esquinca
+ * @created    2015-07-20
+ */
+namespace App\Http\Controllers\v1\Catalogos;
+
+use App\Http\Requests;
+use App\Http\Controllers\Controller;
+
+use Request;
+use Response;
+use Input;
+use DB;
+use App\Models\Catalogos\Zona;
+use App\Http\Requests\ZonaRequest;
+
+
+class ZonaController extends Controller {
+
+	/**
+	 * Muestra una lista de los recurso.
+	 *
+	 * @param  
+	 *		 get en la url ejemplo url?pagina=1&limite=5&order=id
+	 *			pagina = numero del puntero(offset) para la sentencia limit
+	 *		    limite = numero de filas a mostrar
+	 *			order  = campo de la base de datos por la que se debe ordenar. Defaul ASC si se antepone el signo - es de manera DESC
+	 *					 ejemplo url?pagina=1&limite=5&order=id ASC y url?pagina=1&limite=5&order=-id DESC
+	 *		    columna= nombre del campo para hacer busqueda
+	 *          valor  = valor con el que se buscara en el campo
+	 * Los parametros son opcionales, pero si existe pagina debe de existir tambien limite y/o si existe columna debe existir tambien valor y pagina - limite
+	 * @return Response
+	 */
+	public function index()
+	{
+		$datos = Request::all();
+		
+		// Si existe el paarametro pagina en la url devolver las filas según sea el caso
+		// si no existe parametros en la url devolver todos las filas de la tabla correspondiente
+		// esta opción es para devolver todos los datos cuando la tabla es de tipo catálogo
+		if(array_key_exists('pagina',$datos))
+		{
+			$pagina=$datos['pagina'];
+			if(isset($datos['order']))
+			{
+				$order = $datos['order'];
+				if(strpos(" ".$order,"-"))
+					$orden="desc";
+				else
+					$orden="asc";
+				$order=str_replace("-","",$order); 
+			}
+			else{
+				$order="id"; $orden="asc";
+			}
+			
+			if($pagina == 0)
+			{
+				$pagina = 1;
+			}
+			// si existe buscar se realiza esta linea para devolver las filas que en el campo que coincidan con el valor que el usuario escribio
+			// si no existe buscar devolver las filas con el limite y la pagina correspondiente a la paginación
+			if(array_key_exists('buscar',$datos))
+			{
+				$columna = $datos['columna'];
+				$valor   = $datos['valor'];
+				$zona = Zona::orderBy($order,$orden);
+				$search = trim($valor);
+				$keyword = $search;
+				
+				$zona=$zona->whereNested(function($query) use ($keyword)
+				{
+					
+						$query->Where('nombre', 'LIKE', '%'.$keyword.'%'); 
+				});
+				
+				$total= $zona->get();
+				$zona = $zona->skip($pagina-1)->take($datos['limite'])->get();
+			}
+			else
+			{
+				$zona = Zona::skip($pagina-1)->take($datos['limite'])->orderBy($order,$orden)->get();
+				$total=Zona::all();
+			}
+			
+		}
+		else
+		{
+			if(array_key_exists('jurisdiccion',$datos))
+			{
+				$zona = DB::table('ZonaClues AS u')
+					->leftJoin('Zona AS z', 'z.id', '=', 'u.idZona')
+					->distinct()
+					->select(array("z.id","z.nombre"))
+					->where('u.jurisdiccion',$datos["jurisdiccion"])->get();
+			}
+			else
+				$zona = Zona::all();
+			$total=$zona;
+		}
+		
+		if(!$zona)
+		{
+			return Response::json(array('status'=> 404,"messages"=>'No encontrado'),404);
+		} 
+		else 
+		{
+			return Response::json(array("status"=>200,"messages"=>"ok","data"=>$zona,"total"=>count($total)),200);
+		}
+	}
+
+	/**
+	 * Guarde un recurso recién creado en el almacenamiento.
+	 *
+	 * @param post type json de los recursos a almacenar en la tabla correspondiente
+	 * Response si la operacion es exitosa devolver el registro y estado 201 si no devolver error y estado 500
+	 * @return Response
+	 */
+	public function store()
+	{
+		$rules = [
+			'nombre' => 'required|min:3|max:150',
+			'usuarioclues' =>  'array'
+		];
+		$v = \Validator::make(Request::json()->all(), $rules );
+
+		if ($v->fails())
+		{
+			return Response::json($v->errors());
+		}
+		$datos = Input::json();
+		$success = false;
+        DB::beginTransaction();
+        try 
+		{
+            $zona = new Zona;
+            $zona->nombre = $datos->get('nombre');
+
+            if ($zona->save()) 
+			{
+				// guarda las unidades medicas que corresponda al equipo zonal creado
+				DB::table('ZonaClues')->where('idZona', "$zona->id")->delete();
+				
+				foreach($datos->get('usuarioclues') as $clues)
+				{
+					if($clues)								
+						DB::table('ZonaClues')->insert(	array('idZona' => "$zona->id", 'clues' => $clues['clues'], 'jurisdiccion' => $clues['jurisdiccion']) );					
+				}		
+				if(array_key_exists('all',$datos))
+					if($datos->get('all'))
+						DB::table('ZonaClues')->insert(	array('idZona' => "$zona->id", 'clues' => $datos->get('all')) );
+					
+                $success = true;
+			}
+        } 
+		catch (\Exception $e) 
+		{
+			throw $e;
+        }
+        if ($success) 
+		{
+            DB::commit();
+			return Response::json(array("status"=>201,"messages"=>"Creado","data"=>$zona),201);
+        } 
+		else 
+		{
+            DB::rollback();
+			return Response::json(array("status"=>500,"messages"=>"Error interno del servidor"),500);
+        }
+		
+	}
+
+	/**
+	 * Visualizar el recurso especificado.
+	 *
+	 * @param  int  $id que corresponde al recurso a mostrar el detalle
+	 * Response si el recurso es encontrado devolver el registro y estado 200, si no devolver error con estado 404
+	 * @return Response
+	 */
+	public function show($id)
+	{
+		$zona = Zona::find($id);
+
+		if(!$zona)
+		{
+			return Response::json(array('status'=> 404,"messages"=>'No encontrado'),404);
+		} 
+		else 
+		{
+			$zona['usuarioclues'] = DB::table('ZonaClues AS u')
+			->leftJoin('Clues AS c', 'c.clues', '=', 'u.clues')
+			->select('*')
+			->where('idZona',$id)->get();
+			return Response::json(array("status"=>200,"messages"=>"ok","data"=>$zona),200);
+		}
+	}
+
+
+	/**
+	 * Actualizar el recurso especificado en el almacenamiento.
+	 *
+	 * @param  int  $id que corresponde al recurso a actualizar json $request valores a actualizar segun el recurso
+	 * Response si el recurso es encontrado y actualizado devolver el registro y estado 200, si no devolver error con estado 304
+	 * @return Response
+	 */
+	public function update($id)
+	{
+		$rules = [
+			'nombre' => 'required|min:3|max:150',
+			'usuarioclues' =>  'array'
+		];
+		$v = \Validator::make(Request::json()->all(), $rules );
+
+		if ($v->fails())
+		{
+			return Response::json($v->errors());
+		}
+		$datos = Input::json(); 
+		$success = false;
+        DB::beginTransaction();
+        try 
+		{
+			$zona = Zona::find($id);
+			$zona->nombre = $datos->get('nombre');
+
+            if ($zona->save())
+			{
+				DB::table('ZonaClues')->where('idZona', "$zona->id")->delete();
+				
+				foreach($datos->get('usuarioclues') as $clues)
+				{
+					if($clues)								
+						DB::table('ZonaClues')->insert(	array('idZona' => "$zona->id", 'clues' => $clues['clues'], 'jurisdiccion' => $clues['jurisdiccion']) );					
+				}	
+				if(array_key_exists('all',$datos))
+					if($datos->get('all'))
+						DB::table('ZonaClues')->insert(	array('idZona' => "$zona->id", 'clues' => $datos->get('all')) ); 
+                
+				$success = true;
+			}
+		} 
+		catch (\Exception $e) 
+		{throw $e;
+        }
+        if ($success)
+		{
+			DB::commit();
+			return Response::json(array("status"=>200,"messages"=>"ok","data"=>$zona),200);
+		} 
+		else 
+		{
+			DB::rollback();
+			return Response::json(array('status'=> 304,"messages"=>'No modificado'),304);
+		}
+	}
+
+	/**
+	 * Elimine el recurso especificado del almacenamiento (softdelete).
+	 *
+	 * @param  int  $id que corresponde al recurso a eliminar
+	 * Response si el recurso es eliminado devolver el registro y estado 200, si no devolver error con estado 500 
+	 * @return Response
+	 */
+	public function destroy($id)
+	{
+		$success = false;
+        DB::beginTransaction();
+        try 
+		{
+			$zona = Zona::find($id);
+			$zona->delete();
+			$success=true;
+		} 
+		catch (\Exception $e) 
+		{
+			throw $e;
+        }
+        if ($success)
+		{
+			DB::commit();
+			return Response::json(array("status"=>200,"messages"=>"ok","data"=>$zona),200);
+		} 
+		else 
+		{
+			DB::rollback();
+			return Response::json(array('status'=> 500,"messages"=>'Error interno del servidor'),500);
+		}
+	}
+
+}
+

@@ -1,0 +1,16 @@
+/vendor
+
+composer.phar
+
+.env.*.php
+
+.env.php
+
+.DS_Store
+
+Thumbs.db
+
+/public/.htaccess
+
+/public/export
+

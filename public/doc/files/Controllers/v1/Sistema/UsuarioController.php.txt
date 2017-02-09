@@ -1,0 +1,468 @@
+<?php
+/**
+ * Controlador Usuario
+ * 
+ * @package    CIUM API
+ * @subpackage Controlador
+ * @author     Eliecer Ramirez Esquinca
+ * @created    2015-07-20
+ */
+namespace App\Http\Controllers\v1\Sistema;
+
+use App\Http\Requests;
+use App\Http\Controllers\Controller;
+
+use Request;
+use Response;
+use Input;
+use DB; 
+use Sentry;
+use App\Models\Sistema\usuario;
+use App\Http\Requests\UsuarioRequest;
+
+class UsuarioController extends Controller 
+{
+	/**
+	 * Muestra una lista de los recurso.
+	 *
+	 * @param  
+	 *		 get en la url ejemplo url?pagina=1&limite=5&order=id
+	 *			pagina = numero del puntero(offset) para la sentencia limit
+	 *		    limite = numero de filas a mostrar
+	 *			order  = campo de la base de datos por la que se debe ordenar. Defaul ASC si se antepone el signo - es de manera DESC
+	 *					 ejemplo url?pagina=1&limite=5&order=id ASC y url?pagina=1&limite=5&order=-id DESC
+	 *		    columna= nombre del campo para hacer busqueda
+	 *          valor  = valor con el que se buscara en el campo
+	 * Los parametros son opcionales, pero si existe pagina debe de existir tambien limite y/o si existe columna debe existir tambien valor y pagina - limite
+	 * @return Response
+	 */
+	public function index()
+	{
+		$datos = Request::all();
+		
+		// Si existe el paarametro pagina en la url devolver las filas según sea el caso
+		// si no existe parametros en la url devolver todos las filas de la tabla correspondiente
+		// esta opción es para devolver todos los datos cuando la tabla es de tipo catálogo
+		if(array_key_exists('pagina',$datos))
+		{
+			$pagina=$datos['pagina'];
+			if(isset($datos['order']))
+			{
+				$order = $datos['order'];
+				if(strpos(" ".$order,"-"))
+					$orden="desc";
+				else
+					$orden="asc";
+				$order=str_replace("-","",$order); 
+			}
+			else{
+				$order="id"; $orden="asc";
+			}
+			
+			if($pagina == 0)
+			{
+				$pagina = 1;
+			}
+			// si existe buscar se realiza esta linea para devolver las filas que en el campo que coincidan con el valor que el usuario escribio
+			// si no existe buscar devolver las filas con el limite y la pagina correspondiente a la paginación
+			if(array_key_exists('buscar',$datos))
+			{
+				$columna = $datos['columna'];
+				$valor   = $datos['valor'];
+				$usuario = Usuario::orderBy($order,$orden);
+				
+				$search = trim($valor);
+				$keyword = $search;
+				$usuario=$usuario->whereNested(function($query) use ($keyword)
+				{
+					
+						$query->Where('nombres', 'LIKE', '%'.$keyword.'%')
+							 ->orWhere('apellidoPaterno', 'LIKE', '%'.$keyword.'%')
+							 ->orWhere('apellidoMaterno', 'LIKE', '%'.$keyword.'%')
+							 ->orWhere('email', 'LIKE', '%'.$keyword.'%')
+							 ->orWhere('nivel', 'LIKE', '%'.$keyword.'%'); 
+				});
+				
+				$total=$usuario->get();
+				$usuario = $usuario->skip($pagina-1)->take($datos['limite'])->get();
+			}
+			else
+			{
+				$usuario = Usuario::with("Throttles")->skip($pagina-1)->take($datos['limite'])->orderBy($order,$orden)->get();
+				$total=Usuario::all();
+			}
+			
+		}
+		else
+		{
+			$usuario = Usuario::all();
+			$total=$usuario;
+		}
+
+		if(!$usuario)
+		{
+			return Response::json(array('status'=> 404,"messages"=>'No encontrado'),404);
+		} 
+		else 
+		{
+			return Response::json(array("status"=>200,"messages"=>"ok","data"=>$usuario,"total"=>count($total)),200);
+			
+		}
+	}
+
+	/**
+	 * Guarde un recurso recién creado en el almacenamiento.
+	 *
+	 * @param post type json de los recursos a almacenar en la tabla correspondiente
+	 * Response si la operacion es exitosa devolver el registro y estado 201 si no devolver error y estado 500
+	 * @return Response
+	 */
+	public function store()
+	{
+		$rules = [
+			'email' => 'required|min:3|email'
+		];
+		$v = \Validator::make(Request::json()->all(), $rules );
+
+		if ($v->fails())
+		{
+			return Response::json($v->errors());
+		}
+		$datos = Input::json()->all();
+		$success = false;
+		
+        try 
+		{
+			$user=array(
+				'username' => isset($datos['username']) ? $datos['username'] : explode("@",$datos['email'])[0],
+				'nombres' => isset($datos['nombres']) ? $datos['nombres'] : '',
+				'apellidoPaterno' => isset($datos['apellidoPaterno']) ? $datos['apellidoPaterno'] : '',
+				'apellidoMaterno' => isset($datos['apellidoMaterno']) ? $datos['apellidoMaterno'] : '',
+				'cargo' => isset($datos['cargo']) ? $datos['cargo'] : '',
+				'telefono' => isset($datos['telefono']) ? $datos['telefono'] :'',
+				'email' => $datos['email'],
+				'password' => isset($datos['password']) ? $datos['password'] : explode("@",$datos['email'])[0],
+				'activated' => 1,
+				'permissions'=>isset($datos['permissions']) ? $datos['permissions'] : array(),
+				'nivel' => $datos["nivel"]
+			);
+			
+
+            $usuario = Sentry::createUser($user);
+
+			$role_array = $datos['grupos'];
+			if(count($role_array) > 0 && $role_array !== '')
+			{
+				foreach ($role_array as $rol) 
+				{
+					$user_group = Sentry::findGroupById($rol);
+					$usuario->addGroup($user_group);
+				}
+			}
+			if($datos["nivel"]!=1)
+			{
+				if(count($datos['usuariozona'])>0)
+				{
+					DB::table('UsuarioZona')->where('idUsuario', "$usuario->id")->delete();				
+					DB::table('UsuarioJurisdiccion')->where('idUsuario', "$usuario->id")->delete();
+					
+					foreach($datos['usuariozona'] as $zona)
+					{
+						if($zona!="")
+						{
+							if($datos["nivel"]==3)
+								DB::table('UsuarioZona')->insert(	array('idUsuario' => "$usuario->id", 'idZona' => $zona["id"]) );	
+							if($datos["nivel"]==2)
+								DB::table('UsuarioJurisdiccion')->insert(	array('idUsuario' => "$usuario->id", 'jurisdiccion' => $zona["id"]) );	
+						}					
+					}
+				}				
+			}
+			
+            if ($usuario) 
+                $success = true;
+        } 
+		
+		catch (\Cartalyst\Sentry\Users\LoginRequiredException $e)
+		{
+			    return Response::json(array("status"=>400,"messages"=>"Username es requerido"),400);
+		}
+		catch (\Cartalyst\Sentry\Users\PasswordRequiredException $e)
+		{
+			    return Response::json(array("status"=>400,"messages"=>"Password es requerido"),400);
+		}
+		catch (\Cartalyst\Sentry\Users\UserExistsException $e)
+		{
+			return Response::json(array("status"=>403,"messages"=>"Este nombre de usuario ya existe"),400);
+		}
+		catch (\Cartalyst\Sentry\Groups\GroupNotFoundException $e)
+		{
+		    return Response::json(array("status"=>404,"messages"=>"El grupo asignado no existe"),404);
+		}
+        if ($success) 
+		{
+			return Response::json(array("status"=>201,"messages"=>"Creado","data"=>$usuario),201);
+        } 
+		else 
+		{
+			return Response::json(array("status"=>500,"messages"=>"Error interno del servidor"),500);
+        }
+		
+	}
+
+	/**
+	 * Visualizar el recurso especificado.
+	 *
+	 * @param  int  $id que corresponde al recurso a mostrar el detalle
+	 * Response si el recurso es encontrado devolver el registro y estado 200, si no devolver error con estado 404
+	 * @return Response
+	 */
+	public function show($id)
+	{
+		$usuario = Usuario::with("Grupos")->find($id);		
+		
+		if(!$usuario)
+		{
+			return Response::json(array('status'=> 404,"messages"=>'No encontrado'),404);
+		} 
+		else 
+		{
+			$usuario["nivel"] = $usuario->nivel;
+			if($usuario->nivel==2)
+			{
+				$usuario['usuariozona'] = DB::table('UsuarioJurisdiccion')		
+				->select(array("jurisdiccion as id","jurisdiccion as nombre"))
+				->where('idUsuario',$id)->get();
+			}
+			else if($usuario->nivel==3)
+			{
+				$usuario['usuariozona'] = DB::table('UsuarioZona AS u')
+				->leftJoin('Zona AS c', 'c.id', '=', 'u.idZona')			
+				->select('*')
+				->where('idUsuario',$id)->get();
+			}
+			else
+				$usuario['usuariozona']=array();
+			
+			
+			return Response::json(array("status"=>200,"messages"=>"ok","data"=>$usuario),200);
+		}
+	}
+
+
+	/**
+	 * Actualizar el recurso especificado en el almacenamiento.
+	 *
+	 * @param  int  $id que corresponde al recurso a actualizar json $request valores a actualizar segun el recurso
+	 * Response si el recurso es encontrado y actualizado devolver el registro y estado 200, si no devolver error con estado 304
+	 * @return Response
+	 */
+	public function update($id)
+	{
+		$datos = Input::json()->all();  
+		if(isset($datos['baneo']))
+		$rules = [
+			'baneo' => 'required'
+		];
+		else
+		$rules = [
+			'email' => 'required|min:3|email'
+		];
+		$v = \Validator::make(Request::json()->all(), $rules );
+
+		if ($v->fails())
+		{
+			return Response::json($v->errors());
+		}
+		
+		$success = false;
+        try 
+		{
+			if(isset($datos['baneo']))
+			{
+				$usuario = Sentry::findThrottlerByUserId($id);
+				if($usuario->isBanned())
+				{
+					$usuario->unBan();
+				}
+				else
+				{
+					$usuario->ban();
+				}
+				return Response::json(array("status"=>200,"messages"=>"Ok","data"=>$usuario),200);
+			}
+			
+			$usuario = Sentry::findUserById($id);
+			
+			$usuario->username = isset($datos['username']) ? $datos['username'] : explode("@",$datos['email'])[0];
+			$usuario->nombres = isset($datos['nombres']) ? $datos['nombres'] : '';
+			$usuario->apellidoPaterno = isset($datos['apellidoPaterno']) ? $datos['apellidoPaterno'] : '';
+			$usuario->apellidoMaterno = isset($datos['apellidoMaterno']) ? $datos['apellidoMaterno'] : '';
+			$usuario->cargo = isset($datos['cargo']) ? $datos['cargo'] : '';
+			$usuario->telefono = isset($datos['telefono']) ? $datos['telefono'] :'';
+			$usuario->email = $datos['email'];				
+			$usuario->activated = 1;
+			$usuario->nivel = $datos["nivel"];
+			
+			$user_permission = isset($datos["permissions"]) ? $datos["permissions"] : array();
+			
+			foreach ($user_permission as $key => $value) 			
+			{
+				if($value==1)
+				{
+					$user_permission[$key] = 0;
+				}
+			}			
+			$usuario->permissions = $user_permission;
+			
+			if(isset($datos['password']))
+				if($datos['password'] != "")
+					$usuario->password = $datos['password'];
+			
+
+            if ($usuario->save()) 
+                $success = true;
+
+			$role_array = $datos['grupos'];
+			
+			$grupos = $usuario->getGroups();
+			if(count($grupos)>0)
+			{
+				foreach ($grupos as $grupo) 
+				{
+					if(array_search($grupo->id, $role_array) === FALSE)
+					{
+						$usuario->removeGroup($grupo);
+					}
+				}
+			}
+					
+			if(count($role_array) > 0 && $role_array !== '')
+			{
+				foreach ($role_array as $rol) 
+				{
+					$user_group = Sentry::findGroupById($rol);
+					$usuario->addGroup($user_group);
+				}
+			} 
+			if($datos["nivel"]!=1)
+			{
+				if(count($datos['usuariozona'])>0)
+				{
+					DB::table('UsuarioZona')->where('idUsuario', "$usuario->id")->delete();
+					DB::table('UsuarioJurisdiccion')->where('idUsuario', "$usuario->id")->delete();
+					
+					foreach($datos['usuariozona'] as $zona)
+					{
+						if($zona!="")
+						{
+							if($datos["nivel"]==3)
+								DB::table('UsuarioZona')->insert(	array('idUsuario' => "$usuario->id", 'idZona' => $zona["id"]) );	
+							if($datos["nivel"]==2)
+								DB::table('UsuarioJurisdiccion')->insert(	array('idUsuario' => "$usuario->id", 'jurisdiccion' => $zona["id"]) );	
+						}					
+					}
+				}				
+			}
+        } 
+		
+		catch (\Cartalyst\Sentry\Users\LoginRequiredException $e)
+		{
+			    return Response::json(array("status"=>400,"messages"=>"Username es requerido"),400);
+		}				
+		catch (\Cartalyst\Sentry\Groups\GroupNotFoundException $e)
+		{
+		    return Response::json(array("status"=>404,"messages"=>"El grupo asignado no existe"),404);
+		}
+        if ($success) 
+		{
+			return Response::json(array("status"=>200,"messages"=>"Ok","data"=>$usuario),200);
+        } 
+		else 
+		{
+			return Response::json(array("status"=>500,"messages"=>"Error interno del servidor"),500);
+        }
+	}
+
+	/**
+	 * Elimine el recurso especificado del almacenamiento (softdelete).
+	 *
+	 * @param  int  $id que corresponde al recurso a eliminar
+	 * Response si el recurso es eliminado devolver el registro y estado 200, si no devolver error con estado 500 
+	 * @return Response
+	 */
+	public function destroy($id)
+	{
+		$success = false;
+        DB::beginTransaction();
+        try 
+		{
+			$usuario = Usuario::find($id);
+			$grupos = $usuario->Grupos();
+			if(count($grupos)>0)
+			{
+				foreach ($grupos as $grupo) 
+				{
+					$usuario->removeGroup($grupo);				
+				}
+			}
+			$usuario->delete();
+			
+			$success=true;
+		} 
+		catch (\Exception $e) 
+		{
+			throw $e;
+        }
+        if ($success)
+		{
+			DB::commit();
+			return Response::json(array("status"=>200,"messages"=>"ok","data"=>$usuario),200);
+		} 
+		else 
+		{
+			DB::rollback();
+			return Response::json(array('status'=> 500,"messages"=>'Error interno del servidor'),500);
+		}
+	}	
+	
+	/**
+	 * Actualizar el recurso especificado en el almacenamiento.
+	 *
+	 * @param  string  $email que corresponde al recurso a actualizar json $request valores a actualizar segun el recurso
+	 * Response si el recurso es encontrado y actualizado devolver el registro y estado 200, si no devolver error con estado 304
+	 * @return Response
+	 */
+	public function UpdateInfo($email)
+	{
+		$datos = Input::json()->all();
+		$success = false;
+        try 
+		{
+			$user = Sentry::getUser();
+			$usuario = Sentry::findUserByLogin($email);
+			
+			$usuario->nombres = $datos['nombre'];
+			$usuario->apellidoPaterno = $datos['apellido_paterno'];
+			$usuario->apellidoMaterno = $datos['apellido_materno'];			
+			$usuario->telefono = isset($datos['telefono']) ? $datos['telefono'] : '';					
+
+            if ($usuario->save()) 
+                $success = true;			
+        } 
+		catch (\Cartalyst\Sentry\Users\LoginRequiredException $e)
+		{
+			    return Response::json(array("status"=>400,"messages"=>"Username es requerido"),400);
+		}				
+		
+        if ($success) 
+		{
+			return Response::json(array("status"=>200,"messages"=>"Ok","data"=>$usuario),200);
+        } 
+		else 
+		{
+			return Response::json(array("status"=>500,"messages"=>"Error interno del servidor"),500);
+        }
+	}
+
+}

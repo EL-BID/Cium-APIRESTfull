@@ -1,0 +1,346 @@
+<?php
+/**
+ * Controlador Seguimiento
+ * 
+ * @package    CIUM API
+ * @subpackage Controlador
+ * @author     Eliecer Ramirez Esquinca
+ * @created    2015-07-20
+ */
+namespace App\Http\Controllers\v1\Transacciones;
+
+use App\Http\Requests;
+use App\Http\Controllers\Controller;
+
+use Request;
+use Response;
+use Input;
+use DB;
+use Sentry;
+
+use App\Models\Transacciones\Seguimiento;
+use App\Models\Transacciones\Hallazgo;
+use App\Models\Transacciones\Evaluacion;
+use App\Models\Transacciones\EvaluacionCalidad;
+use App\Models\Transacciones\Notificacion;
+use App\Models\Catalogos\Accion;
+use App\Models\Catalogos\Criterio;
+use App\Models\Catalogos\Indicador;
+use App\Http\Requests\SeguimientoRequest;
+ 
+
+class SeguimientoController extends Controller {
+
+	/**
+	 * Muestra una lista de los recurso.
+	 *
+	 * @param  
+	 *		 get en la url ejemplo url?pagina=1&limite=5&order=id
+	 *			pagina = numero del puntero(offset) para la sentencia limit
+	 *		    limite = numero de filas a mostrar
+	 *			order  = campo de la base de datos por la que se debe ordenar. Defaul ASC si se antepone el signo - es de manera DESC
+	 *					 ejemplo url?pagina=1&limite=5&order=id ASC y url?pagina=1&limite=5&order=-id DESC
+	 *		    columna= nombre del campo para hacer busqueda
+	 *          valor  = valor con el que se buscara en el campo
+	 * Los parametros son opcionales, pero si existe pagina debe de existir tambien limite y/o si existe columna debe existir tambien valor y pagina - limite
+	 * @return Response
+	 */
+	public function index()
+	{
+		
+		$datos = Request::all();
+		$user = Sentry::getUser();
+		$accion = Accion::where("tipo","S")->get(array("id"))->toArray(); 		
+		
+		// Si existe el paarametro pagina en la url devolver las filas según sea el caso
+		// si no existe parametros en la url devolver todos las filas de la tabla correspondiente
+		// esta opción es para devolver todos los datos cuando la tabla es de tipo catálogo
+		if(array_key_exists('pagina',$datos))
+		{
+			$pagina=$datos['pagina'];
+			if(isset($datos['order']))
+			{
+				$order = $datos['order'];
+				if(strpos(" ".$order,"-"))
+					$orden="desc";
+				else
+					$orden="asc";
+				$order=str_replace("-","",$order); 
+			}
+			else{
+				$order="id"; $orden="asc";
+			}
+			
+			if($pagina == 0)
+			{
+				$pagina = 1;
+			}
+			// si existe buscar se realiza esta linea para devolver las filas que en el campo que coincidan con el valor que el usuario escribio
+			// si no existe buscar devolver las filas con el limite y la pagina correspondiente a la paginación
+			if(array_key_exists('buscar',$datos))
+			{
+				$columna = $datos['columna'];
+				$valor   = $datos['valor'];
+				$seguimiento = Hallazgo::with("Usuario","Accion","Plazo","Indicador")->where('idUsuario',$user->id)->whereIn("idAccion",$accion)->orderBy($order,$orden);
+				
+				$search = trim($valor);
+				$keyword = $search;
+				$seguimiento=$seguimiento->whereNested(function($query) use ($keyword)
+				{
+					
+						$query->Where('descripcion', 'LIKE', '%'.$keyword.'%')
+							 ->orWhere('resuelto', 'LIKE', '%'.$keyword.'%')
+							 ->orWhere('categoriaEvaluacion', 'LIKE', '%'.$keyword.'%')
+							 ->orWhere('idEvaluacion', 'LIKE', '%'.$keyword.'%'); 
+				});
+				
+				$total=$seguimiento->get();
+				$seguimiento = $seguimiento->skip($pagina-1)->take($datos['limite'])->get();
+			}
+			else
+			{
+				$seguimiento = Hallazgo::with("Usuario","Accion","Plazo","Indicador")->where('idUsuario',$user->id)->whereIn("idAccion",$accion)->skip($pagina-1)->take($datos['limite'])->orderBy($order,$orden)->get();
+				$total=Hallazgo::with("Usuario","Accion","Plazo")->where('idUsuario',$user->id)->whereIn("idAccion",$accion)->get();
+			}
+			
+		}
+		else
+		{
+			$seguimiento = Hallazgo::with("Usuario","Accion","Plazo","Indicador")->where('idUsuario',$user->id)->whereIn("idAccion",$accion)->get();
+			$total=$seguimiento;
+		}
+		
+		$i=0;
+		foreach($seguimiento as $item)
+		{
+			$evaluacion=null;
+			if($item->categoriaEvaluacion=="RECURSO")
+				$evaluacion = Evaluacion::find($item->idEvaluacion);
+			
+			if($item->categoriaEvaluacion=="CALIDAD")
+				$evaluacion = EvaluacionCalidad::find($item->idEvaluacion);
+			
+			$evaluacion["categoria"]=$item->categoriaEvaluacion;
+			$seguimiento[$i]["evaluacion"] = $evaluacion;			
+			$i++;
+		}
+
+		if(!$seguimiento)
+		{
+			return Response::json(array('status'=> 404,"messages"=>'No encontrado'),404);
+		} 
+		else 
+		{
+			return Response::json(array("status"=>200,"messages"=>"ok","data"=>$seguimiento,"total"=>count($total)),200);
+			
+		}
+	}
+
+	/**
+	 * Guarde un recurso recién creado en el almacenamiento.
+	 *
+	 * @param post type json de los recursos a almacenar en la tabla correspondiente
+	 * Response si la operacion es exitosa devolver el registro y estado 201 si no devolver error y estado 500
+	 * @return Response
+	 */
+	public function store()
+	{
+		$rules = [
+			'descripcion' => 'required|min:3|max:250',
+			'idHallazgo'=> 'required'
+		];
+		$v = \Validator::make(Request::json()->all(), $rules );
+
+		if ($v->fails())
+		{
+			return Response::json($v->errors());
+		}
+		$datos = Input::json();
+		$success = false;
+        DB::beginTransaction();
+        try 
+		{
+			$usuario = Sentry::getUser();
+			
+            $seguimiento = new Seguimiento;
+            $seguimiento->idUsuario = $usuario->id;
+			$seguimiento->idHallazgo = $datos->get('idHallazgo');
+			$seguimiento->descripcion = $datos->get('descripcion');
+
+            if ($seguimiento->save()) 
+			{
+				// se genera el hallazgo 
+				$hallazgo = Hallazgo::find($datos->get('idHallazgo'));
+				if($hallazgo->categoriaEvaluacion=="RECURSO")
+					$evaluacion = Evaluacion::find($hallazgo->idEvaluacion);
+				if($hallazgo->categoriaEvaluacion=="CALIDAD")
+					$evaluacion = EvaluacionCalidad::find($hallazgo->idEvaluacion);
+				
+				if($evaluacion->idUsuario!=$usuario->id)
+				{
+					// notificar al usuario correspondiente
+					$notificacion = new Notificacion;
+					$notificacion->nombre = $usuario->nombres." ".$usuario->apellidoPaterno." (".$hallazgo->categoriaEvaluacion.") le ha dado seguimiento al hallazgo #".$datos->get('idHallazgo');
+					$notificacion->descripcion = "Segumiento #".$seguimiento->id." :".$seguimiento->descripcion;
+					$notificacion->idUsuario = $evaluacion->idUsuario;
+					$notificacion->recurso = "seguimiento/ver";
+					$notificacion->parametro = "?id=".$datos->get('idHallazgo');
+					$notificacion->visto = 0;
+					$notificacion->save();
+				}
+                $success = true;
+			}
+        } 
+		catch (\Exception $e) 
+		{
+			throw $e;
+        }
+        if ($success) 
+		{
+            DB::commit();
+			return Response::json(array("status"=>201,"messages"=>"Creado","data"=>$seguimiento),201);
+        } 
+		else 
+		{
+            DB::rollback();
+			return Response::json(array("status"=>500,"messages"=>"Error interno del servidor"),500);
+        }
+		
+	}
+
+	/**
+	 * Visualizar el recurso especificado.
+	 *
+	 * @param  int  $id que corresponde al recurso a mostrar el detalle
+	 * Response si el recurso es encontrado devolver el registro y estado 200, si no devolver error con estado 404
+	 * @return Response
+	 */
+	public function show($id)
+	{
+		$seguimiento = Hallazgo::with("Usuario","Indicador","Accion","Plazo")->find($id);
+				
+		$id=$seguimiento->EvaluacionCriterio["idEvaluacion"];
+		$seguimiento["evaluacion"] = DB::table('Evaluacion AS e')
+		->leftJoin('Clues AS c', 'c.clues', '=', 'e.clues')
+		->leftJoin('ConeClues AS cc', 'cc.clues', '=', 'e.clues')
+		->leftJoin('Cone AS co', 'co.id', '=', 'cc.idCone')
+		->select(array('e.fechaEvaluacion', 'e.cerrado', 'e.id','e.clues', 'c.nombre', 'c.domicilio', 'c.codigoPostal', 'c.entidad', 'c.municipio', 'c.localidad', 'c.jurisdiccion', 'c.institucion', 'c.tipoUnidad', 'c.estatus', 'c.estado', 'c.tipologia','co.nombre as nivelCone', 'cc.idCone'))
+		->where('e.id',"$seguimiento->idEvaluacion")
+		->first();
+		$seguimiento["indicador"] = Indicador::where("id",$seguimiento->idIndicador)->get(array("nombre"))->first();	
+		
+		$seguimiento["seguimiento"] = Seguimiento::with("usuario")->where("idHallazgo",$seguimiento->id)->get();
+		
+		if(!$seguimiento)
+		{
+			return Response::json(array('status'=> 404,"messages"=>'No encontrado'),404);
+		} 
+		else 
+		{
+			return Response::json(array("status"=>200,"messages"=>"ok","data"=>$seguimiento),200);
+		}
+	}
+
+
+	/**
+	 * Actualizar el recurso especificado en el almacenamiento.
+	 *
+	 * @param  int  $id que corresponde al recurso a actualizar json $request valores a actualizar segun el recurso
+	 * Response si el recurso es encontrado y actualizado devolver el registro y estado 200, si no devolver error con estado 304
+	 * @return Response
+	 */
+	public function update($id)
+	{
+		$rules = [
+			'descripcion' => 'required|min:3|max:250',
+			'idHallazgo'=> 'required'
+		];
+		$v = \Validator::make(Request::json()->all(), $rules );
+
+		if ($v->fails())
+		{
+			return Response::json($v->errors());
+		}
+		$datos = Input::json();
+		$success = false;
+        DB::beginTransaction();
+        try 
+		{
+			$usuario = Sentry::getUser();
+			$seguimiento = Hallazgo::find($id);
+			
+			$seguimiento->idUsuario = $usuario->id;
+			$seguimiento->resuelto = $datos->get('resuelto');
+
+            if ($seguimiento->save()) 
+			{
+				$hallazgo = Hallazgo::find($id);
+				if($hallazgo->categoriaEvaluacion=="RECURSO")
+					$evaluacion = Evaluacion::find($hallazgo->idEvaluacion);
+				if($hallazgo->categoriaEvaluacion=="CALIDAD")
+					$evaluacion = EvaluacionCalidad::find($hallazgo->idEvaluacion);
+				
+				if($evaluacion->idUsuario!=$usuario->id)
+				{
+					$notificacion = new Notificacion;
+					$notificacion->nombre = $usuario->nombres." ".$usuario->apellidoPaterno." (".$hallazgo->categoriaEvaluacion.") ha cerrado el hallazgo #".$id;
+					$notificacion->descripcion = "Cerrado Segumiento #".$seguimiento->id." :".$seguimiento->descripcion;
+					$notificacion->idUsuario = $evaluacion->idUsuario;
+					$notificacion->recurso = "seguimiento/ver";
+					$notificacion->parametro = "?id=".$datos->get('idHallazgo');
+					$notificacion->visto = 0;
+					$notificacion->save();
+				}
+                $success = true;
+			}
+		} 
+		catch (\Exception $e) 
+		{
+			throw $e;
+        }
+        if ($success)
+		{
+			DB::commit();
+			return Response::json(array("status"=>200,"messages"=>"ok","data"=>$seguimiento),200);
+		} 
+		else 
+		{
+			DB::rollback();
+			return Response::json(array('status'=> 304,"messages"=>'No modificado'),304);
+		}
+	}
+
+	/**
+	 * Elimine el recurso especificado del almacenamiento (softdelete).
+	 *
+	 * @param  int  $id que corresponde al recurso a eliminar
+	 * Response si el recurso es eliminado devolver el registro y estado 200, si no devolver error con estado 500 
+	 * @return Response
+	 */
+	public function destroy($id)
+	{
+		$success = false;
+        DB::beginTransaction();
+        try 
+		{
+			$seguimiento = Seguimiento::find($id);
+			$seguimiento->delete();
+			$success=true;
+		} 
+		catch (\Exception $e) 
+		{
+			throw $e;
+        }
+        if ($success)
+		{
+			DB::commit();
+			return Response::json(array("status"=>200,"messages"=>"ok","data"=>$seguimiento),200);
+		} 
+		else 
+		{
+			DB::rollback();
+			return Response::json(array('status'=> 500,"messages"=>'Error interno del servidor'),500);
+		}
+	}
+}
+

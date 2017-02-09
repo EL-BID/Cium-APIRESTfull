@@ -1,0 +1,117 @@
+
+	html
+    {
+	  -webkit-print-color-adjust:exact;
+      font-size: 10pt !important;
+	}
+    body
+    {
+        text-align: justify;
+    }
+    h1 { -weasy-bookmark-level: none }
+    .print-full 
+    {
+        page-break-inside: avoid;
+    }
+	
+	.progress 
+    {
+        height: 15px;        
+        overflow: hidden;
+        background-color: #f5f5f5;
+        border-radius: 4px;
+        -webkit-box-shadow: inset 0 1px 2px rgba(0,0,0,.1);
+        box-shadow: inset 0 1px 2px rgba(0,0,0,.1);
+    }
+
+    .progress-bar 
+    {        
+        width: 0;
+        font-size: .9em !important;
+        line-height: 20px;
+        color: #000 !important;
+        text-align: center;
+        background-color: #337ab7;
+        -webkit-box-shadow: inset 0 -1px 0 rgba(0,0,0,.15);
+        box-shadow: inset 0 -1px 0 rgba(0,0,0,.15);
+        -webkit-transition: width .6s ease;
+        -o-transition: width .6s ease;
+        transition: width .6s ease;
+    }
+    .progress-bar > span
+    {
+        margin-top: -5px;
+        display: block;
+    }
+    .img-circle{-webkit-border-radius:500px;-moz-border-radius:500px;border-radius:500px;}
+    .texto-vertical
+    {
+        transform: rotate(270deg);
+        transform-origin: left top -10;
+        float: left;
+        font-size: .7em !important;
+        width: 0px;
+        position: absolute;
+    }
+    table.Table thead
+    {
+        display: table-header-group;
+    }
+    table.Table tbody
+    {
+        display: table-row-group;
+    }
+    table.Tabla
+    {
+      border-collapse: collapse !important; 
+      page-break-after: auto; 
+      font-size: 6pt !important;
+    }
+    table.Tabla tr, table.Tabla td
+    {
+        page-break-inside: avoid;
+        page-break-after: auto;
+    }
+    table.Tabla tr
+    {
+    }
+    table.Tabla td, table.Tabla th
+    {
+      border: 1px #999 solid !important;
+      color: #000 !important;
+    }
+    table.Tabla caption
+    {
+      font-weight: bold;
+      background: #ddd;
+      padding: .4em;
+      border: 1px #999 solid !important;
+      border-bottom: none !important;
+      font-size: 6pt !important;
+    }
+
+    .h3-caption
+    {
+      font-weight: bold;
+      background: #666;
+      color: #fff;
+      padding: .4em;
+      border: 1px #999 solid !important;
+      font-size: 6pt !important;
+    }
+    .equis
+    {
+        display: none !important;
+        height: 0 !important;
+        width: 0 !important;
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+    
+   tbody:before, tbody:after { display: none; } 
+
+@page {
+    margin: 1.5cm 1.5cm .2cm 1.5cm; padding-left: 1.5cm;
+}
+
+

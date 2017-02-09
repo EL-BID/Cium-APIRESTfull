@@ -1,0 +1,96 @@
+{% extends 'layout.html.twig' %}
+
+{% block body_id 'documentation' %}
+{% block title %}{{ book.title }}{% endblock %}
+
+
+{% block titulo %} <span>{{ item.label }}</span>  {% endblock %}
+
+{% block menuNav %}
+{% set urlBasePath = 2 == item.level ? '..' : '.' %}
+<nav class="navbar navbar-default navbar-fixed-top top-bar">
+    <div class="container-fluid">
+      <div class="navbar-header" style="margin-right:20pt;width: 208px;">
+		<a href="./index.html" class="navbar-brand"><img alt="Home" src="./images/icono-cium-blue.png" style="top:0px; margin-top:-5px; height:34px; float:left; ">{{ book.title }}</a>
+      </div>
+      <ul class="nav navbar-nav">
+		<li class="">
+		  <a>Manual de usuario <i class="fa fa-caret-right"></i></a>
+		</li>
+		<li class="active">
+		  <a href="{{ item.url }}">{{ item.title }}</a>
+		</li>
+	  </ul>
+      <ul class="nav navbar-nav navbar-right">
+        {% if previous %}
+				<li><a  href="{{ urlBasePath }}/{{ previous.url }}">&larr; {{ app.getLabel('previous') }} </a></li>
+			{% else %}
+				<li><a class="disabled">&larr; {{ app.getLabel('previous') }} </a></li>
+			{% endif %}
+
+			{% if next %}
+				<li><a href="{{ urlBasePath }}/{{ next.url }}">{{ app.getLabel('next') }} &rarr; </a></li>
+			{% else %}
+				<li><a class="disabled">{{ app.getLabel('next') }} </a></li>
+			{% endif %}
+      </ul>
+    </div>
+  </nav>
+{% endblock %}
+
+
+{% block contents %}
+
+    <h1 id="{{ item.slug }}"> {{ item.title }}</h1>
+    {{ item.content|replace({
+        '{{': '&#123;{',
+        '}}': '}&#125;',
+        '{#': '&#123;#',
+        '#}': '#&#125;',
+        '{%': '&#123;%',
+        '%}': '%&#125;'
+    }) }}
+
+	
+{% endblock %}
+
+{% block menuLeft %}
+{% set urlBasePath = 2 == item.level ? '..' : '.' %}
+
+		
+<!-- Sidebar -->
+    <aside id="sidebar-wrapper">
+      <ul class="sidebar-nav nav">
+        
+        <li>
+          <a href="index.html"><i class="fa fa-dashboard"></i> Dashboard</a>
+        </li>
+		{% set  contador = 0  %}
+		{% for tocItem in toc if tocItem.level <= edition.toc.deep %}
+											
+				<li class="{{ tocItem.slug == item.slug ? 'active' : '' }}">
+					<a href="{{ urlBasePath }}/{{ tocItem.url }}" ><i class="fa fa-book"></i> {{ tocItem.title }} </a>				  
+					<ul id="chunk_toc" class='nav collapse submenu in'  aria-expanded="true">		
+						
+						{% if 1 == edition.chunk_level and tocItem.title == item.toc[0].title %}
+							{% for tocItemToc in item.toc if tocItemToc.level <= edition.toc.deep %}
+								{% if tocItemToc.title != tocItem.title%}
+								<li><a href="{{ urlBasePath }}/{{ tocItemToc.url }}"><i class="fa fa-file"></i> {{ tocItemToc.title }}</a></li>
+								{% endif %}
+							{% endfor %}
+							
+						{% endif %}						
+													
+					</ul>
+					
+				</li>
+		{% endfor %} 
+				  
+        
+      </ul>
+	  
+    </aside>
+<!-- /#sidebar-wrapper -->
+{% endblock %}
+
+

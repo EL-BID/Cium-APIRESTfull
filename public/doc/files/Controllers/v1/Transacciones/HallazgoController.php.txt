@@ -1,0 +1,369 @@
+<?php
+/**
+ * Controlador Hallazgo
+ * 
+ * @package    CIUM API
+ * @subpackage Controlador
+ * @author     Eliecer Ramirez Esquinca
+ * @created    2015-07-20
+ */
+namespace App\Http\Controllers\v1\Transacciones;
+
+use App\Http\Requests;
+use App\Http\Controllers\Controller;
+
+use Request;
+use Response;
+use Input;
+use DB;
+use Sentry;
+
+use App\Models\Catalogos\Clues;
+use App\Models\Catalogos\ConeClues;
+ 
+
+class HallazgoController extends Controller {
+
+	/**
+	 * Muestra una lista de los recurso.
+	 *
+	 * @param  
+	 *		 get en la url ejemplo url?pagina=1&limite=5&order=id
+	 *			pagina = numero del puntero(offset) para la sentencia limit
+	 *		    limite = numero de filas a mostrar
+	 *			order  = campo de la base de datos por la que se debe ordenar. Defaul ASC si se antepone el signo - es de manera DESC
+	 *					 ejemplo url?pagina=1&limite=5&order=id ASC y url?pagina=1&limite=5&order=-id DESC
+	 *		    columna= nombre del campo para hacer busqueda
+	 *          valor  = valor con el que se buscara en el campo
+	 * Los parametros son opcionales, pero si existe pagina debe de existir tambien limite y/o si existe columna debe existir tambien valor y pagina - limite
+	 * @return Response
+	 */
+	public function index()
+	{
+		
+		$datos = Request::all();
+		$filtro = array_key_exists("filtro",$datos) ? json_decode($datos["filtro"]) : null; 
+		$user = Sentry::getUser();
+		$cluesUsuario=$this->permisoZona();
+		$tipo=array_key_exists('tipo',$datos) ? $datos['tipo'] : 'Recurso';
+		
+		$indicadores = array();
+		// Si existe el paarametro pagina en la url devolver las filas según sea el caso
+		// si no existe parametros en la url devolver todos las filas de la tabla correspondiente
+		// esta opción es para devolver todos los datos cuando la tabla es de tipo catálogo
+		if(array_key_exists('pagina',$datos))
+		{
+			$pagina=$datos['pagina'];
+			if(isset($datos['order']))
+			{
+				$order = $datos['order'];
+				if(strpos(" ".$order,"-"))
+					$orden="desc";
+				else
+					$orden="asc";
+				$order=str_replace("-","",$order); 
+			}
+			else{
+				$order="id"; $orden="asc";
+			}
+			
+			if($pagina == 0)
+			{
+				$pagina = 1;
+			}
+			// si existe buscar se realiza esta linea para devolver las filas que en el campo que coincidan con el valor que el usuario escribio
+			// si no existe buscar devolver las filas con el limite y la pagina correspondiente a la paginación
+			if(array_key_exists('buscar',$datos))
+			{
+				$columna = $datos['columna'];
+				$valor   = $datos['valor'];
+				$hallazgo = DB::table("Hallazgos")->distinct()->select(array("clues","nombre","jurisdiccion","municipio","localidad","cone"))->skip($pagina-1)->take($datos['limite']);
+								
+				if($filtro)
+				{
+					if(!$filtro->historial)
+					{
+						$sql = DB::select("select codigo from Hallazgos e where codigo in (select distinct e1.codigo from Hallazgos e1 where MONTH(e1.creadoAl)=MONTH(e.creadoAl) ) and e.creadoAl = (select max(e2.creadoAl) from Hallazgos e2 where e2.codigo=e.codigo and YEAR(e2.creadoAl)=YEAR(e.creadoAl))");
+						$historico = array();
+						foreach($sql as $s)
+							array_push($historico,$s->codigo);
+						$hallazgo = $hallazgo->whereIn('codigo' , $historico);
+					}
+					if(!$filtro->verTodosIndicadores)
+					{
+						$hallazgo = $hallazgo->whereIn('codigo' , $filtro->indicador);
+					}
+					if(!$filtro->verTodosUM)
+					{
+						if(array_key_exists("um",$filtro))
+						{
+							if(array_key_exists("jurisdiccion",$filtro->um))
+							{
+								$hallazgo = $hallazgo->where('jurisdiccion' , $filtro->um->jurisdiccion);
+							}
+							if(array_key_exists("municipio",$filtro->um))
+							{
+								$hallazgo = $hallazgo->where('municipio' , $filtro->um->municipio);
+							}
+							if(array_key_exists("localidad",$filtro->um))
+							{
+								$hallazgo = $hallazgo->where('localidad' , $filtro->um->localidad);
+							}
+							if(array_key_exists("cone",$filtro->um))
+							{
+								$hallazgo = $hallazgo->where('cone' , $filtro->um->cone);
+							}
+						}
+					}
+				}
+				
+				$hallazgo = $hallazgo->whereIn('clues',$cluesUsuario)->orderBy($order,$orden);	
+				$search = trim($valor);
+				$keyword = $search;
+				$hallazgo=$hallazgo->whereNested(function($query) use ($keyword)
+				{
+					
+					$query->Where('jurisdiccion', 'LIKE', '%'.$keyword.'%')
+							 ->orWhere('municipio', 'LIKE', '%'.$keyword.'%')
+							 ->orWhere('localidad', 'LIKE', '%'.$keyword.'%')
+							 ->orWhere('nombre', 'LIKE', '%'.$keyword.'%')
+							 ->orWhere('clues', 'LIKE', '%'.$keyword.'%')
+							 ->orWhere('cone', 'LIKE', '%'.$keyword.'%');
+				});
+				
+				$total=$hallazgo->get();
+				$hallazgo = $hallazgo->get();
+			}
+			else
+			{
+				$hallazgo = DB::table("Hallazgos")->distinct()->select(array("clues","nombre","jurisdiccion","municipio","localidad","cone"))->skip($pagina-1)->take($datos['limite'])
+				->whereIn('clues',$cluesUsuario)->orderBy($order,$orden);
+				
+				if($filtro)
+				{
+					if(!$filtro->historial)
+					{
+						$sql = DB::select("select codigo from Hallazgos e where codigo in (select distinct e1.codigo from Hallazgos e1 where MONTH(e1.creadoAl)=MONTH(e.creadoAl) ) and e.creadoAl = (select max(e2.creadoAl) from Hallazgos e2 where e2.codigo=e.codigo and YEAR(e2.creadoAl)=YEAR(e.creadoAl))");
+						$historico = array();
+						foreach($sql as $s)
+							array_push($historico,$s->codigo);
+						$hallazgo = $hallazgo->whereIn('codigo' , $historico);
+					}
+					if(!$filtro->verTodosIndicadores)
+					{
+						$hallazgo = $hallazgo->whereIn('codigo' , $filtro->indicador);
+					}
+					if(!$filtro->verTodosUM)
+					{
+						if(array_key_exists("um",$filtro))
+						{
+							if(array_key_exists("jurisdiccion",$filtro->um))
+							{
+								$hallazgo = $hallazgo->where('jurisdiccion' , $filtro->um->jurisdiccion);
+							}
+							if(array_key_exists("municipio",$filtro->um))
+							{
+								$hallazgo = $hallazgo->where('municipio' , $filtro->um->municipio);
+							}
+							if(array_key_exists("localidad",$filtro->um))
+							{
+								$hallazgo = $hallazgo->where('localidad' , $filtro->um->localidad);
+							}
+							if(array_key_exists("cone",$filtro->um))
+							{
+								$hallazgo = $hallazgo->where('cone' , $filtro->um->cone);
+							}
+						}
+					}
+				}
+				
+				$hallazgo = $hallazgo->get();
+				$total = DB::table("Hallazgos")->distinct()->select(array("clues","nombre","jurisdiccion","municipio","localidad","cone"))->whereIn('clues',$cluesUsuario)->get();
+				
+				$indicadores = DB::table("Hallazgos")->distinct()->select(array("color","codigo","indicador","categoriaEvaluacion"))->whereIn('clues',$cluesUsuario)->get();				
+			}
+			
+		}
+		else
+		{
+			$hallazgo = $hallazgo = DB::table("Hallazgos")->select("*")->get();
+			$indicadores = DB::table("Hallazgos")->distinct()->select(array("color","codigo","indicador","categoriaEvaluacion"))->whereIn('clues',$cluesUsuario)->get();
+			$total=$hallazgo;
+		}
+		
+		if(!$hallazgo)
+		{
+			return Response::json(array('status'=> 404,"messages"=>'No encontrado'),404);
+		} 
+		else 
+		{
+			$tempIndicador=array();
+			$totalIndicador = count($indicadores);
+			foreach($indicadores as $item)
+			{
+				$item->total=DB::table("Hallazgos")->where("codigo",$item->codigo)->count();
+				array_push($tempIndicador,$item);
+			}
+			if(count($tempIndicador)>0)
+				$indicadores=$tempIndicador;
+			
+			return Response::json(array("status"=>200,"messages"=>"ok","data"=>$hallazgo,"indicadores"=> $indicadores,"totalIndicador"=>$totalIndicador, "total"=>count($total)),200);			
+		}
+	}
+
+	/**
+	 * Visualizar el recurso especificado.
+	 *
+	 * @param  int  $id que corresponde al recurso a mostrar el detalle
+	 * Response si el recurso es encontrado devolver el registro y estado 200, si no devolver error con estado 404
+	 * @return Response
+	 */
+	public function show($id)
+	{	
+		$datos = Request::all();
+		$cluesUsuario=$this->permisoZona();
+		$filtro = array_key_exists("filtro",$datos) ? json_decode($datos["filtro"]) : null; 	
+		
+		if($filtro->nivel<3)
+		{
+			if($filtro->nivel==1)
+			{
+				$hallazgo = DB::table("Hallazgos")->distinct()->select(array("color","codigo","indicador","categoriaEvaluacion"))->where('clues',$id)->whereIn('clues',$cluesUsuario);
+			}
+			if($filtro->nivel==2)
+			{
+				$hallazgo = DB::table("Hallazgos")->distinct()->select(array("clues","nombre","jurisdiccion","fechaEvaluacion","idEvaluacion","categoriaEvaluacion"))->where("codigo",$id)->whereIn('clues',$cluesUsuario);
+			}
+			if(!$filtro->historial)
+			{
+				$sql = DB::select("select codigo from Hallazgos e where codigo in (select distinct e1.codigo from Hallazgos e1 where MONTH(e1.creadoAl)=MONTH(e.creadoAl) ) and e.creadoAl = (select max(e2.creadoAl) from Hallazgos e2 where e2.codigo=e.codigo and YEAR(e2.creadoAl)=YEAR(e.creadoAl))");
+				$historico = array();
+				foreach($sql as $s)
+					array_push($historico,$s->codigo);
+				$hallazgo = $hallazgo->whereIn('codigo' , $historico);
+			}
+			if(!$filtro->verTodosIndicadores)
+			{
+				$hallazgo = $hallazgo->whereIn('codigo' , $filtro->indicador);
+			}
+			if(!$filtro->verTodosUM)
+			{
+				if(array_key_exists("um",$filtro))
+				{
+					if(array_key_exists("jurisdiccion",$filtro->um))
+					{
+						$hallazgo = $hallazgo->where('jurisdiccion' , $filtro->um->jurisdiccion);
+					}
+					if(array_key_exists("municipio",$filtro->um))
+					{
+						$hallazgo = $hallazgo->where('municipio' , $filtro->um->municipio);
+					}
+					if(array_key_exists("localidad",$filtro->um))
+					{
+						$hallazgo = $hallazgo->where('localidad' , $filtro->um->localidad);
+					}
+					if(array_key_exists("cone",$filtro->um))
+					{
+						$hallazgo = $hallazgo->where('cone' , $filtro->um->cone);
+					}
+				}
+			}
+			$hallazgo = $hallazgo->get();
+		}
+		else{
+			
+			$tipo = $filtro->tipo;
+			$indicador = DB::table("Indicador")->where("codigo",$filtro->indicadorActivo)->first();
+			if($tipo == "CALIDAD")
+			{
+				$hallazgo = DB::table('EvaluacionCalidad  AS AS');
+				$criterio = "";
+			}
+			if($tipo == "RECURSO")
+			{
+				$hallazgo = DB::table('EvaluacionRecurso  AS AS');
+				
+				$criterio = DB::select("SELECT cic.aprobado, c.id as idCriterio, ic.idIndicador, lv.id as idlugarVerificacion, c.creadoAl, c.modificadoAl, c.nombre as criterio, lv.nombre as lugarVerificacion FROM EvaluacionRecursoCriterio cic							
+							left join IndicadorCriterio ic on ic.idIndicador = cic.idIndicador and ic.idCriterio = cic.idCriterio
+							left join Criterio c on c.id = ic.idCriterio
+							left join LugarVerificacion lv on lv.id = ic.idlugarVerificacion		
+							WHERE cic.idIndicador = $indicador->id and cic.idEvaluacionRecurso = $id and c.borradoAl is null and ic.borradoAl is null and cic.borradoAl is null and lv.borradoAl is null");
+			}
+			$hallazgo = $hallazgo->leftJoin('Clues AS c', 'c.clues', '=', 'AS.clues')
+			->leftJoin('ConeClues AS cc', 'cc.clues', '=', 'AS.clues')
+			->leftJoin('Cone AS co', 'co.id', '=', 'cc.idCone')
+            ->leftJoin('Usuario AS us', 'us.id', '=', 'AS.idUsuario')
+            ->select(array('us.nombres','us.apellidoPaterno','us.apellidoMaterno','AS.firma','AS.fechaEvaluacion', 'AS.cerrado', 'AS.id','AS.clues', 'c.nombre', 'c.domicilio', 'c.codigoPostal', 'c.entidad', 'c.municipio', 'c.localidad', 'c.jurisdiccion', 'c.institucion', 'c.tipoUnidad', 'c.estatus', 'c.estado', 'c.tipologia','co.nombre as nivelCone', 'cc.idCone'))
+            ->where('AS.id',"$id")->first();
+	
+			$hallazgo->indicador = $indicador;
+			$hallazgo->criterios = $criterio;
+				
+		}
+		
+		if(!$hallazgo)
+		{
+			return Response::json(array('status'=> 404,"messages"=>'No encontrado'),404);
+		} 
+		else 
+		{
+			return Response::json(array("status"=>200,"messages"=>"ok","data"=>$hallazgo),200);
+		}
+	}
+	
+	/**
+	 * Obtener la lista de clues que el usuario tiene acceso.
+	 *
+	 * @param session sentry, usuario logueado
+	 * Response si la operacion es exitosa devolver un array con el listado de clues
+	 * @return array
+	 */
+	public function permisoZona()
+	{
+		$cluesUsuario=array();
+		$clues=array();
+		$cone=ConeClues::all(["clues"]);
+		$cones=array();
+		foreach($cone as $item)
+		{
+			array_push($cones,$item->clues);
+		}	
+		$user = Sentry::getUser();		
+		if($user->nivel==1)
+			$clues = Clues::whereIn('clues',$cones)->get();
+		else if($user->nivel==2)
+		{
+			$result = DB::table('UsuarioJurisdiccion')
+				->where('idUsuario', $user->id)
+				->get();
+		
+			foreach($result as $item)
+			{
+				array_push($cluesUsuario,$item->jurisdiccion);
+			}
+			$clues = Clues::whereIn('clues',$cones)->whereIn('jurisdiccion',$cluesUsuario)->get();
+		}
+		else if($user->nivel==3)
+		{
+			$result = DB::table('UsuarioZona AS u')
+			->leftJoin('Zona AS z', 'z.id', '=', 'u.idZona')
+			->leftJoin('ZonaClues AS zu', 'zu.idZona', '=', 'z.id')
+			->select(array('zu.clues'))
+			->where('u.idUsuario', $user->id)
+			->get();
+			
+			foreach($result as $item)
+			{
+				array_push($cluesUsuario,$item->clues);
+			}
+			$clues = Clues::whereIn('clues',$cones)->whereIn('jurisdiccion',$clues)->get();
+		}
+		$cluesUsuario=array();
+		foreach($clues as $item)
+		{
+			array_push($cluesUsuario,$item->clues);
+		}
+		return $cluesUsuario;
+	}
+}
+

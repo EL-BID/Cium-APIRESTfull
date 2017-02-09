@@ -1,0 +1,236 @@
+<?php
+/**
+ * Controlador Pendiente
+ * 
+ * @package    CIUM API
+ * @subpackage Controlador
+ * @author     Eliecer Ramirez Esquinca
+ * @created    2015-07-20
+ */
+namespace App\Http\Controllers\v1\Transacciones;
+
+use App\Http\Requests;
+use App\Http\Controllers\Controller;
+
+use Request;
+use Response;
+use Input;
+use DB; 
+use Sentry;
+use App\Models\Transacciones\Pendiente;
+
+class PendienteController extends Controller {
+
+	/**
+	 * Muestra una lista de los recurso.
+	 *
+	 * @param  
+	 *		 get en la url ejemplo url?pagina=1&limite=5&order=id
+	 *			pagina = numero del puntero(offset) para la sentencia limit
+	 *		    limite = numero de filas a mostrar
+	 *			order  = campo de la base de datos por la que se debe ordenar. Defaul ASC si se antepone el signo - es de manera DESC
+	 *					 ejemplo url?pagina=1&limite=5&order=id ASC y url?pagina=1&limite=5&order=-id DESC
+	 *		    columna= nombre del campo para hacer busqueda
+	 *          valor  = valor con el que se buscara en el campo
+	 * Los parametros son opcionales, pero si existe pagina debe de existir tambien limite y/o si existe columna debe existir tambien valor y pagina - limite
+	 * @return Response
+	 */
+	public function index()
+	{
+		$datos = Request::all();
+		$user = Sentry::getUser();
+		// Si existe el paarametro pagina en la url devolver las filas según sea el caso
+		// si no existe parametros en la url devolver todos las filas de la tabla correspondiente
+		// esta opción es para devolver todos los datos cuando la tabla es de tipo catálogo
+		if(array_key_exists('pagina',$datos))
+		{
+			$pagina=$datos['pagina'];
+			if(isset($datos['order']))
+			{
+				$order = $datos['order'];
+				if(strpos(" ".$order,"-"))
+					$orden="desc";
+				else
+					$orden="asc";
+				$order=str_replace("-","",$order); 
+			}
+			else{
+				$order="id"; $orden="asc";
+			}
+			
+			if($pagina == 0)
+			{
+				$pagina = 1;
+			}
+			// si existe buscar se realiza esta linea para devolver las filas que en el campo que coincidan con el valor que el usuario escribio
+			// si no existe buscar devolver las filas con el limite y la pagina correspondiente a la paginación
+			if(array_key_exists('buscar',$datos))
+			{
+				$columna = $datos['columna'];
+				$valor   = $datos['valor'];
+				$pendiente = Pendiente::select(array('id', 'nombre', 'descripcion', 'visto', 'recurso', 'parametro', 'idUsuario', 'creadoAl', 'modificadoAl', 'borradoAl',DB::raw('DATEDIFF(NOW(),creadoAl) as dias')))				
+				->where('idUsuario',$user->id)
+				->orderBy($order,$orden);
+				
+				$search = trim($valor);
+				$keyword = $search;
+				$pendiente=$pendiente->whereNested(function($query) use ($keyword)
+				{
+					
+						$query->Where('nombre', 'LIKE', '%'.$keyword.'%')
+							 ->orWhere('descripcion', 'LIKE', '%'.$keyword.'%'); 
+				});
+				
+				$total=$pendiente->get();
+				$pendiente = $pendiente->skip($pagina-1)->take($datos['limite'])->get();
+			}
+			else
+			{
+				$pendiente = Pendiente::select(array('id', 'nombre', 'descripcion', 'visto', 'recurso', 'parametro', 'idUsuario', 'creadoAl', 'modificadoAl', 'borradoAl',DB::raw('DATEDIFF(NOW(),creadoAl) as dias')))
+				->where('idUsuario',$user->id)
+				->skip($pagina-1)
+				->take($datos['limite'])->orderBy($order,$orden)->get();
+				$total=Pendiente::where('idUsuario',$user->id)->get();
+			}
+			
+		}
+		else if(array_key_exists('visto',$datos))
+		{
+			$pagina=$datos['pagina1'];
+			if($pagina == 0)
+			{
+				$pagina = 1;
+			}
+			$pendiente = Pendiente::select(array('id', 'nombre', 'descripcion', 'visto', 'recurso', 'parametro', 'idUsuario', 'creadoAl', 'modificadoAl', 'borradoAl',DB::raw('DATEDIFF(NOW(),creadoAl) as dias')))
+			->where('visto','!=','1')
+			->where('idUsuario',$user->id)
+			->skip($pagina-1)
+			->take($datos['limite1'])->get();
+			$total=Pendiente::where('idUsuario',$user->id)->where('visto','!=','1')->get();
+		}
+		else
+		{
+			$pendiente = Pendiente::where('idUsuario',$user->id)->get();
+			$total=$pendiente;
+		}
+
+		if(!$pendiente)
+		{
+			return Response::json(array('status'=> 404,"messages"=>'No encontrado'),404);
+		} 
+		else 
+		{
+			return Response::json(array("status"=>200,"messages"=>"ok","data"=>$pendiente,"total"=>count($total)),200);
+			
+		}
+	}
+
+
+	/**
+	 * Visualizar el recurso especificado.
+	 *
+	 * @param  int  $id que corresponde al recurso a mostrar el detalle
+	 * Response si el recurso es encontrado devolver el registro y estado 200, si no devolver error con estado 404
+	 * @return Response
+	 */
+	public function show($id)
+	{
+		$pendiente = Pendiente::where('idUsuario',$user->id)->where("id",$id)->first();
+		$user = Sentry::getUser();
+		if(!$pendiente)
+		{
+			return Response::json(array('status'=> 404,"messages"=>'No encontrado'),404);
+		} 
+		else 
+		{
+			return Response::json(array("status"=>200,"messages"=>"ok","data"=>$pendiente),200);
+		}
+	}
+
+
+	/**
+	 * Actualizar el recurso especificado en el almacenamiento.
+	 *
+	 * @param  int  $id que corresponde al recurso a actualizar json $request valores a actualizar segun el recurso
+	 * Response si el recurso es encontrado y actualizado devolver el registro y estado 200, si no devolver error con estado 304
+	 * @return Response
+	 */
+	public function update($id)
+	{
+		$datos = Input::json();
+		$success = false;
+        DB::beginTransaction();
+        try 
+		{
+			$user = Sentry::getUser();
+			$pendiente = Pendiente::find($id);
+			if(array_key_exists('nombre',$datos))
+			$pendiente->nombre = $datos->get('nombre');
+		
+			if(array_key_exists('descripcion',$datos))
+			$pendiente->descripcion = $datos->get('descripcion');
+		
+			$pendiente->idUsuario = $user->id;
+			
+			if(array_key_exists('recurso',$datos))
+			$pendiente->recurso = $datos->get('recurso');
+		
+			if(array_key_exists('parametro',$datos))
+			$pendiente->parametro = $datos->get('parametro');
+		
+			$pendiente->visto = $datos->get('visto');			
+
+            if ($pendiente->save()) 
+                $success = true;
+		} 
+		catch (\Exception $e) 
+		{
+			throw $e;
+        }
+        if ($success)
+		{
+			DB::commit();
+			return Response::json(array("status"=>200,"messages"=>"ok","data"=>$pendiente),200);
+		} 
+		else 
+		{
+			DB::rollback();
+			return Response::json(array('status'=> 304,"messages"=>'No modificado'),304);
+		}
+	}
+
+	/**
+	 * Elimine el recurso especificado del almacenamiento (softdelete).
+	 *
+	 * @param  int  $id que corresponde al recurso a eliminar
+	 * Response si el recurso es eliminado devolver el registro y estado 200, si no devolver error con estado 500 
+	 * @return Response
+	 */
+	public function destroy($id)
+	{
+		$success = false;
+        DB::beginTransaction();
+        try 
+		{
+			$pendiente = Pendiente::find($id);
+			$pendiente->delete();
+			$success=true;
+		} 
+		catch (\Exception $e) 
+		{
+			throw $e;
+        }
+        if ($success)
+		{
+			DB::commit();
+			return Response::json(array("status"=>200,"messages"=>"ok","data"=>$pendiente),200);
+		} 
+		else 
+		{
+			DB::rollback();
+			return Response::json(array('status'=> 500,"messages"=>'Error interno del servidor'),500);
+		}
+	}
+
+}
+

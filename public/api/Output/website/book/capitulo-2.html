@@ -1,0 +1,3055 @@
+<html >
+	<head>
+		<title>API CIUM </title>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<meta name="charset" content="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<!-- Latest compiled and minified CSS -->
+		  
+			<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css">
+			<link rel="stylesheet" href="./css/styles.css" />  
+			<link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+				
+					<script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+			<script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+			<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+			<!-- Latest compiled and minified JavaScript -->
+			<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/js/bootstrap.min.js"></script>
+			<script charset="utf-8">
+			$(document).ready(function () {
+			  $("body").on("click",".btn-main-menu",function(e) {
+				e.preventDefault();
+				$("#wrapper").toggleClass("toggled");
+			  });
+			  $(".btn-datagrid-row-mostrar-opciones").on('click', function(e){
+				e.preventDefault();
+
+				$(this).toggleClass('btn-primary');
+				$(this).parent().find('.btn-group').eq(0).toggleClass('hidden-xs');
+			  });
+			});
+			</script>
+		
+		<link rel="shortcut icon" href="./images/favicon-cium.ico" />
+	</head>
+	<body>
+	
+
+	<nav class="navbar navbar-default navbar-fixed-top top-bar">
+    <div class="container-fluid">
+      <div class="navbar-header" style="margin-right:20pt;width: 208px;">
+		<a href="./index.html" class="navbar-brand"><img alt="Home" src="./images/icono-cium-blue.png" style="top:0px; margin-top:-5px; height:34px; float:left; ">API CIUM</a>
+      </div>
+      <ul class="nav navbar-nav">
+		<li class="">
+		  <a>Manual de usuario <i class="fa fa-caret-right"></i></a>
+		</li>
+		<li class="active">
+		  <a href="">Catálogos</a>
+		</li>
+	  </ul>
+      <ul class="nav navbar-nav navbar-right">
+        				<li><a  href="./capitulo-1.html">&larr; Anterior </a></li>
+			
+							<li><a href="./capitulo-3.html">Siguiente &rarr; </a></li>
+			      </ul>
+    </div>
+  </nav>
+
+	<div id="wrapper" class="" >
+	
+		
+<!-- Sidebar -->
+    <aside id="sidebar-wrapper">
+      <ul class="sidebar-nav nav">
+        
+        <li>
+          <a href="index.html"><i class="fa fa-dashboard"></i> Dashboard</a>
+        </li>
+															
+				<li class="">
+					<a href="./capitulo-1.html" ><i class="fa fa-book"></i> Introducción </a>				  
+					<ul id="chunk_toc" class='nav collapse submenu in'  aria-expanded="true">		
+						
+												
+													
+					</ul>
+					
+				</li>
+													
+				<li class="active">
+					<a href="./capitulo-2.html" ><i class="fa fa-book"></i> Catálogos </a>				  
+					<ul id="chunk_toc" class='nav collapse submenu in'  aria-expanded="true">		
+						
+																																												<li><a href="./capitulo-2.html#acciones"><i class="fa fa-file"></i> Acciones</a></li>
+																															<li><a href="./capitulo-2.html#alertas"><i class="fa fa-file"></i> Alertas</a></li>
+																															<li><a href="./capitulo-2.html#clues"><i class="fa fa-file"></i> Clues</a></li>
+																															<li><a href="./capitulo-2.html#cone"><i class="fa fa-file"></i> Cone</a></li>
+																															<li><a href="./capitulo-2.html#criterio"><i class="fa fa-file"></i> Criterio</a></li>
+																															<li><a href="./capitulo-2.html#indicador"><i class="fa fa-file"></i> Indicador</a></li>
+																															<li><a href="./capitulo-2.html#lugar-de-verificacion"><i class="fa fa-file"></i> Lugar de Verificación</a></li>
+																															<li><a href="./capitulo-2.html#plazo-accion"><i class="fa fa-file"></i> Plazo acción</a></li>
+																															<li><a href="./capitulo-2.html#zona"><i class="fa fa-file"></i> Zona</a></li>
+																						
+												
+													
+					</ul>
+					
+				</li>
+													
+				<li class="">
+					<a href="./capitulo-3.html" ><i class="fa fa-book"></i> Sistema </a>				  
+					<ul id="chunk_toc" class='nav collapse submenu in'  aria-expanded="true">		
+						
+												
+													
+					</ul>
+					
+				</li>
+													
+				<li class="">
+					<a href="./capitulo-4.html" ><i class="fa fa-book"></i> Evaluaciones </a>				  
+					<ul id="chunk_toc" class='nav collapse submenu in'  aria-expanded="true">		
+						
+												
+													
+					</ul>
+					
+				</li>
+		 
+				  
+        
+      </ul>
+	  
+    </aside>
+<!-- /#sidebar-wrapper -->
+		
+    <!-- Page Content -->
+    <div id="page-content-wrapper">
+      <div class="container-fluid">
+        <div class="row">
+          <div class="col-lg-12">
+            <br>
+            <div class="panel panel-default">
+              <div class="panel-heading">
+                <h1 class="panel-title"><i class="fa fa-bookmark"></i> <span>Capítulo 2</span>  </h1>
+              </div>
+              <div class="panel-body" >
+                
+				
+    <h1 id="catalogos"> Catálogos</h1>
+    <p style="text-align: justify;">
+En términos generales, un catálogo es la lista ordenada o clasificada que se hará sobre los datos que necesita el sistema para operar. Normalmente estos catálogos no cambian su contenido. Se crean una sola vez y después se utilizan muchas veces en operaciones y reportes.
+<br/>
+Todos las peticiones se hacen via http con las cabeceras que se explicaron en el capitulo anterior. 
+<br/>
+Aca un ejemplo de como hacer una peticion http con cURL de PHP
+</p>
+
+<p>Ejemplo cURL (PHP)</p>
+
+<pre><code>&lt;?php
+    //cabeceras incluidas en la petición necesarias para el acceso a la API
+    $headers = array(
+        "Content-type: application/json;charset=\"utf-8\"",
+        "Accept: application/json",
+        "Cache-Control: no-cache",
+        "Pragma: no-cache",
+        "Authorization: Bearer yTl379mxyVpGgmjREZs6UF9p6VILca4e33WN8wtd",
+        "X-Usuario: ramirez.esquinca@gmail.com"
+    );
+
+    // url en el caso de PUT, DELETE y GET(show) agregar el parametro /{id}
+    $url = "http://187.217.219.55/cium/api/v1/Accion";
+
+    // Metodo para el llamado de la url,
+    $metodo = array("POST","GET","PUT","DELETE");
+
+    $ch = curl_init();
+    curl_setopt($ch, CURLOPT_URL,$url);
+    curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+    curl_setopt($ch, CURLOPT_TIMEOUT, 60);
+    curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $metodo[0]);
+
+    //para los metodos PUT y POST que envian json
+    if(count($json_data)&gt;0){
+        curl_setopt($ch, CURLOPT_POST, 1);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($json_data));  
+    }
+
+    $datos = curl_exec($ch); 
+    // si existe error retornarlo en caso contrario regresar el valor devuelto de la API
+    if (curl_errno($ch)) {
+        return curl_errno($ch);
+    }else {
+        curl_close($ch);
+        return $datos;
+    }
+?&gt;
+</code></pre>
+
+<h2 id="acciones">2.1 Acciones</h2>
+
+<p style="text-align: justify;">
+Acciones contiene todos los datos a seleccionar cuando en una evaluación se encuentra un hallazgo. 
+</p>
+
+<p><HR></p>
+
+<h3 id="get-index">2.1.1 GET (INDEX)</h3>
+
+<p>Muestra una lista de las acciones según los parámetros a procesar en la petición.</p>
+
+<p>Parametros</p>
+
+<dl>
+<dt>Paginación</dt>
+<dd>
+<p><kbd>$pagina</kbd> número del puntero(offset) para la sentencia limit</p>
+</dd>
+
+<dd>
+<p><kbd>$limite</kbd> número de filas a mostrar por página</p>
+</dd>
+
+<dt>Busqueda</dt>
+<dd>
+<p><kbd>$valor</kbd> string con el valor para hacer la busqueda</p>
+</dd>
+
+<dd>
+<p><kbd>$order</kbd> campo de la base de datos por la que se debe ordenar la información. Por Defaul es ASC, pero si se antepone el signo - es de manera DESC</p>
+</dd>
+</dl>
+
+<p>Petición</p>
+
+<p><CODE>MÉTODO GET</CODE> <a href="http://187.217.219.55/cium/api/v1/Accion"><em>http://187.217.219.55/cium/api/v1/Accion</em></a></p>
+
+<blockquote>
+  <p><strong>Petición con parametros:</strong></p>
+  
+  <ul>
+  <li><p><a href="http://187.217.219.55/cium/api/v1/Accion?pagina=1&amp;limite=5&amp;order=id"><em>http://187.217.219.55/cium/api/v1/Accion?pagina=1&amp;limite=5&amp;order=id</em></a> orden ASC</p></li>
+  <li><p><a href="http://187.217.219.55/cium/api/v1/Accion?pagina=1&amp;limite=5&amp;order=-id"><em>http://187.217.219.55/cium/api/v1/Accion?pagina=1&amp;limite=5&amp;order=-id</em></a> orden DESC</p></li>
+  </ul>
+</blockquote>
+
+<p>Respuesta:</p>
+
+<pre><code>{
+    "status": 200,
+    "messages": "Operación realizada con exito",
+    "data": [
+                {
+                    "id": 1,
+                    "nombre": "Se surte",
+                    "tipo": "R",
+                    "creadoAl": "2015-03-09 23:55:24",
+                    "modificadoAl": "2015-08-26 19:23:41",
+                    "borradoAl": null
+                }
+            ] ,
+    "total": 1
+}
+</code></pre>
+
+<blockquote>
+  <p><strong>Nota</strong></p>
+  
+  <ul>
+  <li><code>status</code> Estado de la petición </li>
+  <li><code>messages</code> Mensaje de confirmacion o error</li>
+  <li><code>data</code> Objeto con todos los resultados</li>
+  <li><code>total</code> Total de registros devueltos</li>
+  </ul>
+</blockquote>
+
+<p><HR></p>
+
+<h3 id="get-id-show">2.1.2 GET/ {ID} (SHOW)</h3>
+
+<p>Devuelve la información del registro especificado.</p>
+
+<p>Petición</p>
+
+<p><CODE>MÉTODO GET</CODE> <a href="http://187.217.219.55/cium/api/v1/Accion/%7bID%7d"><em>http://187.217.219.55/cium/api/v1/Accion/{ID}</em></a></p>
+
+<blockquote>
+  <p><strong>Ejemplo Obtener los datos del registro con id = 1</strong></p>
+  
+  <ul>
+  <li><a href="http://187.217.219.55/cium/api/v1/Accion/1"><em>http://187.217.219.55/cium/api/v1/Accion/1</em></a> </li>
+  </ul>
+</blockquote>
+
+<p>Respuesta</p>
+
+<pre><code>{
+    "status": 200,
+    "messages": "Operación realizada con exito",
+    "data": {
+        "id": 1,
+        "nombre": "Se surte",
+        "tipo": "R",
+        "creadoAl": "2015-03-09 23:55:24",
+        "modificadoAl": "2015-08-26 19:23:41",
+        "borradoAl": null
+    }
+}
+</code></pre>
+
+<blockquote>
+  <p><strong>Nota</strong></p>
+  
+  <ul>
+  <li><code>status</code> Estado de la petición </li>
+  <li><code>messages</code> Mensaje de confirmacion o error</li>
+  <li><code>data</code> Objeto con todos los resultados</li>
+  </ul>
+</blockquote>
+
+<p><HR></p>
+
+<h3 id="post-store">2.1.3 POST (STORE)</h3>
+
+<p>Crear un nuevo registro en la base de datos con los datos enviados</p>
+
+<p>REQUEST (SEND)</p>
+
+<p>Recibe un input request tipo json de los datos a almacenar.</p>
+
+<pre><code>{
+    "nombre": "ejemplo",
+    "tipo": "R"
+}
+</code></pre>
+
+<p>Petición</p>
+
+<p><CODE>MÉTODO POST</CODE> <a href="http://187.217.219.55/cium/api/v1/Accion"><em>http://187.217.219.55/cium/api/v1/Accion</em></a></p>
+
+<p>Respuesta</p>
+
+<pre><code>{
+    "status": 201,
+    "messages": "Creado",
+    "data": {
+        "nombre": "ejemplo",
+        "tipo": "R",
+        "modificadoAl": "2015-10-06 23:27:46",
+        "creadoAl": "2015-10-06 23:27:46",
+        "id": 8
+    }
+}
+</code></pre>
+
+<blockquote>
+  <p><strong>Nota</strong></p>
+  
+  <ul>
+  <li><code>status</code> Estado de la petición </li>
+  <li><code>messages</code> Mensaje de confirmacion o error</li>
+  <li><code>data</code> Objeto con todos los resultados</li>
+  </ul>
+</blockquote>
+
+<p><HR></p>
+
+<h3 id="put-id-update">2.1.4 PUT/{ID} (UPDATE)</h3>
+
+<p>Actualizar el registro especificado en el la base de datos</p>
+
+<p>REQUEST (SEND)</p>
+
+<p>Recibe un Input Request con el json de los datos</p>
+
+<pre><code>{
+    "nombre": "ejemplo UPDATE",
+    "tipo": "S"
+}
+</code></pre>
+
+<p>Petición</p>
+
+<p><CODE>MÉTODO PUT</CODE> <a href="http://187.217.219.55/cium/api/v1/Accion/%7bID%7d"><em>http://187.217.219.55/cium/api/v1/Accion/{ID}</em></a></p>
+
+<blockquote>
+  <p><strong>Ejemplo actualizar el registro con id 8</strong></p>
+  
+  <ul>
+  <li><a href="http://187.217.219.55/cium/api/v1/Accion/8"><em>http://187.217.219.55/cium/api/v1/Accion/8</em></a></li>
+  </ul>
+</blockquote>
+
+<p>Respuesta</p>
+
+<pre><code>{
+    "status": 200,
+    "messages": "Operación realizada con exito",
+    "data": {
+        "id": 8,
+        "nombre": "ejemplo UPDATE",
+        "tipo": "S",
+        "creadoAl": "2015-10-06 23:27:46",
+        "modificadoAl": "2015-10-07 00:32:30",
+        "borradoAl": null
+    }
+}
+</code></pre>
+
+<blockquote>
+  <p><strong>Nota</strong></p>
+  
+  <ul>
+  <li><code>status</code> Estado de la petición </li>
+  <li><code>messages</code> Mensaje de confirmacion o error</li>
+  <li><code>data</code> Objeto con todos los resultados</li>
+  </ul>
+</blockquote>
+
+<p><HR></p>
+
+<h3 id="delete-id-delete">2.1.5 DELETE/{ID} (DELETE)</h3>
+
+<p>Borra el registro especificado en el la base de datos</p>
+
+<p>Petición</p>
+
+<p><CODE>MÉTODO DELETE</CODE> <a href="http://187.217.219.55/cium/api/v1/Accion/%7bID%7d"><em>http://187.217.219.55/cium/api/v1/Accion/{ID}</em></a></p>
+
+<blockquote>
+  <p><strong>Ejemplo eliminar el registro con id 8</strong></p>
+  
+  <ul>
+  <li><a href="http://187.217.219.55/cium/api/v1/Accion/8"><em>http://187.217.219.55/cium/api/v1/Accion/8</em></a></li>
+  </ul>
+</blockquote>
+
+<p>Respuesta</p>
+
+<pre><code>{
+    "status": 200,
+    "messages": "Operación realizada con exito",
+    "data": {
+        "id": 8,
+        "nombre": "ejemplo UPDATE",
+        "tipo": "S",
+        "creadoAl": "2015-10-06 23:27:46",
+        "modificadoAl": "2015-10-07 00:32:30",
+        "borradoAl": "2015-10-07 18:46:29"
+    }
+}
+</code></pre>
+
+<blockquote>
+  <p><strong>Nota</strong></p>
+  
+  <ul>
+  <li><code>status</code> Estado de la petición </li>
+  <li><code>messages</code> Mensaje de confirmacion o error</li>
+  <li><code>data</code> Objeto con todos los resultados</li>
+  </ul>
+</blockquote>
+
+<hr>
+
+<hr>
+
+<h2 id="alertas">2.2 Alertas</h2>
+
+<p style="text-align: justify;">
+Alerta contiene todos los datos a seleccionar para identifcar las alertas por el valor que tome los indicadores en las evaluaciones. 
+</p>
+
+<p><HR></p>
+
+<h3 id="get-index-2">2.2.1 GET (INDEX)</h3>
+
+<p>Muestra una lista de las alertas según los parámetros a procesar en la petición.</p>
+
+<p>Parametros</p>
+
+<dl>
+<dt>Paginación</dt>
+<dd>
+<p><kbd>$pagina</kbd> número del puntero(offset) para la sentencia limit</p>
+</dd>
+
+<dd>
+<p><kbd>$limite</kbd> número de filas a mostrar por página</p>
+</dd>
+
+<dt>Busqueda</dt>
+<dd>
+<p><kbd>$valor</kbd> string con el valor para hacer la busqueda</p>
+</dd>
+
+<dd>
+<p><kbd>$order</kbd> campo de la base de datos por la que se debe ordenar la información. Por Defaul es ASC, pero si se antepone el signo - es de manera DESC</p>
+</dd>
+</dl>
+
+<p>Petición</p>
+
+<p><CODE>MÉTODO GET</CODE> <a href="http://187.217.219.55/cium/api/v1/Alerta"><em>http://187.217.219.55/cium/api/v1/Alerta</em></a></p>
+
+<blockquote>
+  <p><strong>Petición con parametros:</strong></p>
+  
+  <ul>
+  <li><p><a href="http://187.217.219.55/cium/api/v1/Alerta?pagina=1&amp;limite=5&amp;order=id"><em>http://187.217.219.55/cium/api/v1/Alerta?pagina=1&amp;limite=5&amp;order=id</em></a> orden ASC</p></li>
+  <li><p><a href="http://187.217.219.55/cium/api/v1/Alerta?pagina=1&amp;limite=5&amp;order=-id"><em>http://187.217.219.55/cium/api/v1/Alerta?pagina=1&amp;limite=5&amp;order=-id</em></a> orden DESC</p></li>
+  </ul>
+</blockquote>
+
+<p>Respuesta:</p>
+
+<pre><code>{        
+    "status": 200,
+    "messages": "Operación realizada con exito",
+    "data": [
+                {
+                  "id": 1,
+                  "nombre": "Rojo",
+                  "color": "hsla(0, 95%, 49%, 0.62)",
+                  "creadoAl": "2015-10-11  00:00:00",
+                  "modificadoAl": "2015-10-11  00:00:00",
+                  "borradoAl": null
+                }
+            ],
+    "total": 1
+}
+</code></pre>
+
+<blockquote>
+  <p><strong>Nota</strong></p>
+  
+  <ul>
+  <li><code>status</code> Estado de la petición </li>
+  <li><code>messages</code> Mensaje de confirmacion o error</li>
+  <li><code>data</code> Objeto con todos los resultados</li>
+  <li><code>total</code> Total de registros devueltos</li>
+  </ul>
+</blockquote>
+
+<p><HR></p>
+
+<h3 id="get-id-show-2">2.2.2 GET/ {ID} (SHOW)</h3>
+
+<p>Devuelve la información del registro especificado.</p>
+
+<p>Petición</p>
+
+<p><CODE>MÉTODO GET</CODE> <a href="http://187.217.219.55/cium/api/v1/Alerta/%7bID%7d"><em>http://187.217.219.55/cium/api/v1/Alerta/{ID}</em></a></p>
+
+<blockquote>
+  <p><strong>Ejemplo Obtener los datos del registro con id = 1</strong></p>
+  
+  <ul>
+  <li><a href="http://187.217.219.55/cium/api/v1/Alerta/1"><em>http://187.217.219.55/cium/api/v1/Alerta/1</em></a> </li>
+  </ul>
+</blockquote>
+
+<p>Respuesta</p>
+
+<pre><code>{
+    "status": 200,
+    "messages": "Operación realizada con exito",
+    "data": {
+         "id": 1,
+        "nombre": "Rojo",
+        "color": "hsla(0, 95%, 49%, 0.62)",
+        "creadoAl": "2015-10-11  00:00:00",
+        "modificadoAl": "2015-10-11  00:00:00",
+        "borradoAl": null
+    }
+}
+</code></pre>
+
+<blockquote>
+  <p><strong>Nota</strong></p>
+  
+  <ul>
+  <li><code>status</code> Estado de la petición </li>
+  <li><code>messages</code> Mensaje de confirmacion o error</li>
+  <li><code>data</code> Objeto con todos los resultados</li>
+  </ul>
+</blockquote>
+
+<p><HR></p>
+
+<h3 id="post-store-2">2.2.3 POST (STORE)</h3>
+
+<p>Crear un nuevo registro en la base de datos con los datos enviados</p>
+
+<p>REQUEST (SEND)</p>
+
+<p>Recibe un input request tipo json de los datos a almacenar</p>
+
+<pre><code>{
+    "id": 1,
+    "nombre": "Rojo",
+    "color": "hsla(0, 95%, 49%, 0.62)"
+}
+</code></pre>
+
+<p>Petición</p>
+
+<p><CODE>MÉTODO POST</CODE> <a href="http://187.217.219.55/cium/api/v1/Alerta"><em>http://187.217.219.55/cium/api/v1/Alerta</em></a></p>
+
+<p>Respuesta</p>
+
+<pre><code>{
+    "status": 201,
+    "messages": "Creado",
+    "data": {
+        "nombre": "ejemplo",
+        "tipo": "R",
+        "modificadoAl": "2015-10-06 23:27:46",
+        "creadoAl": "2015-10-06 23:27:46",
+        "id": 1
+    }
+}
+</code></pre>
+
+<blockquote>
+  <p><strong>Nota</strong></p>
+  
+  <ul>
+  <li><code>status</code> Estado de la petición </li>
+  <li><code>messages</code> Mensaje de confirmacion o error</li>
+  <li><code>data</code> Objeto con todos los resultados</li>
+  </ul>
+</blockquote>
+
+<p><HR></p>
+
+<h3 id="put-id-update-2">2.2.4 PUT/{ID} (UPDATE)</h3>
+
+<p>Actualizar el registro especificado en el la base de datos</p>
+
+<p>REQUEST (SEND)</p>
+
+<p>Recibe un Input Request con el json de los datos</p>
+
+<pre><code>{
+    "id": 1,
+    "nombre": "Rojo",
+    "color": "hsla(0, 95%, 49%, 0.62)"
+}
+</code></pre>
+
+<p>Petición</p>
+
+<p><CODE>MÉTODO PUT</CODE> <a href="http://187.217.219.55/cium/api/v1/Alerta/%7bID%7d"><em>http://187.217.219.55/cium/api/v1/Alerta/{ID}</em></a></p>
+
+<blockquote>
+  <p><strong>Ejemplo actualizar el registro con id 1</strong></p>
+  
+  <ul>
+  <li><a href="http://187.217.219.55/cium/api/v1/Alerta/1"><em>http://187.217.219.55/cium/api/v1/Alerta/1</em></a></li>
+  </ul>
+</blockquote>
+
+<p>Respuesta</p>
+
+<pre><code>{
+    "status": 200,
+    "messages": "Operación realizada con exito",
+    "data": {
+        "id": 1,
+        "nombre": "Rojo",
+        "color": "hsla(0, 95%, 49%, 0.62)",
+        "creadoAl": "2015-10-11  00:00:00",
+        "modificadoAl": "2015-10-11  00:00:00",
+        "borradoAl": null
+    }
+}
+</code></pre>
+
+<blockquote>
+  <p><strong>Nota</strong></p>
+  
+  <ul>
+  <li><code>status</code> Estado de la petición </li>
+  <li><code>messages</code> Mensaje de confirmacion o error</li>
+  <li><code>data</code> Objeto con todos los resultados</li>
+  </ul>
+</blockquote>
+
+<p><HR></p>
+
+<h3 id="delete-id-delete-2">2.2.5 DELETE/{ID} (DELETE)</h3>
+
+<p>Borra el registro especificado en el la base de datos</p>
+
+<p>Petición</p>
+
+<p><CODE>MÉTODO DELETE</CODE> <a href="http://187.217.219.55/cium/api/v1/Alerta/%7bID%7d"><em>http://187.217.219.55/cium/api/v1/Alerta/{ID}</em></a></p>
+
+<blockquote>
+  <p><strong>Ejemplo eliminar el registro con id 1</strong></p>
+  
+  <ul>
+  <li><a href="http://187.217.219.55/cium/api/v1/Alerta/1"><em>http://187.217.219.55/cium/api/v1/Alerta/1</em></a></li>
+  </ul>
+</blockquote>
+
+<p>Respuesta</p>
+
+<pre><code>{
+    "status": 200,
+    "messages": "Operación realizada con exito",
+    "data": {
+        "id": 1,
+        "nombre": "Rojo",
+        "color": "hsla(0, 95%, 49%, 0.62)",
+        "creadoAl": "2015-10-11  00:00:00",
+        "modificadoAl": "2015-10-11  00:00:00",
+        "borradoAl": "2015-10-07 18:46:29"
+    }
+}
+</code></pre>
+
+<blockquote>
+  <p><strong>Nota</strong></p>
+  
+  <ul>
+  <li><code>status</code> Estado de la petición </li>
+  <li><code>messages</code> Mensaje de confirmacion o error</li>
+  <li><code>data</code> Objeto con todos los resultados</li>
+  </ul>
+</blockquote>
+
+<hr>
+
+<hr>
+
+<h2 id="clues">2.3 Clues</h2>
+
+<p style="text-align: justify;">
+Clues contiene un listado de todas las unidades medicas con su informacion de la ficha tecnica. Este catálogo esta relacionado con CONEs
+</p>
+
+<p><HR></p>
+
+<h3 id="get-index-3">2.3.1 GET (INDEX)</h3>
+
+<p>Muestra una lista de las clues según los parámetros a procesar en la petición.</p>
+
+<p>Parametros</p>
+
+<dl>
+<dt>Paginación</dt>
+<dd>
+<p><kbd>$pagina</kbd> número del puntero(offset) para la sentencia limit</p>
+</dd>
+
+<dd>
+<p><kbd>$limite</kbd> número de filas a mostrar por página</p>
+</dd>
+
+<dt>Busqueda</dt>
+<dd>
+<p><kbd>$valor</kbd> string con el valor para hacer la busqueda</p>
+</dd>
+
+<dd>
+<p><kbd>$order</kbd> campo de la base de datos por la que se debe ordenar la información. Por Defaul es ASC, pero si se antepone el signo - es de manera DESC</p>
+</dd>
+</dl>
+
+<p>Petición</p>
+
+<p><CODE>MÉTODO GET</CODE> <a href="http://187.217.219.55/cium/api/v1/Clues"><em>http://187.217.219.55/cium/api/v1/Clues</em></a></p>
+
+<blockquote>
+  <p><strong>Petición con parametros:</strong></p>
+  
+  <ul>
+  <li><p><a href="http://187.217.219.55/cium/api/v1/Clues?pagina=1&amp;limite=5&amp;order=id"><em>http://187.217.219.55/cium/api/v1/Clues?pagina=1&amp;limite=5&amp;order=id</em></a> orden ASC</p></li>
+  <li><p><a href="http://187.217.219.55/cium/api/v1/Clues?pagina=1&amp;limite=5&amp;order=-id"><em>http://187.217.219.55/cium/api/v1/Clues?pagina=1&amp;limite=5&amp;order=-id</em></a> orden DESC</p></li>
+  </ul>
+</blockquote>
+
+<p>Respuesta:</p>
+
+<pre><code>{
+    "status": 200,
+    "messages": "Operación realizada con exito",
+    "data": [
+                {
+                    "clues": "CSSSA000226",
+                    "nombre": "COL. ADOLFO LÓPEZ MATEOS",
+                    "domicilio": "A UN COSTADO DE TIENDA DICONSA",
+                    "codigoPostal": 29700,
+                    "entidad": "CHIAPAS",
+                    "municipio": "AMATÁN",
+                    "localidad": "LOS AMATES",
+                    "jurisdiccion": "PICHUCALCO",
+                    "institucion": "SSA",
+                    "tipoUnidad": "CONSULTA EXTERNA",
+                    "estatus": "EN OPERACIÓN",
+                    "estado": "1",
+                    "tipologia": "CASA DE SALUD",
+                    "cone": "Ambulatorio con doctor",
+                    "cone_clues": {
+                        "clues": "CSSSA000226",
+                        "idCone": 1
+                    }
+                }
+            ],
+    "total": 1
+}
+</code></pre>
+
+<blockquote>
+  <p><strong>Nota</strong></p>
+  
+  <ul>
+  <li><code>status</code> Estado de la petición </li>
+  <li><code>messages</code> Mensaje de confirmacion o error</li>
+  <li><code>data</code> Objeto con todos los resultados</li>
+  <li><code>total</code> Total de registros devueltos</li>
+  <li><code>cone_clues</code> Relación de la clues con la tabla ConeClues </li>
+  </ul>
+</blockquote>
+
+<p><HR></p>
+
+<h3 id="get-id-show-3">2.3.2 GET/ {ID} (SHOW)</h3>
+
+<p>Devuelve la información del registro especificado.</p>
+
+<p>Petición</p>
+
+<p><CODE>MÉTODO GET</CODE> <a href="http://187.217.219.55/cium/api/v1/Clues/%7bID%7d"><em>http://187.217.219.55/cium/api/v1/Clues/{ID}</em></a></p>
+
+<blockquote>
+  <p><strong>Ejemplo Obtener los datos del registro con id = CSSSA000226</strong></p>
+  
+  <ul>
+  <li><a href="http://187.217.219.55/cium/api/v1/Clues/CSSSA000226"><em>http://187.217.219.55/cium/api/v1/Clues/CSSSA000226</em></a> </li>
+  </ul>
+</blockquote>
+
+<p>Respuesta</p>
+
+<pre><code>{
+    "status": 200,
+    "messages": "Operación realizada con exito",
+    "data": {
+                "clues": "CSSSA000226",
+                "nombre": "COL. ADOLFO LÓPEZ MATEOS",
+                "domicilio": "A UN COSTADO DE TIENDA DICONSA",
+                "codigoPostal": 29700,
+                "entidad": "CHIAPAS",
+                "municipio": "AMATÁN",
+                "localidad": "LOS AMATES",
+                "jurisdiccion": "PICHUCALCO",
+                "institucion": "SSA",
+                "tipoUnidad": "CONSULTA EXTERNA",
+                "estatus": "EN OPERACIÓN",
+                "estado": "1",
+                "tipologia": "CASA DE SALUD",
+                "cone": {
+                    "clues": "CSSSA000226",
+                    "idCone": 1,
+                    "cone": {
+                        "id": 1,
+                        "nombre": "Ambulatorio con doctor",
+                        "creadoAl": "2015-10-11  00:00:00",
+                        "modificadoAl": "2015-10-11  00:00:00",
+                        "borradoAl": null
+                    }
+                },
+                "cone_clues": {
+                    "clues": "CSSSA000226",
+                    "idCone": 1
+                }
+            }
+    }
+</code></pre>
+
+<blockquote>
+  <p><strong>Nota</strong></p>
+  
+  <ul>
+  <li><code>status</code> Estado de la petición </li>
+  <li><code>messages</code> Mensaje de confirmacion o error</li>
+  <li><code>data</code> Objeto con todos los resultados</li>
+  <li><code>cone</code> Nivel de cone de la clues </li>
+  <li><code>cone_clues</code> Relación de la clues con la tabla ConeClues </li>
+  </ul>
+</blockquote>
+
+<p><HR></p>
+
+<h3 id="get">2.3.3 GET</h3>
+
+<p>Este método regresa el listado de jurisdicciones.</p>
+
+<p>Petición</p>
+
+<p><CODE>MÉTODO GET</CODE> <a href="http://187.217.219.55/cium/api/v1/jurisdiccion"><em>http://187.217.219.55/cium/api/v1/jurisdiccion</em></a></p>
+
+<p>Respuesta</p>
+
+<pre><code>{
+    "status": 200,
+    "messages": "Operación realizada con exito",
+    "data": [
+        {
+            "jurisdiccion": "PICHUCALCO",
+            "entidad": "CHIAPAS"
+        },
+        {
+            "jurisdiccion": "SAN CRISTÓBAL DE LAS CASAS",
+            "entidad": "CHIAPAS"
+        },
+        {
+            "jurisdiccion": "OCOSINGO",
+            "entidad": "CHIAPAS"
+        },
+        {
+            "jurisdiccion": "PALENQUE",
+            "entidad": "CHIAPAS"
+        }
+    ],
+    "total": 4
+}
+</code></pre>
+
+<blockquote>
+  <p><strong>Nota</strong></p>
+  
+  <ul>
+  <li><code>status</code> Estado de la petición </li>
+  <li><code>messages</code> Mensaje de confirmacion o error</li>
+  <li><code>data</code> Objeto con todos los resultados</li>
+  <li><code>total</code> Total de registros devueltos</li>
+  </ul>
+</blockquote>
+
+<p><HR></p>
+
+<h3 id="get-2">2.3.4 GET</h3>
+
+<p>Este método regresa el listado de clues pertenecientes a los permisos del usuario que hace la petición.</p>
+
+<p><CODE>MÉTODO GET</CODE> <a href="http://187.217.219.55/cium/api/v1/CluesUsuario"><em>http://187.217.219.55/cium/api/v1/CluesUsuario</em></a></p>
+
+<p>Respuesta</p>
+
+<pre><code>{
+    "status": 200,
+    "messages": "Operación realizada con exito",
+    "data": [
+        {
+        "zona": "EXCLUSIVO CHAMULA",
+        "cone": "Básico",
+        "clues": "CSSSA019481",
+        "nombre": "H. B. C. DE SAN JUAN CHAMULA",
+        "domicilio": "A UN COSTADO DE LA U.M.R.",
+        "codigoPostal": 29320,
+        "entidad": "CHIAPAS",
+        "municipio": "CHAMULA",
+        "localidad": "Chamula",
+        "jurisdiccion": "SAN CRISTÓBAL DE LAS CASAS",
+        "institucion": "SSA",
+        "tipoUnidad": "HOSPITAL",
+        "estatus": "EN OPERACIÓN",
+        "estado": "1",
+        "tipologia": "HOSPITAL INTEGRAL (COMUNITARIO)"
+        }
+    ],
+    "total": 1
+}
+</code></pre>
+
+<blockquote>
+  <p><strong>Nota</strong></p>
+  
+  <ul>
+  <li><code>status</code> Estado de la petición </li>
+  <li><code>messages</code> Mensaje de confirmacion o error</li>
+  <li><code>data</code> Objeto con todos los resultados</li>
+  <li><code>total</code> Total de registros devueltos</li>
+  </ul>
+</blockquote>
+
+<hr>
+
+<hr>
+
+<h2 id="cone">2.4 Cone</h2>
+
+<p style="text-align: justify;">
+Cone (Cuidado obstétrico y neonatal esencial) este catálogo agrupa las unidades medicas, es de suma importancia ya que todo los criterios dependen del nivel de cone de cada unidad médica. 
+</p>
+
+<p><HR></p>
+
+<h3 id="get-index-4">2.4.1 GET (INDEX)</h3>
+
+<p>Muestra una lista de lo CONEs según los parámetros a procesar en la petición.</p>
+
+<p>Parametros</p>
+
+<dl>
+<dt>Paginación</dt>
+<dd>
+<p><kbd>$pagina</kbd> número del puntero(offset) para la sentencia limit</p>
+</dd>
+
+<dd>
+<p><kbd>$limite</kbd> número de filas a mostrar por página</p>
+</dd>
+
+<dt>Busqueda</dt>
+<dd>
+<p><kbd>$valor</kbd> string con el valor para hacer la busqueda</p>
+</dd>
+
+<dd>
+<p><kbd>$order</kbd> campo de la base de datos por la que se debe ordenar la información. Por Defaul es ASC, pero si se antepone el signo - es de manera DESC</p>
+</dd>
+</dl>
+
+<p>Petición</p>
+
+<p><CODE>MÉTODO GET</CODE> <a href="http://187.217.219.55/cium/api/v1/Cone"><em>http://187.217.219.55/cium/api/v1/Cone</em></a></p>
+
+<blockquote>
+  <p><strong>Petición con parametros:</strong></p>
+  
+  <ul>
+  <li><p><a href="http://187.217.219.55/cium/api/v1/Cone?pagina=1&amp;limite=5&amp;order=id"><em>http://187.217.219.55/cium/api/v1/Cone?pagina=1&amp;limite=5&amp;order=id</em></a> orden ASC</p></li>
+  <li><p><a href="http://187.217.219.55/cium/api/v1/Cone?pagina=1&amp;limite=5&amp;order=-id"><em>http://187.217.219.55/cium/api/v1/Cone?pagina=1&amp;limite=5&amp;order=-id</em></a> orden DESC</p></li>
+  </ul>
+</blockquote>
+
+<p>Respuesta:</p>
+
+<pre><code>{
+    "status": 200,
+    "messages": "Operación realizada con exito",
+    "data": [
+        {
+            "id": 1,
+            "nombre": "Ambulatorio con doctor",
+            "creadoAl": "2015-03-17 16:19:40",
+            "modificadoAl": "2015-03-17 16:19:40",
+            "borradoAl": null
+        },
+        {
+            "id": 2,
+            "nombre": "Ambulatorio sin doctor",
+            "creadoAl": "2015-03-17 16:20:05",
+            "modificadoAl": "2015-03-17 16:20:05",
+            "borradoAl": null
+        },
+        {
+            "id": 3,
+            "nombre": "Básico",
+            "creadoAl": "2015-03-17 16:20:20",
+            "modificadoAl": "2015-03-17 16:20:20",
+            "borradoAl": null
+        },
+        {
+            "id": 4,
+            "nombre": "Completo",
+            "creadoAl": "2015-03-17 16:20:30",
+            "modificadoAl": "2015-03-17 16:20:30",
+            "borradoAl": null
+        }
+    ],
+    "total": 4
+}
+</code></pre>
+
+<blockquote>
+  <p><strong>Nota</strong></p>
+  
+  <ul>
+  <li><code>status</code> Estado de la petición </li>
+  <li><code>messages</code> Mensaje de confirmacion o error</li>
+  <li><code>data</code> Objeto con todos los resultados</li>
+  <li><code>total</code> Total de registros devueltos</li>
+  </ul>
+</blockquote>
+
+<p><HR></p>
+
+<h3 id="get-id-show-4">2.4.2 GET/ {ID} (SHOW)</h3>
+
+<p>Devuelve la información del registro especificado.</p>
+
+<p>Petición</p>
+
+<p><CODE>MÉTODO GET</CODE> <a href="http://187.217.219.55/cium/api/v1/Cone/%7bID%7d"><em>http://187.217.219.55/cium/api/v1/Cone/{ID}</em></a></p>
+
+<blockquote>
+  <p><strong>Ejemplo Obtener los datos del registro con id = 1</strong></p>
+  
+  <ul>
+  <li><a href="http://187.217.219.55/cium/api/v1/Cone/1"><em>http://187.217.219.55/cium/api/v1/Cone/1</em></a> </li>
+  </ul>
+</blockquote>
+
+<p>Respuesta</p>
+
+<pre><code>{
+    "status": 200,
+    "messages": "Operación realizada con exito",
+    "data": {
+        "id": 1,
+        "nombre": "Ambulatorio con doctor",
+        "creadoAl": "2015-10-11  00:00:00",
+        "modificadoAl": "2015-10-11  00:00:00",
+        "borradoAl": null,
+        "ConeClues": [
+            {
+                "clues": "CSSSA019744",
+                "nombre": "CENTRO DE SALUD MICROREGIONAL FILADELFIA",
+                "jurisdiccion": "OCOSINGO",
+                "municipio": "CHILÓN",
+                "localidad": "PALESTINA"
+            }
+        ]
+    }
+}
+</code></pre>
+
+<blockquote>
+  <p><strong>Nota</strong></p>
+  
+  <ul>
+  <li><code>status</code> Estado de la petición </li>
+  <li><code>messages</code> Mensaje de confirmacion o error</li>
+  <li><code>data</code> Objeto con todos los resultados</li>
+  <li><code>ConeClues</code> Obejto con la lista de unidades medicas que pertenecen al nivel de CONE</li>
+  </ul>
+</blockquote>
+
+<p><HR></p>
+
+<h3 id="post-store-3">2.4.3 POST (STORE)</h3>
+
+<p>Crear un nuevo registro en la base de datos con los datos enviados</p>
+
+<p>REQUEST (SEND)</p>
+
+<p>Recibe un input request tipo json de los datos a almacenar.</p>
+
+<pre><code>{
+    "id": 1,
+    "nombre": "Ambulatorio con doctor",        
+    "ConeClues": [
+        {
+            "clues": "CSSSA019744",
+            "nombre": "CENTRO DE SALUD MICROREGIONAL FILADELFIA",
+            "jurisdiccion": "OCOSINGO",
+            "municipio": "CHILÓN",
+            "localidad": "PALESTINA"
+        }
+    ]
+}
+</code></pre>
+
+<p>Petición</p>
+
+<p><CODE>MÉTODO POST</CODE> <a href="http://187.217.219.55/cium/api/v1/Cone"><em>http://187.217.219.55/cium/api/v1/Cone</em></a></p>
+
+<p>Respuesta</p>
+
+<pre><code>{
+    "status": 201,
+    "messages": "Creado",
+    "data": {
+        "id": 1,
+        "nombre": "Ambulatorio con doctor",
+        "creadoAl": "2015-10-11  00:00:00",
+        "modificadoAl": "2015-10-11  00:00:00",
+        "borradoAl": null
+    }
+}
+</code></pre>
+
+<blockquote>
+  <p><strong>Nota</strong></p>
+  
+  <ul>
+  <li><code>status</code> Estado de la petición </li>
+  <li><code>messages</code> Mensaje de confirmacion o error</li>
+  <li><code>data</code> Objeto con todos los resultados</li>
+  </ul>
+</blockquote>
+
+<p><HR></p>
+
+<h3 id="put-id-update-3">2.4.4 PUT/{ID} (UPDATE)</h3>
+
+<p>Actualizar el registro especificado en el la base de datos</p>
+
+<p>REQUEST (SEND)</p>
+
+<p>Recibe un Input Request con el json de los datos</p>
+
+<pre><code>{
+    "id": 1,
+    "nombre": "Ambulatorio con doctor",
+    "creadoAl": "2015-10-11  00:00:00",
+    "modificadoAl": "2015-10-11  00:00:00",
+    "borradoAl": null,
+    "ConeClues": [
+        {
+            "clues": "CSSSA019744",
+            "nombre": "CENTRO DE SALUD MICROREGIONAL FILADELFIA",
+            "jurisdiccion": "OCOSINGO",
+            "municipio": "CHILÓN",
+            "localidad": "PALESTINA"
+        }
+    ]
+}
+</code></pre>
+
+<p>Petición</p>
+
+<p><CODE>MÉTODO PUT</CODE> <a href="http://187.217.219.55/cium/api/v1/Cone/%7bID%7d"><em>http://187.217.219.55/cium/api/v1/Cone/{ID}</em></a></p>
+
+<blockquote>
+  <p><strong>Ejemplo actualizar el registro con id 1</strong></p>
+  
+  <ul>
+  <li><a href="http://187.217.219.55/cium/api/v1/Cone/1"><em>http://187.217.219.55/cium/api/v1/Cone/1</em></a></li>
+  </ul>
+</blockquote>
+
+<p>Respuesta</p>
+
+<pre><code>{
+    "status": 200,
+    "messages": "Operación realizada con exito",
+    "data": {
+        "id": 8,
+        "nombre": "ejemplo UPDATE",
+        "tipo": "S",
+        "creadoAl": "2015-10-06 23:27:46",
+        "modificadoAl": "2015-10-07 00:32:30",
+        "borradoAl": null
+    }
+}
+</code></pre>
+
+<blockquote>
+  <p><strong>Nota</strong></p>
+  
+  <ul>
+  <li><code>status</code> Estado de la petición </li>
+  <li><code>messages</code> Mensaje de confirmacion o error</li>
+  <li><code>data</code> Objeto con todos los resultados</li>
+  </ul>
+</blockquote>
+
+<p><HR></p>
+
+<h3 id="delete-id-delete-3">2.4.5 DELETE/{ID} (DELETE)</h3>
+
+<p>Borra el registro especificado en el la base de datos</p>
+
+<p>Petición</p>
+
+<p><CODE>MÉTODO DELETE</CODE> <a href="http://187.217.219.55/cium/api/v1/Cone/%7bID%7d"><em>http://187.217.219.55/cium/api/v1/Cone/{ID}</em></a></p>
+
+<blockquote>
+  <p><strong>Ejemplo eliminar el registro con id 1</strong></p>
+  
+  <ul>
+  <li><a href="http://187.217.219.55/cium/api/v1/Cone/1"><em>http://187.217.219.55/cium/api/v1/Cone/1</em></a></li>
+  </ul>
+</blockquote>
+
+<p>Respuesta</p>
+
+<pre><code>{
+    "status": 200,
+    "messages": "Operación realizada con exito",
+    "data": {
+        "id": 1,
+        "nombre": "Ambulatorio con doctor",
+        "creadoAl": "2015-10-11  00:00:00",
+        "modificadoAl": "2015-10-11  00:00:00",
+        "borradoAl": "2015-10-09 02:49:01"
+    }
+}
+</code></pre>
+
+<blockquote>
+  <p><strong>Nota</strong></p>
+  
+  <ul>
+  <li><code>status</code> Estado de la petición </li>
+  <li><code>messages</code> Mensaje de confirmacion o error</li>
+  <li><code>data</code> Objeto con todos los resultados</li>
+  </ul>
+</blockquote>
+
+<hr>
+
+<hr>
+
+<h2 id="criterio">2.5 Criterio</h2>
+
+<p style="text-align: justify;">
+Criterio este catálogo contiene todos los puntos a evaluar se relaciona con indicador, cone y lugar de verificación para obtener el listado correspondiente a cada de las unidades médicas, el lugar de verificación sirve para agrupar los criterios. 
+</p>
+
+<p><HR></p>
+
+<h3 id="get-index-5">2.5.1 GET (INDEX)</h3>
+
+<p>Muestra una lista de los criterios según los parámetros a procesar en la petición.</p>
+
+<p>Parametros</p>
+
+<dl>
+<dt>Paginación</dt>
+<dd>
+<p><kbd>$pagina</kbd> número del puntero(offset) para la sentencia limit</p>
+</dd>
+
+<dd>
+<p><kbd>$limite</kbd> número de filas a mostrar por página</p>
+</dd>
+
+<dt>Busqueda</dt>
+<dd>
+<p><kbd>$valor</kbd> string con el valor para hacer la busqueda</p>
+</dd>
+
+<dd>
+<p><kbd>$order</kbd> campo de la base de datos por la que se debe ordenar la información. Por Defaul es ASC, pero si se antepone el signo - es de manera DESC</p>
+</dd>
+</dl>
+
+<p>Petición</p>
+
+<p><CODE>MÉTODO GET</CODE> <a href="http://187.217.219.55/cium/api/v1/Criterio"><em>http://187.217.219.55/cium/api/v1/Criterio</em></a></p>
+
+<blockquote>
+  <p><strong>Petición con parametros:</strong></p>
+  
+  <ul>
+  <li><p><a href="http://187.217.219.55/cium/api/v1/Criterio?pagina=1&amp;limite=5&amp;order=id"><em>http://187.217.219.55/cium/api/v1/Criterio?pagina=1&amp;limite=5&amp;order=id</em></a> orden ASC</p></li>
+  <li><p><a href="http://187.217.219.55/cium/api/v1/Criterio?pagina=1&amp;limite=5&amp;order=-id"><em>http://187.217.219.55/cium/api/v1/Criterio?pagina=1&amp;limite=5&amp;order=-id</em></a> orden DESC</p></li>
+  </ul>
+</blockquote>
+
+<p>Respuesta:</p>
+
+<pre><code>{
+    "status": 200,
+    "messages": "Operación realizada con exito",
+    "data": [
+        {
+            "id": 1,
+            "nombre": "Paquetes o sobres de sales de rehidratación oral  o sobres de vida",
+            "creadoAl": null,
+            "modificadoAl": null,
+            "borradoAl": null,
+            "indicadores": [
+                {
+                    "id": 1,
+                    "codigo": "7010",
+                    "nombre": "Atención del niño",
+                    "color": "hsla(197, 84%, 67%, 0.62)",
+                    "categoria": "RECURSO",
+                    "creadoAl": "2015-10-11  00:00:00",
+                    "modificadoAl": "2015-10-11  00:00:00",
+                    "borradoAl": null,
+                    "cones": [
+                        {
+                            "id": 1,
+                            "idCone": 1,
+                            "idIndicadorCriterio": 1,
+                            "creadoAl": "0000-00-00 00:00:00",
+                            "modificadoAl": "2015-10-09 02:49:01",
+                            "borradoAl": null,
+                            "nombre": "Ambulatorio con doctor"
+                        },
+                        {
+                            "id": 2,
+                            "idCone": 2,
+                            "idIndicadorCriterio": 1,
+                            "creadoAl": "0000-00-00 00:00:00",
+                            "modificadoAl": "0000-00-00 00:00:00",
+                            "borradoAl": null,
+                            "nombre": "Ambulatorio sin doctor"
+                        },
+                        {
+                            "id": 3,
+                            "idCone": 3,
+                            "idIndicadorCriterio": 1,
+                            "creadoAl": "0000-00-00 00:00:00",
+                            "modificadoAl": "0000-00-00 00:00:00",
+                            "borradoAl": null,
+                            "nombre": "Básico"
+                        },
+                        {
+                            "id": 4,
+                            "idCone": 4,
+                            "idIndicadorCriterio": 1,
+                            "creadoAl": "0000-00-00 00:00:00",
+                            "modificadoAl": "0000-00-00 00:00:00",
+                            "borradoAl": null,
+                            "nombre": "Completo"
+                        }
+                    ],
+                    "lugarVerificacion": {
+                        "id": 1,
+                        "nombre": "Farmacia",
+                        "creadoAl": "2015-10-11  00:00:00",
+                        "modificadoAl": "2015-10-11  00:00:00",
+                        "borradoAl": null
+                    },
+                    "pivot": {
+                        "idCriterio": 1,
+                        "idIndicador": 1,
+                        "id": 1,
+                        "idLugarVerificacion": 1
+                    }
+                }
+            ]
+        }
+    ],
+    "total": 1
+}
+</code></pre>
+
+<blockquote>
+  <p><strong>Nota</strong></p>
+  
+  <ul>
+  <li><code>status</code> Estado de la petición </li>
+  <li><code>messages</code> Mensaje de confirmacion o error</li>
+  <li><code>data</code> Objeto con todos los resultados</li>
+  <li><code>indicadores</code> Contiene los indicadores, lugarVerificacion y sus niveles de cone </li>
+  <li><code>cone</code> Niveles de cones</li>
+  <li><code>pivot</code> Resumen de los ids que se relacionan</li>
+  <li><code>total</code> Total de registros devueltos</li>
+  </ul>
+</blockquote>
+
+<p><HR></p>
+
+<h3 id="get-id-show-5">2.5.2 GET/ {ID} (SHOW)</h3>
+
+<p>Devuelve la información del registro especificado.</p>
+
+<p>Petición</p>
+
+<p><CODE>MÉTODO GET</CODE> <a href="http://187.217.219.55/cium/api/v1/Criterio/%7bID%7d"><em>http://187.217.219.55/cium/api/v1/Criterio/{ID}</em></a></p>
+
+<blockquote>
+  <p><strong>Ejemplo Obtener los datos del registro con id = 1</strong></p>
+  
+  <ul>
+  <li><a href="http://187.217.219.55/cium/api/v1/Criterio/1"><em>http://187.217.219.55/cium/api/v1/Criterio/1</em></a> </li>
+  </ul>
+</blockquote>
+
+<p>Respuesta</p>
+
+<pre><code>{
+    "status": 200,
+    "messages": "Operación realizada con exito",
+    "data": {
+        "id": 1,
+        "nombre": "Paquetes o sobres de sales de rehidratación oral  o sobres de vida",
+        "creadoAl": null,
+        "modificadoAl": null,
+        "borradoAl": null,
+        "indicadores": [
+            {
+                "id": 1,
+                "codigo": "7010",
+                "nombre": "Atención del niño",
+                "color": "hsla(197, 84%, 67%, 0.62)",
+                "categoria": "RECURSO",
+                "creadoAl": "2015-10-11  00:00:00",
+                "modificadoAl": "2015-10-11  00:00:00",
+                "borradoAl": null,
+                "cones": [
+                    {
+                        "id": 1,
+                        "idCone": 1,
+                        "idIndicadorCriterio": 1,
+                        "creadoAl": "0000-00-00 00:00:00",
+                        "modificadoAl": "2015-10-09 02:49:01",
+                        "borradoAl": null,
+                        "nombre": "Ambulatorio con doctor"
+                    },
+                    {
+                        "id": 2,
+                        "idCone": 2,
+                        "idIndicadorCriterio": 1,
+                        "creadoAl": "0000-00-00 00:00:00",
+                        "modificadoAl": "0000-00-00 00:00:00",
+                        "borradoAl": null,
+                        "nombre": "Ambulatorio sin doctor"
+                    },
+                    {
+                        "id": 3,
+                        "idCone": 3,
+                        "idIndicadorCriterio": 1,
+                        "creadoAl": "0000-00-00 00:00:00",
+                        "modificadoAl": "0000-00-00 00:00:00",
+                        "borradoAl": null,
+                        "nombre": "Básico"
+                    },
+                    {
+                        "id": 4,
+                        "idCone": 4,
+                        "idIndicadorCriterio": 1,
+                        "creadoAl": "0000-00-00 00:00:00",
+                        "modificadoAl": "0000-00-00 00:00:00",
+                        "borradoAl": null,
+                        "nombre": "Completo"
+                    }
+                ],
+                "lugarVerificacion": {
+                    "id": 1,
+                    "nombre": "Farmacia",
+                    "creadoAl": "2015-10-11  00:00:00",
+                    "modificadoAl": "2015-10-11  00:00:00",
+                    "borradoAl": null
+                },
+                "pivot": {
+                    "idCriterio": 1,
+                    "idIndicador": 1,
+                    "id": 1,
+                    "idLugarVerificacion": 1
+                }
+            }
+        ]
+    }
+}
+</code></pre>
+
+<blockquote>
+  <p><strong>Nota</strong></p>
+  
+  <ul>
+  <li><code>status</code> Estado de la petición </li>
+  <li><code>messages</code> Mensaje de confirmacion o error</li>
+  <li><code>data</code> Objeto con todos los resultados</li>
+  <li><code>indicadores</code> Contiene los indicadores, lugarVerificacion y sus niveles de cone </li>
+  <li><code>cone</code> Niveles de cones</li>
+  <li><code>pivot</code> Resumen de los ids que se relacionan</li>
+  </ul>
+</blockquote>
+
+<p><HR></p>
+
+<h3 id="post-store-4">2.5.3 POST (STORE)</h3>
+
+<p>Crear un nuevo registro en la base de datos con los datos enviados</p>
+
+<p>REQUEST (SEND)</p>
+
+<p>Recibe un input request tipo json de los datos a almacenar.</p>
+
+<pre><code>{
+    "nombre": "Paquetes o sobres de sales de rehidratación oral  o sobres de vida",
+    "indicadores": [
+        {
+            "id": "1",
+            "idLugarVerificacion": 1,
+            "cones": [
+                {
+                    "id": "1"
+                },
+                {
+                    "id": "2"
+                },
+                {
+                    "id": "3"
+                },
+                {
+                    "id": "4"
+                }
+            ]
+        }
+    ]
+}
+</code></pre>
+
+<p>Petición</p>
+
+<p><CODE>MÉTODO POST</CODE> <a href="http://187.217.219.55/cium/api/v1/Criterio"><em>http://187.217.219.55/cium/api/v1/Criterio</em></a></p>
+
+<p>Respuesta</p>
+
+<pre><code>{
+    "status": 201,
+    "messages": "Creado",
+    "data": {
+        "id": 1,
+        "nombre": "Paquetes o sobres de sales de rehidratación oral  o sobres de vida",
+        "creadoAl": 2015-10-06,
+        "modificadoAl": 2015-10-06,
+        "borradoAl": null
+    }
+}
+</code></pre>
+
+<blockquote>
+  <p><strong>Nota</strong></p>
+  
+  <ul>
+  <li><code>status</code> Estado de la petición </li>
+  <li><code>messages</code> Mensaje de confirmacion o error</li>
+  <li><code>data</code> Objeto con todos los resultados</li>
+  </ul>
+</blockquote>
+
+<p><HR></p>
+
+<h3 id="put-id-update-4">2.5.4 PUT/{ID} (UPDATE)</h3>
+
+<p>Actualizar el registro especificado en el la base de datos</p>
+
+<p>REQUEST (SEND)</p>
+
+<p>Recibe un Input Request con el json de los datos</p>
+
+<pre><code>{
+    "nombre": "Paquetes o sobres de sales de rehidratación oral  o sobres de vida",
+    "indicadores": [
+        {
+            "id": "1",
+            "idLugarVerificacion": 1,
+            "cones": [
+                {
+                    "id": "1"
+                },
+                {
+                    "id": "2"
+                },
+                {
+                    "id": "3"
+                },
+                {
+                    "id": "4"
+                }
+            ]
+        }
+    ]
+}
+</code></pre>
+
+<p>Petición</p>
+
+<p><CODE>MÉTODO PUT</CODE> <a href="http://187.217.219.55/cium/api/v1/Criterio/%7bID%7d"><em>http://187.217.219.55/cium/api/v1/Criterio/{ID}</em></a></p>
+
+<blockquote>
+  <p><strong>Ejemplo actualizar el registro con id 1</strong></p>
+  
+  <ul>
+  <li><a href="http://187.217.219.55/cium/api/v1/Criterio/1"><em>http://187.217.219.55/cium/api/v1/Criterio/1</em></a></li>
+  </ul>
+</blockquote>
+
+<p>Respuesta</p>
+
+<pre><code>{
+    "status": 200,
+    "messages": "Operación realizada con exito",
+    "data": {
+        "id": 1,
+        "nombre": "Paquetes o sobres de sales de rehidratación oral  o sobres de vida",
+        "creadoAl": 2015-10-06,
+        "modificadoAl": 2015-10-06,
+        "borradoAl": null
+    }
+}
+</code></pre>
+
+<blockquote>
+  <p><strong>Nota</strong></p>
+  
+  <ul>
+  <li><code>status</code> Estado de la petición </li>
+  <li><code>messages</code> Mensaje de confirmacion o error</li>
+  <li><code>data</code> Objeto con todos los resultados</li>
+  </ul>
+</blockquote>
+
+<p><HR></p>
+
+<h3 id="delete-id-delete-4">2.5.5 DELETE/{ID} (DELETE)</h3>
+
+<p>Borra el registro especificado en el la base de datos</p>
+
+<p>Petición</p>
+
+<p><CODE>MÉTODO DELETE</CODE> <a href="http://187.217.219.55/cium/api/v1/Criterio/%7bID%7d"><em>http://187.217.219.55/cium/api/v1/Criterio/{ID}</em></a></p>
+
+<blockquote>
+  <p><strong>Ejemplo eliminar el registro con id 1</strong></p>
+  
+  <ul>
+  <li><a href="http://187.217.219.55/cium/api/v1/Criterio/1"><em>http://187.217.219.55/cium/api/v1/Criterio/1</em></a></li>
+  </ul>
+</blockquote>
+
+<p>Respuesta</p>
+
+<pre><code>{
+    "status": 200,
+    "messages": "Operación realizada con exito",
+    "data": {
+        "id": 1,
+        "nombre": "Paquetes o sobres de sales de rehidratación oral  o sobres de vida",
+        "creadoAl": null,
+        "modificadoAl": null,
+        "borradoAl": "2015-10-11 16:04:25"
+    }
+}
+</code></pre>
+
+<blockquote>
+  <p><strong>Nota</strong></p>
+  
+  <ul>
+  <li><code>status</code> Estado de la petición </li>
+  <li><code>messages</code> Mensaje de confirmacion o error</li>
+  <li><code>data</code> Objeto con todos los resultados</li>
+  </ul>
+</blockquote>
+
+<hr>
+
+<hr>
+
+<h2 id="indicador">2.6 Indicador</h2>
+
+<p style="text-align: justify;">
+Indicador este catálogo contiene todos los indicadores para generar las evaluaciones. Se relaciona con alertaIndicador para generar los colores segun el porcentaje obtenido.
+</p>
+
+<p><HR></p>
+
+<h3 id="get-index-6">2.6.1 GET (INDEX)</h3>
+
+<p>Muestra una lista de los indicadores según los parámetros a procesar en la petición.</p>
+
+<p>Parametros</p>
+
+<dl>
+<dt>Paginación</dt>
+<dd>
+<p><kbd>$pagina</kbd> número del puntero(offset) para la sentencia limit</p>
+</dd>
+
+<dd>
+<p><kbd>$limite</kbd> número de filas a mostrar por página</p>
+</dd>
+
+<dt>Busqueda</dt>
+<dd>
+<p><kbd>$valor</kbd> string con el valor para hacer la busqueda</p>
+</dd>
+
+<dd>
+<p><kbd>$order</kbd> campo de la base de datos por la que se debe ordenar la información. Por Defaul es ASC, pero si se antepone el signo - es de manera DESC</p>
+</dd>
+</dl>
+
+<p>Petición</p>
+
+<p><CODE>MÉTODO GET</CODE> <a href="http://187.217.219.55/cium/api/v1/Indicador"><em>http://187.217.219.55/cium/api/v1/Indicador</em></a></p>
+
+<blockquote>
+  <p><strong>Petición con parametros:</strong></p>
+  
+  <ul>
+  <li><p><a href="http://187.217.219.55/cium/api/v1/Indicador?pagina=1&amp;limite=5&amp;order=id"><em>http://187.217.219.55/cium/api/v1/Indicador?pagina=1&amp;limite=5&amp;order=id</em></a> orden ASC</p></li>
+  <li><p><a href="http://187.217.219.55/cium/api/v1/Indicador?pagina=1&amp;limite=5&amp;order=-id"><em>http://187.217.219.55/cium/api/v1/Indicador?pagina=1&amp;limite=5&amp;order=-id</em></a> orden DESC</p></li>
+  </ul>
+</blockquote>
+
+<p>Respuesta:</p>
+
+<pre><code>{
+    "status": 200,
+    "messages": "Operación realizada con exito",
+    "data": [
+        {
+            "id": 1,
+            "codigo": "7010",
+            "nombre": "Atención del niño",
+            "color": "hsla(197, 84%, 67%, 0.62)",
+            "categoria": "RECURSO",
+            "creadoAl": "2015-10-11  00:00:00",
+            "modificadoAl": "2015-10-11  00:00:00",
+            "borradoAl": null,
+            "indicador_alertas": [
+                {
+                    "id": 9,
+                    "minimo": "0",
+                    "maximo": "50",
+                    "idAlerta": 1,
+                    "idIndicador": 1,
+                    "creadoAl": "2015-10-11  00:00:00",
+                    "modificadoAl": "2015-10-11  00:00:00",
+                    "borradoAl": null
+                },
+                {
+                    "id": 10,
+                    "minimo": "51",
+                    "maximo": "70",
+                    "idAlerta": 3,
+                    "idIndicador": 1,
+                    "creadoAl": "2015-10-11  00:00:00",
+                    "modificadoAl": "2015-10-11  00:00:00",
+                    "borradoAl": null
+                },
+                {
+                    "id": 11,
+                    "minimo": "71",
+                    "maximo": "100",
+                    "idAlerta": 2,
+                    "idIndicador": 1,
+                    "creadoAl": "2015-10-11  00:00:00",
+                    "modificadoAl": "2015-10-11  00:00:00",
+                    "borradoAl": null
+                }
+            ]
+        }
+    },
+    "total": 1
+}
+</code></pre>
+
+<blockquote>
+  <p><strong>Nota</strong></p>
+  
+  <ul>
+  <li><code>status</code> Estado de la petición </li>
+  <li><code>messages</code> Mensaje de confirmacion o error</li>
+  <li><code>data</code> Objeto con todos los resultados</li>
+  <li><code>total</code> Total de registros devueltos</li>
+  </ul>
+</blockquote>
+
+<p><HR></p>
+
+<h3 id="get-id-show-6">2.6.2 GET/ {ID} (SHOW)</h3>
+
+<p>Devuelve la información del registro especificado.</p>
+
+<p>Petición</p>
+
+<p><CODE>MÉTODO GET</CODE> <a href="http://187.217.219.55/cium/api/v1/Indicador/%7bID%7d"><em>http://187.217.219.55/cium/api/v1/Indicador/{ID}</em></a></p>
+
+<blockquote>
+  <p><strong>Ejemplo Obtener los datos del registro con id = 1</strong></p>
+  
+  <ul>
+  <li><a href="http://187.217.219.55/cium/api/v1/Indicador/1"><em>http://187.217.219.55/cium/api/v1/Indicador/1</em></a> </li>
+  </ul>
+</blockquote>
+
+<p>Respuesta</p>
+
+<pre><code>{
+    "status": 200,
+    "messages": "Operación realizada con exito",
+    "data": {
+        "id": 1,
+        "codigo": "7010",
+        "nombre": "Atención del niño",
+        "color": "hsla(197, 84%, 67%, 0.62)",
+        "categoria": "RECURSO",
+        "creadoAl": "2015-10-11  00:00:00",
+        "modificadoAl": "2015-10-11  00:00:00",
+        "borradoAl": null,
+        "indicador_alertas": [
+            {
+                "id": 9,
+                "minimo": "0",
+                "maximo": "50",
+                "idAlerta": 1,
+                "idIndicador": 1,
+                "creadoAl": "2015-10-11  00:00:00",
+                "modificadoAl": "2015-10-11  00:00:00",
+                "borradoAl": null
+            },
+            {
+                "id": 10,
+                "minimo": "51",
+                "maximo": "70",
+                "idAlerta": 3,
+                "idIndicador": 1,
+                "creadoAl": "2015-10-11  00:00:00",
+                "modificadoAl": "2015-10-11  00:00:00",
+                "borradoAl": null
+            },
+            {
+                "id": 11,
+                "minimo": "71",
+                "maximo": "100",
+                "idAlerta": 2,
+                "idIndicador": 1,
+                "creadoAl": "2015-10-11  00:00:00",
+                "modificadoAl": "2015-10-11  00:00:00",
+                "borradoAl": null
+            }
+        ]
+    }
+}
+</code></pre>
+
+<blockquote>
+  <p><strong>Nota</strong></p>
+  
+  <ul>
+  <li><code>status</code> Estado de la petición </li>
+  <li><code>messages</code> Mensaje de confirmacion o error</li>
+  <li><code>data</code> Objeto con todos los resultados</li>
+  </ul>
+</blockquote>
+
+<p><HR></p>
+
+<h3 id="post-store-5">2.6.3 POST (STORE)</h3>
+
+<p>Crear un nuevo registro en la base de datos con los datos enviados</p>
+
+<p>REQUEST (SEND)</p>
+
+<p>Recibe un input request tipo json de los datos a almacenar.</p>
+
+<pre><code>{
+    "id": 1,
+    "codigo": "7010",
+    "nombre": "Atención del niño",
+    "color": "hsla(197, 84%, 67%, 0.62)",
+    "categoria": "RECURSO",
+    "indicador_alertas": [
+        {
+            "id": 9,
+            "minimo": "0",
+            "maximo": "50",
+            "idAlerta": "1",
+            "idIndicador": 1,
+            "creadoAl": "2015-10-11  00:00:00",
+            "modificadoAl": "2015-10-11  00:00:00",
+            "borradoAl": null
+        },
+        {
+            "id": 10,
+            "minimo": "51",
+            "maximo": "70",
+            "idAlerta": "3",
+            "idIndicador": 1,
+            "creadoAl": "2015-10-11  00:00:00",
+            "modificadoAl": "2015-10-11  00:00:00",
+            "borradoAl": null
+        },
+        {
+            "id": 11,
+            "minimo": "71",
+            "maximo": "100",
+            "idAlerta": "2",
+            "idIndicador": 1,
+            "creadoAl": "2015-10-11  00:00:00",
+            "modificadoAl": "2015-10-11  00:00:00",
+            "borradoAl": null
+        }
+    ]
+}
+</code></pre>
+
+<p>Petición</p>
+
+<p><CODE>MÉTODO POST</CODE> <a href="http://187.217.219.55/cium/api/v1/Indicador"><em>http://187.217.219.55/cium/api/v1/Indicador</em></a></p>
+
+<p>Respuesta</p>
+
+<pre><code>{
+    "status": 201,
+    "messages": "Creado",
+    "data": {
+        "id": 1,
+        "codigo": "7010",
+        "nombre": "Atención del niño",
+        "color": "hsla(197, 84%, 67%, 0.62)",
+        "categoria": "RECURSO",
+        "creadoAl": "2015-10-11  00:00:00",
+        "modificadoAl": "2015-10-11  00:00:00",
+        "borradoAl": null
+    }
+}
+</code></pre>
+
+<blockquote>
+  <p><strong>Nota</strong></p>
+  
+  <ul>
+  <li><code>status</code> Estado de la petición </li>
+  <li><code>messages</code> Mensaje de confirmacion o error</li>
+  <li><code>data</code> Objeto con todos los resultados</li>
+  </ul>
+</blockquote>
+
+<p><HR></p>
+
+<h3 id="put-id-update-5">2.6.4 PUT/{ID} (UPDATE)</h3>
+
+<p>Actualizar el registro especificado en el la base de datos</p>
+
+<p>REQUEST (SEND)</p>
+
+<p>Recibe un Input Request con el json de los datos</p>
+
+<pre><code>{
+    "id": 1,
+    "codigo": "7010",
+    "nombre": "Atención del niño",
+    "color": "hsla(197, 84%, 67%, 0.62)",
+    "categoria": "RECURSO",
+    "creadoAl": "2015-10-11  00:00:00",
+    "modificadoAl": "2015-10-11  00:00:00",
+    "borradoAl": null,
+    "indicador_alertas": [
+        {
+            "id": 9,
+            "minimo": "0",
+            "maximo": "50",
+            "idAlerta": "1",
+            "idIndicador": 1,
+            "creadoAl": "2015-10-11  00:00:00",
+            "modificadoAl": "2015-10-11  00:00:00",
+            "borradoAl": null
+        },
+        {
+            "id": 10,
+            "minimo": "51",
+            "maximo": "70",
+            "idAlerta": "3",
+            "idIndicador": 1,
+            "creadoAl": "2015-10-11  00:00:00",
+            "modificadoAl": "2015-10-11  00:00:00",
+            "borradoAl": null
+        },
+        {
+            "id": 11,
+            "minimo": "71",
+            "maximo": "100",
+            "idAlerta": "2",
+            "idIndicador": 1,
+            "creadoAl": "2015-10-11  00:00:00",
+            "modificadoAl": "2015-10-11  00:00:00",
+            "borradoAl": null
+        }
+    ]
+}
+</code></pre>
+
+<p>Petición</p>
+
+<p><CODE>MÉTODO PUT</CODE> <a href="http://187.217.219.55/cium/api/v1/Indicador/%7bID%7d"><em>http://187.217.219.55/cium/api/v1/Indicador/{ID}</em></a></p>
+
+<blockquote>
+  <p><strong>Ejemplo actualizar el registro con id 1</strong></p>
+  
+  <ul>
+  <li><a href="http://187.217.219.55/cium/api/v1/Indicador/1"><em>http://187.217.219.55/cium/api/v1/Indicador/1</em></a></li>
+  </ul>
+</blockquote>
+
+<p>Respuesta</p>
+
+<pre><code>{
+    "status": 200,
+    "messages": "Operación realizada con exito",
+    "data": {
+        "id": 1,
+        "codigo": "7010",
+        "nombre": "Atención del niño",
+        "color": "hsla(197, 84%, 67%, 0.62)",
+        "categoria": "RECURSO",
+        "creadoAl": "2015-10-11  00:00:00",
+        "modificadoAl": "2015-10-11  00:00:00",
+        "borradoAl": null
+    }
+}
+</code></pre>
+
+<blockquote>
+  <p><strong>Nota</strong></p>
+  
+  <ul>
+  <li><code>status</code> Estado de la petición </li>
+  <li><code>messages</code> Mensaje de confirmacion o error</li>
+  <li><code>data</code> Objeto con todos los resultados</li>
+  </ul>
+</blockquote>
+
+<p><HR></p>
+
+<h3 id="delete-id-delete-5">2.6.5 DELETE/{ID} (DELETE)</h3>
+
+<p>Borra el registro especificado en el la base de datos</p>
+
+<p>Petición</p>
+
+<p><CODE>MÉTODO DELETE</CODE> <a href="http://187.217.219.55/cium/api/v1/Indicador/%7bID%7d"><em>http://187.217.219.55/cium/api/v1/Indicador/{ID}</em></a></p>
+
+<blockquote>
+  <p><strong>Ejemplo eliminar el registro con id 1</strong></p>
+  
+  <ul>
+  <li><a href="http://187.217.219.55/cium/api/v1/Indicador/1"><em>http://187.217.219.55/cium/api/v1/Indicador/1</em></a></li>
+  </ul>
+</blockquote>
+
+<p>Respuesta</p>
+
+<pre><code>{
+    "status": 200,
+    "messages": "Operación realizada con exito",
+    "data": {
+        "id": 1,
+        "codigo": "7010",
+        "nombre": "Atención del niño",
+        "color": "hsla(197, 84%, 67%, 0.62)",
+        "categoria": "RECURSO",
+        "creadoAl": "2015-10-11  00:00:00",
+        "modificadoAl": "2015-10-11  00:00:00",
+        "borradoAl": "2015-10-11 16:19:03"
+    }
+}
+</code></pre>
+
+<blockquote>
+  <p><strong>Nota</strong></p>
+  
+  <ul>
+  <li><code>status</code> Estado de la petición </li>
+  <li><code>messages</code> Mensaje de confirmacion o error</li>
+  <li><code>data</code> Objeto con todos los resultados</li>
+  </ul>
+</blockquote>
+
+<hr>
+
+<hr>
+
+<h2 id="lugar-de-verificacion">2.7 Lugar de Verificación</h2>
+
+<p style="text-align: justify;">
+LugarVerificacion este catálogo contiene los lugares de verificacion para agrupar los criterios de cada indicador para las unidades médicas.
+</p>
+
+<p><HR></p>
+
+<h3 id="get-index-7">2.7.1 GET (INDEX)</h3>
+
+<p>Muestra una lista de los luagares de verificación según los parámetros a procesar en la petición.</p>
+
+<p>Parametros</p>
+
+<dl>
+<dt>Paginación</dt>
+<dd>
+<p><kbd>$pagina</kbd> número del puntero(offset) para la sentencia limit</p>
+</dd>
+
+<dd>
+<p><kbd>$limite</kbd> número de filas a mostrar por página</p>
+</dd>
+
+<dt>Busqueda</dt>
+<dd>
+<p><kbd>$valor</kbd> string con el valor para hacer la busqueda</p>
+</dd>
+
+<dd>
+<p><kbd>$order</kbd> campo de la base de datos por la que se debe ordenar la información. Por Defaul es ASC, pero si se antepone el signo - es de manera DESC</p>
+</dd>
+</dl>
+
+<p>Petición</p>
+
+<p><CODE>MÉTODO GET</CODE> <a href="http://187.217.219.55/cium/api/v1/LugarVerificacion"><em>http://187.217.219.55/cium/api/v1/LugarVerificacion</em></a></p>
+
+<blockquote>
+  <p><strong>Petición con parametros:</strong></p>
+  
+  <ul>
+  <li><p><a href="http://187.217.219.55/cium/api/v1/LugarVerificacion?pagina=1&amp;limite=5&amp;order=id"><em>http://187.217.219.55/cium/api/v1/LugarVerificacion?pagina=1&amp;limite=5&amp;order=id</em></a> orden ASC</p></li>
+  <li><p><a href="http://187.217.219.55/cium/api/v1/LugarVerificacion?pagina=1&amp;limite=5&amp;order=-id"><em>http://187.217.219.55/cium/api/v1/LugarVerificacion?pagina=1&amp;limite=5&amp;order=-id</em></a> orden DESC</p></li>
+  </ul>
+</blockquote>
+
+<p>Respuesta:</p>
+
+<pre><code>{
+    "status": 200,
+    "messages": "Operación realizada con exito",
+    "data": [
+        {
+            "id": 1,
+            "nombre": "Farmacia",
+            "creadoAl": "2015-10-11  00:00:00",
+            "modificadoAl": "2015-10-11  00:00:00",
+            "borradoAl": null
+        }
+    ],
+    "total": 1
+}
+</code></pre>
+
+<blockquote>
+  <p><strong>Nota</strong></p>
+  
+  <ul>
+  <li><code>status</code> Estado de la petición </li>
+  <li><code>messages</code> Mensaje de confirmacion o error</li>
+  <li><code>data</code> Objeto con todos los resultados</li>
+  <li><code>total</code> Total de registros devueltos</li>
+  </ul>
+</blockquote>
+
+<p><HR></p>
+
+<h3 id="get-id-show-7">2.7.2 GET/ {ID} (SHOW)</h3>
+
+<p>Devuelve la información del registro especificado.</p>
+
+<p>Petición</p>
+
+<p><CODE>MÉTODO GET</CODE> <a href="http://187.217.219.55/cium/api/v1/LugarVerificacion/%7bID%7d"><em>http://187.217.219.55/cium/api/v1/LugarVerificacion/{ID}</em></a></p>
+
+<blockquote>
+  <p><strong>Ejemplo Obtener los datos del registro con id = 1</strong></p>
+  
+  <ul>
+  <li><a href="http://187.217.219.55/cium/api/v1/LugarVerificacion/1"><em>http://187.217.219.55/cium/api/v1/LugarVerificacion/1</em></a> </li>
+  </ul>
+</blockquote>
+
+<p>Respuesta</p>
+
+<pre><code>{
+    "status": 200,
+    "messages": "Operación realizada con exito",
+    "data": {
+        "id": 1,
+        "nombre": "Farmacia",
+        "creadoAl": "2015-10-11  00:00:00",
+        "modificadoAl": "2015-10-11  00:00:00",
+        "borradoAl": null
+    }
+}
+</code></pre>
+
+<blockquote>
+  <p><strong>Nota</strong></p>
+  
+  <ul>
+  <li><code>status</code> Estado de la petición </li>
+  <li><code>messages</code> Mensaje de confirmacion o error</li>
+  <li><code>data</code> Objeto con todos los resultados</li>
+  </ul>
+</blockquote>
+
+<p><HR></p>
+
+<h3 id="post-store-6">2.7.3 POST (STORE)</h3>
+
+<p>Crear un nuevo registro en la base de datos con los datos enviados</p>
+
+<p>REQUEST (SEND)</p>
+
+<p>Recibe un input request tipo json de los datos a almacenar.</p>
+
+<pre><code>{
+    "id": 1,
+    "nombre": "Farmacia"
+}
+</code></pre>
+
+<p>Petición</p>
+
+<p><CODE>MÉTODO POST</CODE> <a href="http://187.217.219.55/cium/api/v1/LugarVerificacion"><em>http://187.217.219.55/cium/api/v1/LugarVerificacion</em></a></p>
+
+<p>Respuesta</p>
+
+<pre><code>{
+    "status": 201,
+    "messages": "Creado",
+    "data": {
+        "id": 1,
+        "nombre": "Farmacia",
+        "creadoAl": "2015-10-11  00:00:00",
+        "modificadoAl": "2015-10-11  00:00:00",
+        "borradoAl": null
+    }
+}
+</code></pre>
+
+<blockquote>
+  <p><strong>Nota</strong></p>
+  
+  <ul>
+  <li><code>status</code> Estado de la petición </li>
+  <li><code>messages</code> Mensaje de confirmacion o error</li>
+  <li><code>data</code> Objeto con todos los resultados</li>
+  </ul>
+</blockquote>
+
+<p><HR></p>
+
+<h3 id="put-id-update-6">2.7.4 PUT/{ID} (UPDATE)</h3>
+
+<p>Actualizar el registro especificado en el la base de datos</p>
+
+<p>REQUEST (SEND)</p>
+
+<p>Recibe un Input Request con el json de los datos</p>
+
+<pre><code>{
+    "id": 1,
+    "nombre": "Farmacia",
+    "creadoAl": "2015-10-11  00:00:00",
+    "modificadoAl": "2015-10-11  00:00:00",
+    "borradoAl": null
+}
+</code></pre>
+
+<p>Petición</p>
+
+<p><CODE>MÉTODO PUT</CODE> <a href="http://187.217.219.55/cium/api/v1/LugarVerificacion/%7bID%7d"><em>http://187.217.219.55/cium/api/v1/LugarVerificacion/{ID}</em></a></p>
+
+<blockquote>
+  <p><strong>Ejemplo actualizar el registro con id 1</strong></p>
+  
+  <ul>
+  <li><a href="http://187.217.219.55/cium/api/v1/LugarVerificacion/1"><em>http://187.217.219.55/cium/api/v1/LugarVerificacion/1</em></a></li>
+  </ul>
+</blockquote>
+
+<p>Respuesta</p>
+
+<pre><code>{
+    "status": 200,
+    "messages": "Operación realizada con exito",
+    "data": {
+        "id": 1,
+        "nombre": "Farmacia",
+        "creadoAl": "2015-10-11  00:00:00",
+        "modificadoAl": "2015-10-11  00:00:00",
+        "borradoAl": null
+    }
+}
+</code></pre>
+
+<blockquote>
+  <p><strong>Nota</strong></p>
+  
+  <ul>
+  <li><code>status</code> Estado de la petición </li>
+  <li><code>messages</code> Mensaje de confirmacion o error</li>
+  <li><code>data</code> Objeto con todos los resultados</li>
+  </ul>
+</blockquote>
+
+<p><HR></p>
+
+<h3 id="delete-id-delete-6">2.7.5 DELETE/{ID} (DELETE)</h3>
+
+<p>Borra el registro especificado en el la base de datos</p>
+
+<p>Petición</p>
+
+<p><CODE>MÉTODO DELETE</CODE> <a href="http://187.217.219.55/cium/api/v1/LugarVerificacion/%7bID%7d"><em>http://187.217.219.55/cium/api/v1/LugarVerificacion/{ID}</em></a></p>
+
+<blockquote>
+  <p><strong>Ejemplo eliminar el registro con id 1</strong></p>
+  
+  <ul>
+  <li><a href="http://187.217.219.55/cium/api/v1/LugarVerificacion/1"><em>http://187.217.219.55/cium/api/v1/LugarVerificacion/1</em></a></li>
+  </ul>
+</blockquote>
+
+<p>Respuesta</p>
+
+<pre><code>{
+    "status": 200,
+    "messages": "Operación realizada con exito",
+    "data": {
+        "id": 1,
+        "nombre": "Farmacia",
+        "creadoAl": "2015-10-11  00:00:00",
+        "modificadoAl": "2015-10-11  00:00:00",
+        "borradoAl": "2015-10-11 16:19:03"
+    }
+}
+</code></pre>
+
+<blockquote>
+  <p><strong>Nota</strong></p>
+  
+  <ul>
+  <li><code>status</code> Estado de la petición </li>
+  <li><code>messages</code> Mensaje de confirmacion o error</li>
+  <li><code>data</code> Objeto con todos los resultados</li>
+  </ul>
+</blockquote>
+
+<hr>
+
+<hr>
+
+<h2 id="plazo-accion">2.8 Plazo acción</h2>
+
+<p style="text-align: justify;">
+PlazoAccion este catálogo contiene los lugares de verificacion para agrupar los criterios de cada indicador para las unidades médicas.
+</p>
+
+<p><HR></p>
+
+<h3 id="get-index-8">2.8.1 GET (INDEX)</h3>
+
+<p>Muestra una lista de los plazo por acción según los parámetros a procesar en la petición.</p>
+
+<p>Parametros</p>
+
+<dl>
+<dt>Paginación</dt>
+<dd>
+<p><kbd>$pagina</kbd> número del puntero(offset) para la sentencia limit</p>
+</dd>
+
+<dd>
+<p><kbd>$limite</kbd> número de filas a mostrar por página</p>
+</dd>
+
+<dt>Busqueda</dt>
+<dd>
+<p><kbd>$valor</kbd> string con el valor para hacer la busqueda</p>
+</dd>
+
+<dd>
+<p><kbd>$order</kbd> campo de la base de datos por la que se debe ordenar la información. Por Defaul es ASC, pero si se antepone el signo - es de manera DESC</p>
+</dd>
+</dl>
+
+<p>Petición</p>
+
+<p><CODE>MÉTODO GET</CODE> <a href="http://187.217.219.55/cium/api/v1/PlazoAccion"><em>http://187.217.219.55/cium/api/v1/PlazoAccion</em></a></p>
+
+<blockquote>
+  <p><strong>Petición con parametros:</strong></p>
+  
+  <ul>
+  <li><p><a href="http://187.217.219.55/cium/api/v1/PlazoAccion?pagina=1&amp;limite=5&amp;order=id"><em>http://187.217.219.55/cium/api/v1/PlazoAccion?pagina=1&amp;limite=5&amp;order=id</em></a> orden ASC</p></li>
+  <li><p><a href="http://187.217.219.55/cium/api/v1/PlazoAccion?pagina=1&amp;limite=5&amp;order=-id"><em>http://187.217.219.55/cium/api/v1/PlazoAccion?pagina=1&amp;limite=5&amp;order=-id</em></a> orden DESC</p></li>
+  </ul>
+</blockquote>
+
+<p>Respuesta:</p>
+
+<pre><code>{
+    "status": 200,
+    "messages": "Operación realizada con exito",
+    "data": [
+        {
+            "id": 1,
+            "nombre": "4 Días",
+            "tipo": "d",
+            "valor": "4",
+            "creadoAl": "2015-10-11  00:00:00",
+            "modificadoAl": "2015-10-11  00:00:00",
+            "borradoAl": null
+        }
+    ],
+    "total": 1
+}
+</code></pre>
+
+<blockquote>
+  <p><strong>Nota</strong></p>
+  
+  <ul>
+  <li><code>status</code> Estado de la petición </li>
+  <li><code>messages</code> Mensaje de confirmacion o error</li>
+  <li><code>data</code> Objeto con todos los resultados</li>
+  <li><code>total</code> Total de registros devueltos</li>
+  </ul>
+</blockquote>
+
+<p><HR></p>
+
+<h3 id="get-id-show-8">2.8.2 GET/ {ID} (SHOW)</h3>
+
+<p>Devuelve la información del registro especificado.</p>
+
+<p>Petición</p>
+
+<p><CODE>MÉTODO GET</CODE> <a href="http://187.217.219.55/cium/api/v1/PlazoAccion/%7bID%7d"><em>http://187.217.219.55/cium/api/v1/PlazoAccion/{ID}</em></a></p>
+
+<blockquote>
+  <p><strong>Ejemplo Obtener los datos del registro con id = 1</strong></p>
+  
+  <ul>
+  <li><a href="http://187.217.219.55/cium/api/v1/PlazoAccion/1"><em>http://187.217.219.55/cium/api/v1/PlazoAccion/1</em></a> </li>
+  </ul>
+</blockquote>
+
+<p>Respuesta</p>
+
+<pre><code>{
+    "status": 200,
+    "messages": "Operación realizada con exito",
+    "data": {
+        "id": 1,
+        "nombre": "4 Días",
+        "tipo": "d",
+        "valor": "4",
+        "creadoAl": "2015-10-11  00:00:00",
+        "modificadoAl": "2015-10-11  00:00:00",
+        "borradoAl": null
+    }
+}
+</code></pre>
+
+<blockquote>
+  <p><strong>Nota</strong></p>
+  
+  <ul>
+  <li><code>status</code> Estado de la petición </li>
+  <li><code>messages</code> Mensaje de confirmacion o error</li>
+  <li><code>data</code> Objeto con todos los resultados</li>
+  </ul>
+</blockquote>
+
+<p><HR></p>
+
+<h3 id="post-store-7">2.8.3 POST (STORE)</h3>
+
+<p>Crear un nuevo registro en la base de datos con los datos enviados</p>
+
+<p>REQUEST (SEND)</p>
+
+<p>Recibe un input request tipo json de los datos a almacenar.</p>
+
+<pre><code>{
+    "id": 1,
+    "nombre": "4 Días",
+    "tipo": "d",
+    "valor": "4"
+}
+</code></pre>
+
+<p>Petición</p>
+
+<p><CODE>MÉTODO POST</CODE> <a href="http://187.217.219.55/cium/api/v1/PlazoAccion"><em>http://187.217.219.55/cium/api/v1/PlazoAccion</em></a></p>
+
+<p>Respuesta</p>
+
+<pre><code>{
+    "status": 201,
+    "messages": "Creado",
+    "data": {
+        "id": 1,
+        "nombre": "4 Días",
+        "tipo": "d",
+        "valor": "4",
+        "creadoAl": "2015-10-11  00:00:00",
+        "modificadoAl": "2015-10-11  00:00:00",
+        "borradoAl": null
+    }
+}
+</code></pre>
+
+<blockquote>
+  <p><strong>Nota</strong></p>
+  
+  <ul>
+  <li><code>status</code> Estado de la petición </li>
+  <li><code>messages</code> Mensaje de confirmacion o error</li>
+  <li><code>data</code> Objeto con todos los resultados</li>
+  </ul>
+</blockquote>
+
+<p><HR></p>
+
+<h3 id="put-id-update-7">2.8.4 PUT/{ID} (UPDATE)</h3>
+
+<p>Actualizar el registro especificado en el la base de datos</p>
+
+<p>REQUEST (SEND)</p>
+
+<p>Recibe un Input Request con el json de los datos</p>
+
+<pre><code>{
+    "id": 1,
+    "nombre": "4 Días",
+    "tipo": "d",
+    "valor": "4",
+    "creadoAl": "2015-10-11  00:00:00",
+    "modificadoAl": "2015-10-11  00:00:00",
+    "borradoAl": null
+}
+</code></pre>
+
+<p>Petición</p>
+
+<p><CODE>MÉTODO PUT</CODE> <a href="http://187.217.219.55/cium/api/v1/PlazoAccion/%7bID%7d"><em>http://187.217.219.55/cium/api/v1/PlazoAccion/{ID}</em></a></p>
+
+<blockquote>
+  <p><strong>Ejemplo actualizar el registro con id 1</strong></p>
+  
+  <ul>
+  <li><a href="http://187.217.219.55/cium/api/v1/PlazoAccion/1"><em>http://187.217.219.55/cium/api/v1/PlazoAccion/1</em></a></li>
+  </ul>
+</blockquote>
+
+<p>Respuesta</p>
+
+<pre><code>{
+    "status": 200,
+    "messages": "Operación realizada con exito",
+    "data": {
+        "id": 1,
+        "nombre": "4 Días",
+        "tipo": "d",
+        "valor": "4",
+        "creadoAl": "2015-10-11  00:00:00",
+        "modificadoAl": "2015-10-11  00:00:00",
+        "borradoAl": null
+    }
+}
+</code></pre>
+
+<blockquote>
+  <p><strong>Nota</strong></p>
+  
+  <ul>
+  <li><code>status</code> Estado de la petición </li>
+  <li><code>messages</code> Mensaje de confirmacion o error</li>
+  <li><code>data</code> Objeto con todos los resultados</li>
+  </ul>
+</blockquote>
+
+<p><HR></p>
+
+<h3 id="delete-id-delete-7">2.8.5 DELETE/{ID} (DELETE)</h3>
+
+<p>Borra el registro especificado en el la base de datos</p>
+
+<p>Petición</p>
+
+<p><CODE>MÉTODO DELETE</CODE> <a href="http://187.217.219.55/cium/api/v1/PlazoAccion/%7bID%7d"><em>http://187.217.219.55/cium/api/v1/PlazoAccion/{ID}</em></a></p>
+
+<blockquote>
+  <p><strong>Ejemplo eliminar el registro con id 1</strong></p>
+  
+  <ul>
+  <li><a href="http://187.217.219.55/cium/api/v1/PlazoAccion/1"><em>http://187.217.219.55/cium/api/v1/PlazoAccion/1</em></a></li>
+  </ul>
+</blockquote>
+
+<p>Respuesta</p>
+
+<pre><code>{
+    "status": 200,
+    "messages": "Operación realizada con exito",
+    "data": {
+        "id": 1,
+        "nombre": "4 Días",
+        "tipo": "d",
+        "valor": "4",
+        "creadoAl": "2015-10-11  00:00:00",
+        "modificadoAl": "2015-10-11  00:00:00",
+        "borradoAl": "2015-10-11 16:19:03"
+    }
+}
+</code></pre>
+
+<blockquote>
+  <p><strong>Nota</strong></p>
+  
+  <ul>
+  <li><code>status</code> Estado de la petición </li>
+  <li><code>messages</code> Mensaje de confirmacion o error</li>
+  <li><code>data</code> Objeto con todos los resultados</li>
+  </ul>
+</blockquote>
+
+<hr>
+
+<hr>
+
+<h2 id="zona">2.9 Zona</h2>
+
+<p style="text-align: justify;">
+Zona este catálogo contiene las zonas y las unidades médicas que la conforman, Debido a que cada zona puede tener muchas unidades médiacas y para no hacer tardio la carga del listado se recomienda descargar el listado y depues hacer un recorrido de cada uno de los resultados para extraer los datos del metodo show.
+</p>
+
+<p><HR></p>
+
+<h3 id="get-index-9">2.9.1 GET (INDEX)</h3>
+
+<p>Muestra una lista de las zonas según los parámetros a procesar en la petición.</p>
+
+<p>Parametros</p>
+
+<dl>
+<dt>Paginación</dt>
+<dd>
+<p><kbd>$pagina</kbd> número del puntero(offset) para la sentencia limit</p>
+</dd>
+
+<dd>
+<p><kbd>$limite</kbd> número de filas a mostrar por página</p>
+</dd>
+
+<dt>Busqueda</dt>
+<dd>
+<p><kbd>$valor</kbd> string con el valor para hacer la busqueda</p>
+</dd>
+
+<dd>
+<p><kbd>$order</kbd> campo de la base de datos por la que se debe ordenar la información. Por Defaul es ASC, pero si se antepone el signo - es de manera DESC</p>
+</dd>
+</dl>
+
+<p>Petición</p>
+
+<p><CODE>MÉTODO GET</CODE> <a href="http://187.217.219.55/cium/api/v1/Zona"><em>http://187.217.219.55/cium/api/v1/Zona</em></a></p>
+
+<blockquote>
+  <p><strong>Petición con parametros:</strong></p>
+  
+  <ul>
+  <li><p><a href="http://187.217.219.55/cium/api/v1/Zona?pagina=1&amp;limite=5&amp;order=id"><em>http://187.217.219.55/cium/api/v1/Zona?pagina=1&amp;limite=5&amp;order=id</em></a> orden ASC</p></li>
+  <li><p><a href="http://187.217.219.55/cium/api/v1/Zona?pagina=1&amp;limite=5&amp;order=-id"><em>http://187.217.219.55/cium/api/v1/Zona?pagina=1&amp;limite=5&amp;order=-id</em></a> orden DESC</p></li>
+  </ul>
+</blockquote>
+
+<p>Respuesta:</p>
+
+<pre><code>{
+    "status": 200,
+    "messages": "Operación realizada con exito",
+    "data": [
+        {
+            "id": 1,
+            "nombre": "EXCLUSIVO CHAMULA",
+            "creadoAl": "-0001-11-30 00:00:00",
+            "modificadoAl": "-0001-11-30 00:00:00",
+            "borradoAl": null
+        }
+    ],
+    "total": 1
+}
+</code></pre>
+
+<blockquote>
+  <p><strong>Nota</strong></p>
+  
+  <ul>
+  <li><code>status</code> Estado de la petición </li>
+  <li><code>messages</code> Mensaje de confirmacion o error</li>
+  <li><code>data</code> Objeto con todos los resultados</li>
+  <li><code>total</code> Total de registros devueltos</li>
+  </ul>
+</blockquote>
+
+<p><HR></p>
+
+<h3 id="get-id-show-9">2.9.2 GET/ {ID} (SHOW)</h3>
+
+<p>Devuelve la información del registro especificado.</p>
+
+<p>Petición</p>
+
+<p><CODE>MÉTODO GET</CODE> <a href="http://187.217.219.55/cium/api/v1/Zona/%7bID%7d"><em>http://187.217.219.55/cium/api/v1/Zona/{ID}</em></a></p>
+
+<blockquote>
+  <p><strong>Ejemplo Obtener los datos del registro con id = 1</strong></p>
+  
+  <ul>
+  <li><a href="http://187.217.219.55/cium/api/v1/Zona/1"><em>http://187.217.219.55/cium/api/v1/Zona/1</em></a> </li>
+  </ul>
+</blockquote>
+
+<p>Respuesta</p>
+
+<pre><code>{
+    "status": 200,
+    "messages": "Operación realizada con exito",
+    "data": {
+        "id": 1,
+        "nombre": "EXCLUSIVO CHAMULA",
+        "creadoAl": "-0001-11-30 00:00:00",
+        "modificadoAl": "-0001-11-30 00:00:00",
+        "borradoAl": null,
+        "ZonaClues": [
+            {
+                "id": 1,
+                "idZona": 1,
+                "clues": "CSSSA019481",
+                "jurisdiccion": "SAN CRISTÓBAL DE LAS CASAS",
+                "nombre": "H. B. C. DE SAN JUAN CHAMULA",
+                "domicilio": "A UN COSTADO DE LA U.M.R.",
+                "codigoPostal": 29320,
+                "entidad": "CHIAPAS",
+                "municipio": "CHAMULA",
+                "localidad": "ACACOYAGUA",
+                "institucion": "SSA",
+                "tipoUnidad": "HOSPITAL",
+                "estatus": "EN OPERACIÓN",
+                "estado": "1",
+                "tipologia": "HOSPITAL INTEGRAL (COMUNITARIO)"
+            }
+        ]
+    }
+}
+</code></pre>
+
+<blockquote>
+  <p><strong>Nota</strong></p>
+  
+  <ul>
+  <li><code>status</code> Estado de la petición </li>
+  <li><code>messages</code> Mensaje de confirmacion o error</li>
+  <li><code>data</code> Objeto con todos los resultados</li>
+  <li><code>ZonaClues</code> Objeto con todas las unidades médicas</li>
+  </ul>
+</blockquote>
+
+<p><HR></p>
+
+<h3 id="post-store-8">2.9.3 POST (STORE)</h3>
+
+<p>Crear un nuevo registro en la base de datos con los datos enviados</p>
+
+<p>REQUEST (SEND)</p>
+
+<p>Recibe un input request tipo json de los datos a almacenar.</p>
+
+<pre><code>{
+    "id": 1,
+    "nombre": "EXCLUSIVO CHAMULA",
+    "ZonaClues": [
+        {
+            "id": 1,
+            "idZona": 1,
+            "clues": "CSSSA019481",
+            "jurisdiccion": "SAN CRISTÓBAL DE LAS CASAS",
+            "nombre": "H. B. C. DE SAN JUAN CHAMULA",
+            "domicilio": "A UN COSTADO DE LA U.M.R.",
+            "codigoPostal": 29320,
+            "entidad": "CHIAPAS",
+            "municipio": "CHAMULA",
+            "localidad": "ACACOYAGUA",
+            "institucion": "SSA",
+            "tipoUnidad": "HOSPITAL",
+            "estatus": "EN OPERACIÓN",
+            "estado": "1",
+            "tipologia": "HOSPITAL INTEGRAL (COMUNITARIO)"
+        }
+    ]
+}
+</code></pre>
+
+<p>Petición</p>
+
+<p><CODE>MÉTODO POST</CODE> <a href="http://187.217.219.55/cium/api/v1/Zona"><em>http://187.217.219.55/cium/api/v1/Zona</em></a></p>
+
+<p>Respuesta</p>
+
+<pre><code>{
+    "status": 201,
+    "messages": "Creado",
+    "data": {
+        "id": 1,
+        "nombre": "EXCLUSIVO CHAMULA",
+        "creadoAl": "2015-10-11  00:00:00",
+        "modificadoAl": "2015-10-11  00:00:00",
+        "borradoAl": null
+    }
+}
+</code></pre>
+
+<blockquote>
+  <p><strong>Nota</strong></p>
+  
+  <ul>
+  <li><code>status</code> Estado de la petición </li>
+  <li><code>messages</code> Mensaje de confirmacion o error</li>
+  <li><code>data</code> Objeto con todos los resultados</li>
+  </ul>
+</blockquote>
+
+<p><HR></p>
+
+<h3 id="put-id-update-8">2.9.4 PUT/{ID} (UPDATE)</h3>
+
+<p>Actualizar el registro especificado en el la base de datos</p>
+
+<p>REQUEST (SEND)</p>
+
+<p>Recibe un Input Request con el json de los datos</p>
+
+<pre><code>{
+    "id": 1,
+    "nombre": "EXCLUSIVO CHAMULA",
+    "creadoAl": "2015-10-11  00:00:00",
+    "modificadoAl": "2015-10-11  00:00:00",
+    "borradoAl": null,
+    "ZonaClues": [
+        {
+            "id": 1,
+            "idZona": 1,
+            "clues": "CSSSA019481",
+            "jurisdiccion": "SAN CRISTÓBAL DE LAS CASAS",
+            "nombre": "H. B. C. DE SAN JUAN CHAMULA",
+            "domicilio": "A UN COSTADO DE LA U.M.R.",
+            "codigoPostal": 29320,
+            "entidad": "CHIAPAS",
+            "municipio": "CHAMULA",
+            "localidad": "ACACOYAGUA",
+            "institucion": "SSA",
+            "tipoUnidad": "HOSPITAL",
+            "estatus": "EN OPERACIÓN",
+            "estado": "1",
+            "tipologia": "HOSPITAL INTEGRAL (COMUNITARIO)"
+        }
+    ]
+}
+</code></pre>
+
+<p>Petición</p>
+
+<p><CODE>MÉTODO PUT</CODE> <a href="http://187.217.219.55/cium/api/v1/Zona/%7bID%7d"><em>http://187.217.219.55/cium/api/v1/Zona/{ID}</em></a></p>
+
+<blockquote>
+  <p><strong>Ejemplo actualizar el registro con id 1</strong></p>
+  
+  <ul>
+  <li><a href="http://187.217.219.55/cium/api/v1/Zona/1"><em>http://187.217.219.55/cium/api/v1/Zona/1</em></a></li>
+  </ul>
+</blockquote>
+
+<p>Respuesta</p>
+
+<pre><code>{
+    "status": 200,
+    "messages": "Operación realizada con exito",
+    "data": {
+        "id": 1,
+        "nombre": "EXCLUSIVO CHAMULA",
+        "creadoAl": "2015-10-11  00:00:00",
+        "modificadoAl": "2015-10-11  00:00:00",
+        "borradoAl": null
+    }
+}
+</code></pre>
+
+<blockquote>
+  <p><strong>Nota</strong></p>
+  
+  <ul>
+  <li><code>status</code> Estado de la petición </li>
+  <li><code>messages</code> Mensaje de confirmacion o error</li>
+  <li><code>data</code> Objeto con todos los resultados</li>
+  </ul>
+</blockquote>
+
+<p><HR></p>
+
+<h3 id="delete-id-delete-8">2.9.5 DELETE/{ID} (DELETE)</h3>
+
+<p>Borra el registro especificado en el la base de datos</p>
+
+<p>Petición</p>
+
+<p><CODE>MÉTODO DELETE</CODE> <a href="http://187.217.219.55/cium/api/v1/Zona/%7bID%7d"><em>http://187.217.219.55/cium/api/v1/Zona/{ID}</em></a></p>
+
+<blockquote>
+  <p><strong>Ejemplo eliminar el registro con id 1</strong></p>
+  
+  <ul>
+  <li><a href="http://187.217.219.55/cium/api/v1/Zona/1"><em>http://187.217.219.55/cium/api/v1/Zona/1</em></a></li>
+  </ul>
+</blockquote>
+
+<p>Respuesta</p>
+
+<pre><code>{
+    "status": 200,
+    "messages": "Operación realizada con exito",
+    "data": {
+        "id": 1,
+        "nombre": "EXCLUSIVO CHAMULA",
+        "creadoAl": "2015-10-11  00:00:00",
+        "modificadoAl": "2015-10-11  00:00:00",
+        "borradoAl": "2015-10-11 16:19:03"
+    }
+}
+</code></pre>
+
+<blockquote>
+  <p><strong>Nota</strong></p>
+  
+  <ul>
+  <li><code>status</code> Estado de la petición </li>
+  <li><code>messages</code> Mensaje de confirmacion o error</li>
+  <li><code>data</code> Objeto con todos los resultados</li>
+  </ul>
+</blockquote>
+
+<hr>
+
+<hr>
+
+
+	
+			
+              </div>
+              
+            </div>
+          </div>
+        </div>
+      </div>
+      <footer class="app-footer">
+        <div class="container-fluid">
+          <div class="row">
+            <div class="col-xs-4"><img src="./images/secretaria-de-salud.png"  height="30px" alt="" /></div>
+            <div class="col-xs-4">
+              <p class="hidden-xs">
+                Secretaría de Salud, Gobierno del Estado de Chiapas | CIUM
+              </p>
+            </div>
+            <div class="col-xs-4" align="right"><img src="./images/chiapas-nos-une.png"  height="30px" alt="" /></div>
+          </div>
+        </div>
+      </footer>
+    </div>
+    <!-- /#page-content-wrapper -->
+
+  </div>
+</body>
+</html>

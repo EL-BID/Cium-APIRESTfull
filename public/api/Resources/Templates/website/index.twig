@@ -1,0 +1,65 @@
+{% extends 'layout.html.twig' %}
+{% block class %}toggled{% endblock %}
+{% block title %}{{ book.title }}{% endblock %}
+{% block titulo %} {{ book.title }}{% endblock %}
+
+{% block menuNav %}
+{% set urlBasePath = 2 == item.level ? '..' : '.' %}
+<nav class="navbar navbar-default navbar-fixed-top top-bar">
+    <div class="container-fluid">
+      <div class="navbar-header" style="margin-right:20pt;width: 208px;">
+		<a href="./index.html" class="navbar-brand"><img alt="Home" src="./images/icono-cium-blue.png" style="top:0px; margin-top:-5px; height:34px; float:left; ">{{ book.title }}</a>
+      </div>
+      <ul class="nav navbar-nav">
+		<li class="">
+		  <a>Manual de usuario <i class="fa fa-caret-right"></i></a>
+		</li>
+		<li class="active">
+		  <a href="#">Dashboard</a>
+		</li>
+	  </ul>
+      <ul class="nav navbar-nav navbar-right">        
+		<li><a class="disabled">{{ app.getLabel('previous') }} </a></li>
+		<li><a href="capitulo-1.html">{{ app.getLabel('next') }} &rarr; </a></li>			
+      </ul>
+    </div>
+  </nav>
+{% endblock %}
+
+{% block contents %}
+<h1>{{ item.title }}</h1>
+
+
+<div class="row">
+{% set  contador = 0  %}
+	{% for tocItem in toc if tocItem.level <= edition.toc.deep %}
+				
+		{% if tocItem.level == 1 %}
+			{% if contador > 0%}
+							</ul>
+						</div>
+					</div>
+				</div>
+				{% set contador = 0 %}
+			{% endif %}
+			<div class="col-sm-12 col-md-3">
+			{% set contador = contador+1 %}
+			
+			<div class="thumbnail">
+			  <img src="./images/{{ tocItem.slug }}.png" alt="...">	  
+			  <div class="caption">
+				<a href="./{{ tocItem.url }}"><h3>{{ tocItem.label }} <strong>{{ tocItem.title }}</strong></h3></a>
+				<ul class="unstyled">
+		{% else %}		
+			
+			<li class="{{ tocItem.config.element|default('') }} level-{{ tocItem.level }} ">
+				<span>{{ tocItem.label }}</span>
+				<a href="./{{ tocItem.url }}">{{ tocItem.title }}</a>
+			</li>
+					
+		{% endif %}	  				
+	{% endfor %}    
+</div>
+
+{% endblock %}
+
