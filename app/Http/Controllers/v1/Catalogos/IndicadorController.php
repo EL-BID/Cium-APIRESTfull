@@ -330,9 +330,10 @@ class IndicadorController extends Controller {
 				$alertas = $datos->get('indicador_alertas');
 				$pregunt = $datos->get('indicador_preguntas');
 				$validar = $datos->get('indicador_validaciones');				
-
+				IndicadorAlerta::where('idIndicador',$indicador->id)->delete();
 				for($i=0;$i<count($alertas);$i++)
 				{
+					DB::update("update IndicadorAlerta set borradoAl = null where idIndicador = $indicador->id and idAlerta = ".$alertas[$i]["idAlerta"]);
 					$indicador_alertas = IndicadorAlerta::where('idIndicador',$indicador->id)->where('idAlerta',$alertas[$i]["idAlerta"])->first();
 					if(!$indicador_alertas)						
 						$indicador_alertas =  new IndicadorAlerta;
@@ -343,9 +344,10 @@ class IndicadorController extends Controller {
 					$indicador_alertas->idIndicador = $indicador->id;
 					$indicador_alertas->save();									
 				}
-				
+				IndicadorValidacionPregunta::where('idIndicador',$indicador->id)->delete();
 				for($i=0;$i<count($pregunt);$i++)
 				{
+					DB::update("update IndicadorValidacionPregunta set borradoAl = null where idIndicador = $indicador->id and id = ".$pregunt[$i]["id"]);
 					$indicador_preguntas = IndicadorValidacionPregunta::where('idIndicador',$indicador->id)->where('id',$pregunt[$i]["id"])->first();
 					if(!$indicador_preguntas)						
 						$indicador_preguntas =  new IndicadorValidacionPregunta;
@@ -359,9 +361,10 @@ class IndicadorController extends Controller {
 					$indicador_preguntas->idIndicador = $indicador->id;
 					$indicador_preguntas->save();									
 				}
-				
+				IndicadorValidacion::where('idIndicador',$indicador->id)->delete();
 				for($i=0;$i<count($validar);$i++)
-				{					
+				{
+					DB::update("update IndicadorValidacion set borradoAl = null where idIndicador = $indicador->id and id = ".$validar[$i]["id"]);					
 					$indicador_validaciones = IndicadorValidacion::where('idIndicador',$indicador->id)->where('id',$validar[$i]["id"])->first();
 					if(!$indicador_validaciones)						
 						$indicador_validaciones =  new IndicadorValidacion;

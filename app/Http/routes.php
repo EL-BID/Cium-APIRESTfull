@@ -229,7 +229,11 @@ Route::group(array('prefix' => 'v1', 'middleware' => 'oauth'), function()
 	Route::get('calidadDimension', 'v1\Transacciones\DashboardController@indicadorCalidadDimension');
 	Route::get('calidadClues', 'v1\Transacciones\DashboardController@indicadorCalidadClues');
 	
-	Route::get('alertaDash', 'v1\Transacciones\DashboardController@alerta');
+    Route::get('criterioDash', 'v1\Transacciones\DashboardController@criterio');
+    Route::get('criterioDetalle', 'v1\Transacciones\DashboardController@criterioDetalle');
+    Route::get('criterioEvaluacion', 'v1\Transacciones\DashboardController@criterioEvaluacion'); 
+
+	Route::get('alertaDash', 'v1\Transacciones\DashboardController@alerta');    
 	Route::get('alertaEstricto', 'v1\Transacciones\DashboardController@alertaEstricto');
     Route::get('alertaDetalle', 'v1\Transacciones\DashboardController@alertaDetalle');
     Route::get('alertaEvaluacion', 'v1\Transacciones\DashboardController@alertaEvaluacion');    

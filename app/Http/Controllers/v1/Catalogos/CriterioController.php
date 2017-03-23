@@ -399,9 +399,10 @@ class CriterioController extends Controller {
 						}
 					}
 				}
-				
+				CriterioValidacionPregunta::where('idCriterio',$criterio->id)->delete();
 				for($i=0;$i<count($pregunt);$i++)
 				{
+					DB::update("update CriterioValidacionPregunta set borradoAl = null where idCriterio = $criterio->id and id = ".$pregunt[$i]["id"]);
 					$criterio_preguntas = CriterioValidacionPregunta::where('idCriterio',$criterio->id)->where('id',$pregunt[$i]["id"])->first();
 					if(!$criterio_preguntas)						
 						$criterio_preguntas =  new CriterioValidacionPregunta;
@@ -415,9 +416,10 @@ class CriterioController extends Controller {
 					$criterio_preguntas->idCriterio = $criterio->id;
 					$criterio_preguntas->save();									
 				}
-				
+				CriterioValidacion::where('idCriterio',$criterio->id)->delete();
 				for($i=0;$i<count($validar);$i++)
 				{
+					DB::update("update CriterioValidacion set borradoAl = null where idCriterio = $criterio->id and id = ".$validar[$i]["id"]);
 					$criterio_validaciones = CriterioValidacion::where('idCriterio',$criterio->id)->where('id',$validar[$i]["id"])->first();
 					if(!$criterio_validaciones)						
 						$criterio_validaciones =  new CriterioValidacion;
