@@ -1573,14 +1573,16 @@ class DashboardController extends Controller
 			$fecha = date("Y-m-d");
 			$crear = true;
 			if(Schema::hasTable("Temp$tipo")){
+
 				$tiene = DB::select("select codigo from Temp$tipo where temporal = '$fecha'");
 				if(count($tiene)>0){
 					$crear = false; 
 				}
 				else{
-					Schema::select("drop table Temp$tipo");
+					DB::select("drop table Temp$tipo");
 				}	
 			}
+
 			if($crear){
 				$sql_new ="CREATE TABLE Temp$tipo AS (";
 				if($tipo == "Recurso"){
