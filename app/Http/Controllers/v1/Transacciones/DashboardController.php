@@ -63,7 +63,7 @@ class DashboardController extends Controller
 
 		$datos = Request::all();
 		$filtro = array_key_exists("filtro",$datos) ? json_decode($datos["filtro"]) : null; 		
-		$cluesUsuario=$this->permisoZona();
+		$cluesUsuario=$this->permisoZona($filtro);
 		
 		$parametro = $this->getTiempo($filtro);
 		$valor = $this->getParametro($filtro);
@@ -194,7 +194,7 @@ class DashboardController extends Controller
 		$parametro .= $valor[0];
 		$nivel = $datos["nivel"];
 				
-		$cluesUsuario=$this->permisoZona();
+		$cluesUsuario=$this->permisoZona($filtro);
 
 		$order = "";
 		if(stripos($nivel,"indicador"))
@@ -246,7 +246,7 @@ class DashboardController extends Controller
 		$datos = Request::all();
 		$clues = $datos["clues"];
 		$filtro = array_key_exists("filtro",$datos) ? json_decode($datos["filtro"]) : null;
-		$cluesUsuario=$this->permisoZona();
+		$cluesUsuario=$this->permisoZona($filtro);
 		
 		$parametro = $this->getTiempo($filtro);				
 			
@@ -353,7 +353,7 @@ class DashboardController extends Controller
 	{
 		$datos = Request::all();
 		$filtro = array_key_exists("filtro",$datos) ? json_decode($datos["filtro"]) : null; 		
-		$cluesUsuario=$this->permisoZona();
+		$cluesUsuario=$this->permisoZona($filtro);
 		
 		$parametro = $this->getTiempo($filtro);
 		$valor = $this->getParametro($filtro);
@@ -474,7 +474,7 @@ class DashboardController extends Controller
 		$parametro .= $valor[0];
 		$nivel = $datos["nivel"];
 				
-		$cluesUsuario=$this->permisoZona();
+		$cluesUsuario=$this->permisoZona($filtro);
 		if($nivel == "anio")
 			$parametro = "";
 		$nivelD = DB::select("select distinct $nivel from ReporteCalidad where clues in ($cluesUsuario) $parametro");
@@ -521,7 +521,7 @@ class DashboardController extends Controller
 		$datos = Request::all();
 		$clues = $datos["clues"];
 		$filtro = array_key_exists("filtro",$datos) ? json_decode($datos["filtro"]) : null;
-		$cluesUsuario=$this->permisoZona();
+		$cluesUsuario=$this->permisoZona($filtro);
 		
 		$parametro = $this->getTiempo($filtro);
 		$sql = "select distinct codigo,indicador,color from ReporteCalidad where clues='$clues' and clues in ($cluesUsuario) $parametro ";
@@ -619,7 +619,7 @@ class DashboardController extends Controller
 		/*$datos = Request::all();		
 		$filtro = array_key_exists("filtro",$datos) ? json_decode($datos["filtro"]) : null;
 		$tipo = $filtro->tipo;
-		$cluesUsuario=$this->permisoZona();
+		$cluesUsuario=$this->permisoZona($filtro);
 		
 		$parametro = $this->getTiempo($filtro);
 		$valor = $this->getParametro($filtro);
@@ -707,7 +707,7 @@ class DashboardController extends Controller
 		
 		$filtro = array_key_exists("filtro",$datos) ? json_decode($datos["filtro"]) : null;			
 		$tipo = $filtro->tipo;
-		$cluesUsuario=$this->permisoZona();
+		$cluesUsuario=$this->permisoZona($filtro);
 		
 		$parametro = $this->getTiempo($filtro);
 		$valor = $this->getParametro($filtro);
@@ -741,12 +741,14 @@ class DashboardController extends Controller
 		else 
 		{
 			foreach ($data as $key => $value) {
-				$color = DB::select("select a.color from Indicador i 
-				LEFT JOIN IndicadorAlerta ia on ia.idIndicador = i.id
-				LEFT JOIN Alerta a on a.id = ia.idAlerta 
-				where i.codigo = '$value->codigo' and ($value->porcentaje) between minimo and maximo");
-				if($color)
-					$value->color = $color[0]->color;
+				if($value->codigo != ''){
+					$color = DB::select("select a.color from Indicador i 
+					LEFT JOIN IndicadorAlerta ia on ia.idIndicador = i.id
+					LEFT JOIN Alerta a on a.id = ia.idAlerta 
+					where i.codigo = '$value->codigo' and ($value->porcentaje) between minimo and maximo");
+					if($color)
+						$value->color = $color[0]->color;
+				}
 			}
 			return Response::json(array("status" => 200, "messages"=>"Operación realizada con exito", 
 			"data" => $data, 
@@ -770,7 +772,7 @@ class DashboardController extends Controller
 		$datos = Request::all();		
 		$filtro = array_key_exists("filtro",$datos) ? json_decode($datos["filtro"]) : null;
 		$tipo = $filtro->tipo;
-		$cluesUsuario=$this->permisoZona();
+		$cluesUsuario=$this->permisoZona($filtro);
 		
 		$parametro = $this->getTiempo($filtro);
 		$valor = $this->getParametro($filtro);
@@ -885,7 +887,7 @@ class DashboardController extends Controller
 		$filtro = array_key_exists("filtro",$datos) ? json_decode($datos["filtro"]) : null;
 		$id = $filtro->id;		
 		$tipo = $filtro->tipo;
-		$cluesUsuario=$this->permisoZona();
+		$cluesUsuario=$this->permisoZona($filtro);
 		
 		$parametro = $this->getTiempo($filtro);
 		$valor = $this->getParametro($filtro);
@@ -961,7 +963,7 @@ class DashboardController extends Controller
 	{	
 		$datos = Request::all();
 		$filtro = array_key_exists("filtro",$datos) ? json_decode($datos["filtro"]) : null; 		
-		$cluesUsuario=$this->permisoZona();
+		$cluesUsuario=$this->permisoZona($filtro);
 		
 		$parametro = $this->getTiempo($filtro);
 		$valor = $this->getParametro($filtro);
@@ -1046,7 +1048,7 @@ class DashboardController extends Controller
 		$datos = Request::all();		
 		$filtro = array_key_exists("filtro",$datos) ? json_decode($datos["filtro"]) : null;
 		$tipo = $filtro->tipo;
-		$cluesUsuario=$this->permisoZona();
+		$cluesUsuario=$this->permisoZona($filtro);
 		
 		$parametro = $this->getTiempo($filtro);
 		$valor = $this->getParametro($filtro);
@@ -1091,14 +1093,14 @@ class DashboardController extends Controller
 			{
 				$codigo = is_array($filtro->um->zona) ? implode("','",$filtro->um->zona) : $filtro->um->zona;
 				$codigo = "'".$codigo."'";
-				$sql1 .= " AND sh.clues in (SELECT clues FROM Clues c WHERE c.zona in ($codigo))";
+				$sql1 .= " AND sh.clues in (SELECT clues FROM Clues c WHERE c.clues in (select zc.clues from Zona z left join ZonaClues zc on zc.idZona = z.id where z.nombre in($codigo)))";
 			}
 			if(array_key_exists("cone",$filtro->um)) 
 			{
 				$codigo = is_array($filtro->um->cone) ? implode("','",$filtro->um->cone) : $filtro->um->cone;
 				$codigo = "'".$codigo."'";
-				$sql1 .= " AND sh.clues in (SELECT clues FROM Clues c WHERE c.cone in ($codigo))";
-			}
+				$sql1 .= " AND sh.clues in (SELECT clues FROM Clues c WHERE c.clues in (select zc.clues from Cone z left join ConeClues zc on zc.idCone = z.id where z.nombre in($codigo)))";
+			}			
 		}
 
 		$sql2 = "SELECT clues FROM Reporte$tipo sh where $sql0  and sh.clues in ($cluesUsuario) $parametro group by clues";
@@ -1155,7 +1157,7 @@ class DashboardController extends Controller
 		$filtro = array_key_exists("filtro",$datos) ? json_decode($datos["filtro"]) : null;
 		$top = array_key_exists("top",$filtro) ? $filtro->top : 5;
 		$tipo = $filtro->tipo;
-		$cluesUsuario=$this->permisoZona();
+		$cluesUsuario=$this->permisoZona($filtro);
 		
 		$parametro = $this->getTiempo($filtro);
 		$valor = $this->getParametro($filtro);
@@ -1200,7 +1202,7 @@ class DashboardController extends Controller
 		$filtro = array_key_exists("filtro",$datos) ? json_decode($datos["filtro"]) : null;
 		$top = array_key_exists("top",$filtro) ? $filtro->top : 5;
 		$tipo = $filtro->tipo;
-		$cluesUsuario=$this->permisoZona();
+		$cluesUsuario=$this->permisoZona($filtro);
 		
 		$parametro = $this->getTiempo($filtro);
 		$valor = $this->getParametro($filtro);
@@ -1244,17 +1246,18 @@ class DashboardController extends Controller
 		$datos = Request::all();		
 		$filtro = array_key_exists("filtro",$datos) ? json_decode($datos["filtro"]) : null;
 		$tipo = $filtro->tipo;
-		$cluesUsuario=$this->permisoZona();
+		$cluesUsuario=$this->permisoZona($filtro);
 		
 		$parametro = $this->getTiempo($filtro);
 		$valor = $this->getParametro($filtro);
 		$parametro .= $valor[0];
 		$nivel = $valor[1];										
 		
-		$sql = "SELECT count(distinct clues) as total from Reporte".$tipo." where clues in ($cluesUsuario) $parametro";
-		$tot = "SELECT count(clues) as total from Clues where clues in ($cluesUsuario) ";
+		$sql = "SELECT distinct clues, nombre, jurisdiccion from Reporte".$tipo." where clues in ($cluesUsuario) $parametro order by jurisdiccion";			
+		$tot = "SELECT clues, nombre, jurisdiccion FROM  Clues where clues in ($cluesUsuario)  order by jurisdiccion";
+		
 		$tot=DB::select($tot);
-		$totalClues=$tot[0]->total;
+		$totalClues=count($tot);
 		$data = DB::select($sql);
 		
 		if(!$data)
@@ -1266,12 +1269,23 @@ class DashboardController extends Controller
 
 			return Response::json(array("status" => 200, "messages"=>"Operación realizada con exito", 
 			"data"  => $data,
+			"Clues Total" => $tot,
+			"Visitado" => [],
+			"No Visitado" => [], 
 			"total" => 0),200);
 		} 
 		else 
 		{	
-				
-			$total=$data[0]->total;	
+			$novisitado = [];
+			foreach($data as $key => $value){
+				$novisitado[] = $value->clues;
+			}
+			$novisitado = "'".implode("','", $novisitado)."'";			
+			$nov = "SELECT distinct clues, nombre, jurisdiccion FROM  Clues where  clues in ($cluesUsuario) and clues not in ($novisitado)  order by jurisdiccion";
+			$clues_no = DB::select($nov);
+			
+			$clues_si = $data;	
+			$total=count($data);	
 
 			$data["labels"]=array("No Visitado", "Visitado");
 			$data["datasets"][0]["data"] = array($totalClues - $total, $total);
@@ -1280,6 +1294,9 @@ class DashboardController extends Controller
 
 			return Response::json(array("status" => 200, "messages"=>"Operación realizada con exito", 
 			"data"  => $data,
+			"Clues Total" => $tot,
+			"Visitado" => $clues_si,
+			"No Visitado" => $clues_no,
 			"total" => $total),200);
 		}
 	}
@@ -1291,11 +1308,49 @@ class DashboardController extends Controller
 	 * Response si la operacion es exitosa devolver un string con las clues separadas por coma
 	 * @return string	 
 	 */
-	public function permisoZona()
+	public function permisoZona($filtro)
 	{
 		$cluesUsuario=array();
 		$clues=array();
-		$cone=ConeClues::all(["clues"]);
+
+		$sql1 = "SELECT sh.clues FROM  ConeClues sh where sh.clues";
+		$verTodosUM = array_key_exists("verTodosUM",$filtro) ? $filtro->verTodosUM : true;
+
+		if(!$verTodosUM)
+		{
+			if(array_key_exists("jurisdiccion",$filtro->um))
+			{
+				$codigo = is_array($filtro->um->jurisdiccion) ? implode("','",$filtro->um->jurisdiccion) : $filtro->um->jurisdiccion;
+				$codigo = "'".$codigo."'";
+				$sql1 .= "  in (SELECT clues FROM Clues c WHERE c.jurisdiccion in ($codigo))";
+			}
+			if(array_key_exists("municipio",$filtro->um)) 
+			{
+				$codigo = is_array($filtro->um->municipio) ? implode("','",$filtro->um->municipio) : $filtro->um->municipio;
+				$codigo = "'".$codigo."'";
+				$sql1 .= "  in (SELECT clues FROM Clues c WHERE c.municipio in ($codigo))";
+			}
+			if(array_key_exists("zona",$filtro->um)) 
+			{
+				$codigo = is_array($filtro->um->zona) ? implode("','",$filtro->um->zona) : $filtro->um->zona;
+				$codigo = "'".$codigo."'";
+				$sql1 .= "  in (SELECT clues FROM Clues c WHERE c.clues in (select zc.clues from Zona z left join ZonaClues zc on zc.idZona = z.id where z.nombre in($codigo)))";
+			}
+			if(array_key_exists("cone",$filtro->um)) 
+			{
+				$codigo = is_array($filtro->um->cone) ? implode("','",$filtro->um->cone) : $filtro->um->cone;
+				$codigo = "'".$codigo."'";
+				$sql1 .= "  in (SELECT clues FROM Clues c WHERE c.clues in (select zc.clues from Cone z left join ConeClues zc on zc.idCone = z.id where z.nombre in($codigo)))";
+			}
+			$cluesIn = [];
+			$cluesData = DB::select($sql1);
+			foreach($cluesData as $key => $value){
+				$cluesIn[] = $value->clues;
+			}		
+			$cone=ConeClues::whereIn('clues',$cluesIn)->get(["clues"]);
+		}
+		else
+			$cone=ConeClues::all(["clues"]);
 		$cones=array();
 		foreach($cone as $item)
 		{
@@ -1529,7 +1584,7 @@ class DashboardController extends Controller
 		
 		$filtro = array_key_exists("filtro",$datos) ? json_decode($datos["filtro"]) : null;			
 		$tipo = $filtro->tipo;
-		$cluesUsuario=$this->permisoZona();
+		$cluesUsuario=$this->permisoZona($filtro);
 		
 		$parametro = $this->getTiempo($filtro);
 		$valor = $this->getParametro($filtro);
@@ -1661,7 +1716,7 @@ class DashboardController extends Controller
 		$filtro = array_key_exists("filtro",$datos) ? json_decode($datos["filtro"]) : null;
 		$id = $filtro->id;		
 		$tipo = $filtro->tipo;
-		$cluesUsuario=$this->permisoZona();
+		$cluesUsuario=$this->permisoZona($filtro);
 		
 		$parametro = $this->getTiempo($filtro);
 		$valor = $this->getParametro($filtro);
@@ -1741,7 +1796,7 @@ class DashboardController extends Controller
 	{	
 		$datos = Request::all();
 		$filtro = array_key_exists("filtro",$datos) ? json_decode($datos["filtro"]) : null; 		
-		$cluesUsuario=$this->permisoZona();
+		$cluesUsuario=$this->permisoZona($filtro);
 		
 		$parametro = $this->getTiempo($filtro);
 		$valor = $this->getParametro($filtro);
