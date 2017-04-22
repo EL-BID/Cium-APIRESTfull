@@ -1254,7 +1254,7 @@ class DashboardController extends Controller
 		$nivel = $valor[1];										
 		
 		$sql = "SELECT distinct clues, nombre, jurisdiccion from Reporte".$tipo." where clues in ($cluesUsuario) $parametro order by jurisdiccion";			
-		$tot = "SELECT clues, nombre, jurisdiccion FROM  Clues where clues in ($cluesUsuario)  order by jurisdiccion";
+		$tot = "SELECT distinct clues, nombre, jurisdiccion FROM  Clues where clues in ($cluesUsuario)  order by jurisdiccion";
 		
 		$tot=DB::select($tot);
 		$totalClues=count($tot);
