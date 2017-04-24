@@ -1618,12 +1618,15 @@ class DashboardController extends Controller
 		else 
 		{
 			foreach ($data as $key => $value) {
-				$color = DB::select("select a.color from Indicador i 
-				LEFT JOIN IndicadorAlerta ia on ia.idIndicador = i.id
-				LEFT JOIN Alerta a on a.id = ia.idAlerta 
-				where i.codigo = '$value->codigo' and ($value->porcentaje) between minimo and maximo");
-				if($color)
-					$value->color = $color[0]->color;
+				if($value->codigo != ''){
+					$color = DB::select("select a.color from Indicador i 
+					LEFT JOIN IndicadorAlerta ia on ia.idIndicador = i.id
+					LEFT JOIN Alerta a on a.id = ia.idAlerta 
+					where i.codigo = '$value->codigo' and ($value->porcentaje) between minimo and maximo");
+					if($color)
+						$value->color = $color[0]->color;
+				}
+			
 			}
 			$fecha = date("Y-m-d");
 			$crear = true;
