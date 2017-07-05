@@ -16,7 +16,18 @@ use App\Models\Sistema\usuario;
 Route::get('/', function()
 {
 });
-
+Route::get("descargar-app",   function()
+    {
+        $aplicaciones = [];
+        $app = DB::select("select * from VersionApp where creadoAl = (SELECT MAX( creadoAl )  FROM VersionApp )");
+        
+        if(!$app){
+            return Response::json(array("status" => 404,"messages" => "No hay resultados"), 404);
+        } 
+        else{
+            return response()->download(public_path().$app[0]->path);            
+        }
+    });
 /**
 * si se tiene un oauth y expira podemos renovar con el refresh oauth proporcionado
 */
