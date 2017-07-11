@@ -25,7 +25,7 @@ Route::get("descargar-app",   function()
             return Response::json(array("status" => 404,"messages" => "No hay resultados"), 404);
         } 
         else{
-            return response()->download(public_path().$app[0]->path);            
+            return response()->download(url('/').$app[0]->path);            
         }
     });
 /**
