@@ -104,7 +104,7 @@ class EvaluacionCalidadController extends Controller
 			{
 				$columna = $datos['columna'];
 				$valor   = $datos['valor'];
-				$evaluacion = EvaluacionCalidad::with("cone","usuarios","cluess")->select("EvaluacionCalidad.id", "EvaluacionCalidad.idUsuario"
+				$evaluacion = EvaluacionCalidad::with("cone","usuarios","cluess")->distinct()->select("EvaluacionCalidad.id", "EvaluacionCalidad.idUsuario"
 					, "EvaluacionCalidad.clues", "EvaluacionCalidad.fechaEvaluacion", "EvaluacionCalidad.cerrado", "EvaluacionCalidad.firma"
 					, "EvaluacionCalidad.responsable", "EvaluacionCalidad.email", "EvaluacionCalidad.enviado", "EvaluacionCalidad.creadoAl"
 					, "EvaluacionCalidad.modificadoAl", "EvaluacionCalidad.borradoAl")

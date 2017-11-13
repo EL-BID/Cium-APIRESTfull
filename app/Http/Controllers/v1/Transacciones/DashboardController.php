@@ -477,8 +477,7 @@ class DashboardController extends Controller
 		$cluesUsuario=$this->permisoZona($filtro);
 		if($nivel == "anio")
 			$parametro = "";
-		$nivelD = DB::select("select distinct $nivel from ReporteCalidad where clues in ($cluesUsuario) $parametro");
-		
+		$nivelD = DB::select("select distinct $nivel from ReporteCalidad where clues in ($cluesUsuario) $parametro");		
 		if($nivel == "month")
 		{
 			$nivelD=$this->getTrimestre($nivelD);			
@@ -1320,34 +1319,45 @@ class DashboardController extends Controller
 		{
 			if(array_key_exists("jurisdiccion",$filtro->um))
 			{
-				$codigo = is_array($filtro->um->jurisdiccion) ? implode("','",$filtro->um->jurisdiccion) : $filtro->um->jurisdiccion;
-				$codigo = "'".$codigo."'";
-				$sql1 .= "  in (SELECT clues FROM Clues c WHERE c.jurisdiccion in ($codigo))";
+				if($filtro->um->jurisdiccion != ""){
+					$codigo = is_array($filtro->um->jurisdiccion) ? implode("','",$filtro->um->jurisdiccion) : $filtro->um->jurisdiccion;
+					$codigo = "'".$codigo."'";
+					$sql1 .= "  in (SELECT clues FROM Clues c WHERE c.jurisdiccion in ($codigo))";
+				}
 			}
 			if(array_key_exists("municipio",$filtro->um)) 
 			{
-				$codigo = is_array($filtro->um->municipio) ? implode("','",$filtro->um->municipio) : $filtro->um->municipio;
-				$codigo = "'".$codigo."'";
-				$sql1 .= "  in (SELECT clues FROM Clues c WHERE c.municipio in ($codigo))";
+				if($filtro->um->municipio != ""){
+					$codigo = is_array($filtro->um->municipio) ? implode("','",$filtro->um->municipio) : $filtro->um->municipio;
+					$codigo = "'".$codigo."'";
+					$sql1 .= " and sh.clues in (SELECT clues FROM Clues c WHERE c.municipio in ($codigo))";
+				}
 			}
 			if(array_key_exists("zona",$filtro->um)) 
 			{
-				$codigo = is_array($filtro->um->zona) ? implode("','",$filtro->um->zona) : $filtro->um->zona;
-				$codigo = "'".$codigo."'";
-				$sql1 .= "  in (SELECT clues FROM Clues c WHERE c.clues in (select zc.clues from Zona z left join ZonaClues zc on zc.idZona = z.id where z.nombre in($codigo)))";
+				if($filtro->um->zona != ""){
+					$codigo = is_array($filtro->um->zona) ? implode("','",$filtro->um->zona) : $filtro->um->zona;
+					$codigo = "'".$codigo."'";
+					$sql1 .= " and sh.clues  in (SELECT clues FROM Clues c WHERE c.clues in (select zc.clues from Zona z left join ZonaClues zc on zc.idZona = z.id where z.nombre in($codigo)))";
+				}
 			}
 			if(array_key_exists("cone",$filtro->um)) 
 			{
-				$codigo = is_array($filtro->um->cone) ? implode("','",$filtro->um->cone) : $filtro->um->cone;
-				$codigo = "'".$codigo."'";
-				$sql1 .= "  in (SELECT clues FROM Clues c WHERE c.clues in (select zc.clues from Cone z left join ConeClues zc on zc.idCone = z.id where z.nombre in($codigo)))";
+				if($filtro->um->cone != ""){
+					$codigo = is_array($filtro->um->cone) ? implode("','",$filtro->um->cone) : $filtro->um->cone;
+					$codigo = "'".$codigo."'";
+					$sql1 .= " and sh.clues  in (SELECT clues FROM Clues c WHERE c.clues in (select zc.clues from Cone z left join ConeClues zc on zc.idCone = z.id where z.nombre in($codigo)))";
+				}
 			}
 			$cluesIn = [];
 			$cluesData = DB::select($sql1);
 			foreach($cluesData as $key => $value){
 				$cluesIn[] = $value->clues;
 			}		
-			$cone=ConeClues::whereIn('clues',$cluesIn)->get(["clues"]);
+			$cone=ConeClues::where("idCone", ">", 0);
+			if(count($cluesIn) > 0)
+				$cone = $cone->whereIn('clues',$cluesIn);
+			$cone = $cone->get(["clues"]);
 		}
 		else
 			$cone=ConeClues::all(["clues"]);
@@ -1391,7 +1401,10 @@ class DashboardController extends Controller
 		{
 			array_push($cluesUsuario,"'".$item->clues."'");
 		}
-		return implode(",",$cluesUsuario);
+		$cluesUsuario = implode(",",$cluesUsuario);
+		if($cluesUsuario == "")
+			$cluesUsuario = '';
+		return $cluesUsuario;
 	}
 	/**
 	 * Obtener la lista del bimestre que corresponda un mes.
@@ -1410,7 +1423,7 @@ class DashboardController extends Controller
 		if(strpos($bimestre,"JANUARY") || strpos($bimestre,"FEBRUARY") || strpos($bimestre,"MARCH") )
 			array_push($nivelD,array("id" => "1 and 3" , "nombre" => "Enero - Marzo"));
 		
-		if(strpos($bimestre,"APRIL") || strpos($bimestre,"MAY") || strpos($bimestre,"JUNE"))
+		if(strpos($bimestre,"APRIL") || strpos($bimestre,"JUNE"))
 			array_push($nivelD,array("id" => "4 and 6" , "nombre" => "Abril - Junio"));
 		
 		if(strpos($bimestre,"JULY") || strpos($bimestre,"AUGUST") || strpos($bimestre,"SEPTEMBER"))
@@ -1420,7 +1433,7 @@ class DashboardController extends Controller
 			array_push($nivelD,array("id" => "10 and 12" , "nombre" => "Octubre - Diciembre"));
 
 		//////////////////////////////////////////////////////////////////////////////////////////////
-
+		
 		if(strpos($bimestre,"ENERO") || strpos($bimestre,"FEBRERO") || strpos($bimestre,"MARZO"))
 			array_push($nivelD,array("id" => "1 and 3" , "nombre" => "Enero - Marzo"));
 		
@@ -1601,8 +1614,6 @@ class DashboardController extends Controller
 			$promedio = "(sum(promedio) / count(clues))";
 		}
 
-		
-
 		$sql = "SELECT distinct (select count(cic.id) from ConeIndicadorCriterio cic 
 			LEFT JOIN IndicadorCriterio  ic on ic.id = cic.idIndicadorCriterio 
 			where cic.idCone = r.idCone and ic.idIndicador = r.id) as criterios, 
@@ -1626,7 +1637,7 @@ class DashboardController extends Controller
 					if($color)
 						$value->color = $color[0]->color;
 				}
-			
+
 			}
 			$fecha = date("Y-m-d");
 			$crear = true;

@@ -104,7 +104,7 @@ class EvaluacionRecursoController extends Controller
 			{
 				$columna = $datos['columna'];
 				$valor   = $datos['valor'];
-				$evaluacion = EvaluacionRecurso::with("cone","usuarios","cluess")->select("EvaluacionRecurso.id", "EvaluacionRecurso.idUsuario"
+				$evaluacion = EvaluacionRecurso::with("cone","usuarios","cluess")->distinct()->select("EvaluacionRecurso.id", "EvaluacionRecurso.idUsuario"
 					, "EvaluacionRecurso.clues", "EvaluacionRecurso.fechaEvaluacion", "EvaluacionRecurso.cerrado", "EvaluacionRecurso.firma"
 					, "EvaluacionRecurso.responsable", "EvaluacionRecurso.email", "EvaluacionRecurso.enviado", "EvaluacionRecurso.creadoAl"
 					, "EvaluacionRecurso.modificadoAl", "EvaluacionRecurso.borradoAl")
