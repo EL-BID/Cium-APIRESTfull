@@ -371,9 +371,9 @@ class EvaluacionRecursoController extends Controller
             DB::commit();
             if($evaluacion->cerrado)
 			{
-				$spr = DB::select('call sp_recurso()');	
+				/*$spr = DB::select('call sp_recurso()');	
 				if($hayhallazgo)
-					$sph = DB::select('call sp_hallazgo()');
+					$sph = DB::select('call sp_hallazgo()');*/
 			}
 			return Response::json(array("status"=>201,"messages"=>"Creado","data"=>$respuesta),201);
         } 
@@ -659,9 +659,9 @@ class EvaluacionRecursoController extends Controller
 			DB::commit();
 			if($evaluacion->cerrado)
 			{
-				$spr = DB::select('call sp_recurso()');	
+				/*$spr = DB::select('call sp_recurso()');	
 				if($hayhallazgo)
-					$sph = DB::select('call sp_hallazgo()');
+					$sph = DB::select('call sp_hallazgo()');*/
 			}
 			return Response::json(array("status"=>200,"messages"=>"Operación realizada con exito","data"=>$respuesta),200);
 		} 

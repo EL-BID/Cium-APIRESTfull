@@ -16,7 +16,7 @@ GET (Mostrar), POST (Insertar), PUT (Agregar/Actualizar) y DELETE (Borrar).
 ## Tecnología
 
 * [APACHE]('http://www.apache.org/')
-* [PHP 5.4]('https://secure.php.net/')  o superior 
+* [PHP 5.6]('https://secure.php.net/')  o superior 
 * [MYSQL]('https://www.mysql.com/')
 * [LARAVEL 5.0]('http://laravel.com/docs/master') o superios
 
@@ -58,7 +58,7 @@ GET (Mostrar), POST (Insertar), PUT (Agregar/Actualizar) y DELETE (Borrar).
 
 > - 1.- Crear la base de datos Cium	
 > - 2.- Correr el script para generar los schemas
-
+> - 3.- Instalar la libreria sudo apt-get install php5-mysqlnd o yum install php56w-mysqlnd para el retorno de tipos de datos de mysql
 
 ## Contributing
 

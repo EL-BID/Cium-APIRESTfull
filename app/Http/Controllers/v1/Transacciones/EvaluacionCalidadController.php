@@ -387,9 +387,9 @@ class EvaluacionCalidadController extends Controller
             DB::commit();
             if($evaluacion->cerrado)
 			{
-				$spr = DB::select('call sp_calidad()');	
+				/*$spr = DB::select('call sp_calidad()');	
 				if($hayhallazgo)
-					$sph = DB::select('call sp_hallazgo()');
+					$sph = DB::select('call sp_hallazgo()');*/
 			}
 			return Response::json(array("status"=>201,"messages"=>"Creado","data"=>$respuesta),201);
         } 
@@ -702,9 +702,9 @@ class EvaluacionCalidadController extends Controller
 			DB::commit();
 			if($evaluacion->cerrado)
 			{
-				$spr = DB::select('call sp_calidad()');	
+				/*$spr = DB::select('call sp_calidad()');	
 				if($hayhallazgo)
-					$sph = DB::select('call sp_hallazgo()');
+					$sph = DB::select('call sp_hallazgo()');*/
 			}
 			return Response::json(array("status"=>200,"messages"=>"Operación realizada con exito","data"=>$respuesta),200);
 		} 
