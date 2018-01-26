@@ -22,6 +22,9 @@ use App\Models\Transacciones\EvaluacionCalidadRegistro;
 use App\Models\Transacciones\Hallazgo;
 
 use App\Models\Catalogos\CriterioValidacionRespuesta;
+
+use App\Jobs\ReporteCalidad;
+use App\Jobs\ReporteHallazgo;
 /**
 * Controlador Evaluación (calidad)
 * 
@@ -387,6 +390,10 @@ class EvaluacionCalidadController extends Controller
             DB::commit();
             if($evaluacion->cerrado)
 			{
+				$this->dispatch(new ReporteCalidad($evaluacion));
+				if($hayhallazgo){
+					$this->dispatch(new ReporteHallazgo($evaluacion));
+				}
 				/*$spr = DB::select('call sp_calidad()');	
 				if($hayhallazgo)
 					$sph = DB::select('call sp_hallazgo()');*/
@@ -702,6 +709,10 @@ class EvaluacionCalidadController extends Controller
 			DB::commit();
 			if($evaluacion->cerrado)
 			{
+				$this->dispatch(new ReporteCalidad($evaluacion));
+				if($hayhallazgo){
+					$this->dispatch(new ReporteHallazgo($evaluacion));
+				}
 				/*$spr = DB::select('call sp_calidad()');	
 				if($hayhallazgo)
 					$sph = DB::select('call sp_hallazgo()');*/

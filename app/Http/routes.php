@@ -259,6 +259,10 @@ Route::group(array('prefix' => 'v1', 'middleware' => 'oauth'), function()
 	Route::get('indexCriterios', 'v1\Transacciones\HallazgoController@indexCriterios');
 	Route::get('showCriterios', 'v1\Transacciones\HallazgoController@showCriterios');
 	
+    Route::get('PivotRecurso', 'v1\Transacciones\PivotController@Recurso');
+    Route::get('PivotCalidad', 'v1\Transacciones\PivotController@Calidad');
+    Route::get('ResetearReportes', 'v1\Transacciones\PivotController@ResetearReportes');
+    
 	/*export
 	Route::post('Export', 'v1\ExportController@Export');
 	Route::post('exportGenerate', 'v1\ExportController@exportGenerate');*/

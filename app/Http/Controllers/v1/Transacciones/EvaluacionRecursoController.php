@@ -22,6 +22,9 @@ use App\Models\Transacciones\EvaluacionRecursoCriterio;
 use App\Models\Transacciones\EvaluacionRecursoRegistro;
 
 use App\Models\Catalogos\CriterioValidacionRespuesta;
+
+use App\Jobs\ReporteRecurso;
+use App\Jobs\ReporteHallazgo;
 /**
 * Controlador Evaluación (Recurso)
 * 
@@ -371,9 +374,12 @@ class EvaluacionRecursoController extends Controller
             DB::commit();
             if($evaluacion->cerrado)
 			{
-				/*$spr = DB::select('call sp_recurso()');	
-				if($hayhallazgo)
-					$sph = DB::select('call sp_hallazgo()');*/
+				$this->dispatch(new ReporteRecurso($evaluacion));
+				//$spr = DB::select('call sp_recurso()');	
+				if($hayhallazgo){
+					$this->dispatch(new ReporteHallazgo($evaluacion));
+				}
+				//	$sph = DB::select('call sp_hallazgo()');
 			}
 			return Response::json(array("status"=>201,"messages"=>"Creado","data"=>$respuesta),201);
         } 
@@ -659,6 +665,11 @@ class EvaluacionRecursoController extends Controller
 			DB::commit();
 			if($evaluacion->cerrado)
 			{
+				$this->dispatch(new ReporteRecurso($evaluacion));
+				if($hayhallazgo){
+					$this->dispatch(new ReporteHallazgo($evaluacion));
+				}
+
 				/*$spr = DB::select('call sp_recurso()');	
 				if($hayhallazgo)
 					$sph = DB::select('call sp_hallazgo()');*/
