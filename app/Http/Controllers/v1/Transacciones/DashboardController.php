@@ -720,7 +720,7 @@ class DashboardController extends Controller
 			$promedio = "(sum(aprobado) / sum(total)   * 100)";
 		}
 		else{
-			$promedio = "(sum(promedio) / count(clues))";
+			$promedio = "(sum(promedio_exp) / count(clues))";
 		}
 
 		
@@ -914,7 +914,7 @@ class DashboardController extends Controller
 			$promedio = "(sum(aprobado) / sum(total)   * 100)";
 		}
 		else{
-			$promedio = "(sum(promedio) / count(clues))";
+			$promedio = "(sum(promedio_exp) / count(clues))";
 		}
 
 		$color = "(select a.color from Indicador i 
@@ -1062,7 +1062,7 @@ class DashboardController extends Controller
 		}
 		if($tipo == "Calidad")
 		{
-			$sql0 .= "promedio<100";
+			$sql0 .= "promedio_exp<100";
 		}
 		
 
@@ -1165,7 +1165,7 @@ class DashboardController extends Controller
 		
 		
 
-		$sql = "((select sum(promedio) from ReporteCalidad where clues = c.clues)/(select count(promedio) from ReporteCalidad where clues = c.clues))";
+		$sql = "((select sum(promedio_exp) from ReporteCalidad where clues = c.clues)/(select count(promedio) from ReporteCalidad where clues = c.clues))";
 		$sql1 = "select distinct clues,nombre, $sql as porcentaje from ReporteCalidad c where clues in ($cluesUsuario) $parametro and $sql between 80 and 100 order by $sql desc limit 0,$top";						
 		$sql2 = "select distinct clues,nombre, $sql as porcentaje from ReporteCalidad c where clues in ($cluesUsuario) $parametro and $sql between 0 and 80  order by $sql asc limit 0,$top";
 										
@@ -1611,7 +1611,7 @@ class DashboardController extends Controller
 			$promedio = "(sum(aprobado) / sum(total)   * 100)";
 		}
 		else{
-			$promedio = "(sum(promedio) / count(clues))";
+			$promedio = "(sum(promedio_exp) / count(clues))";
 		}
 
 		$sql = "SELECT distinct (select count(cic.id) from ConeIndicadorCriterio cic 
