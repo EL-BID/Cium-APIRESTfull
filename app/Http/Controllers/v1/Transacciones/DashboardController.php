@@ -406,7 +406,7 @@ class DashboardController extends Controller
 			{
 				$a=$nivelD[$x]->$nivel;				
 				$data["datasets"][$i]["label"]=$serie[$i];
-				$sql = "select ReporteCalidad.id,indicador,total, ((sum(cumple) / count(cumple)) * 100) as porcentaje, 
+				$sql = "select ReporteCalidad.id,indicador,total_exp as total, ((sum(cumple) / count(cumple)) * 100) as porcentaje, 
 				fechaEvaluacion,dia,mes,anio,day,month,semana,clues,ReporteCalidad.nombre,cone from ReporteCalidad 
 				where $nivel = '$a' and indicador = '$serie[$i]' $parametro 
 				group by indicador, anio, mes";
@@ -554,7 +554,7 @@ class DashboardController extends Controller
 				$a=$nivelD[$x]->evaluacion;
 				$data["datasets"][$i]["label"]=$serie[$i];
 
-				$sql = "select ReporteCalidad.id,indicador,total, ((sum(cumple) / count(cumple)) * 100) as porcentaje, 
+				$sql = "select ReporteCalidad.id,indicador,total_exp as total, ((sum(cumple) / count(cumple)) * 100) as porcentaje, 
 				fechaEvaluacion,dia,mes,anio,day,month,semana,clues,ReporteCalidad.nombre,cone from ReporteCalidad 
 				where clues='$clues' and indicador = '$serie[$i]' $parametro
 				group by indicador, anio, mes";
@@ -801,7 +801,7 @@ class DashboardController extends Controller
 			
 			if($tipo == "Calidad")
 			{				
-				$sql = "select ReporteCalidad.id,indicador,total,fechaEvaluacion,dia,mes,anio,day,month,semana,clues,ReporteCalidad.nombre,cone,
+				$sql = "select ReporteCalidad.id,indicador,total_exp as total,fechaEvaluacion,dia,mes,anio,day,month,semana,clues,ReporteCalidad.nombre,cone,
 				sum(cumple) as cumple,
 				(count(cumple) - sum(cumple)) as nocumple
 				from ReporteCalidad 
@@ -910,18 +910,21 @@ class DashboardController extends Controller
 				$campos = "codigo, clues, nombre, fechaEvaluacion, jurisdiccion, ";
 			}		
 		}
+		$suma_ = "";
 		if($tipo == "Recurso"){
 			$promedio = "(sum(aprobado) / sum(total)   * 100)";
+			$suma_ = "sum(total) as total";
 		}
 		else{
 			$promedio = "(sum(promedio_exp) / count(clues))";
+			$suma_ = "sum(total_exp) as total";
 		}
 
 		$color = "(select a.color from Indicador i 
 				LEFT JOIN IndicadorAlerta ia on ia.idIndicador = i.id
 				LEFT JOIN Alerta a on a.id = ia.idAlerta 
 				where i.codigo = '$id' and ($promedio) between minimo and maximo)";
-		$sql = "SELECT distinct $campos evaluacion, count(clues) as um, sum(total) as total, (select count(cic.id) from ConeIndicadorCriterio cic 
+		$sql = "SELECT distinct $campos evaluacion, count(clues) as um, $suma_, (select count(cic.id) from ConeIndicadorCriterio cic 
 			LEFT JOIN IndicadorCriterio  ic on ic.id = cic.idIndicadorCriterio 
 			where cic.idCone = r.idCone and ic.idIndicador = r.id) as criterios, 
 					CONVERT($promedio, DECIMAL(4,2))  as promedio, $color  as color, $dimen, cone FROM Reporte".$tipo." r where clues in ($cluesUsuario) $parametro and codigo = '$id' $where 
@@ -931,7 +934,7 @@ class DashboardController extends Controller
 			if($filtro->grado == 3){
 				$where = "and nombre = '".$filtro->valor."'";
 				$dimen = "evaluacion";
-				$sql = "SELECT distinct evaluacion, count(clues) as um, sum(total) as total, (select count(cic.id) from ConeIndicadorCriterio cic LEFT JOIN IndicadorCriterio  ic on ic.id = cic.idIndicadorCriterio where cic.idCone = r.idCone and ic.idIndicador = r.id) as criterios, CONVERT($promedio, DECIMAL(4,2))  as promedio, $color  as color, $dimen, cone FROM Reporte".$tipo." r where clues in ($cluesUsuario) $parametro and codigo = '$id' $where";						
+				$sql = "SELECT distinct evaluacion, count(clues) as um, $suma_, (select count(cic.id) from ConeIndicadorCriterio cic LEFT JOIN IndicadorCriterio  ic on ic.id = cic.idIndicadorCriterio where cic.idCone = r.idCone and ic.idIndicador = r.id) as criterios, CONVERT($promedio, DECIMAL(4,2))  as promedio, $color  as color, $dimen, cone FROM Reporte".$tipo." r where clues in ($cluesUsuario) $parametro and codigo = '$id' $where";						
 			}
 		}	
 		$data = DB::select($sql);
