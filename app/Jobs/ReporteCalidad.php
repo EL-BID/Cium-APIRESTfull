@@ -61,7 +61,11 @@ class ReporteCalidad extends Job implements SelfHandling, ShouldQueue
         cn.id AS idCone,
         cn.nombre AS cone,
         c.jurisdiccion AS jurisdiccion,
+        c.claveJurisdiccion  AS clave_jurisdiccion,
         c.municipio AS municipio,
+        c.claveMunicipio  AS clave_municipio,
+        c.localidad AS localidad,
+        c.claveLocalidad  AS clave_localidad,
         z.nombre AS zona
     FROM
         EvaluacionCalidadRegistro ec
@@ -104,7 +108,7 @@ class ReporteCalidad extends Job implements SelfHandling, ShouldQueue
             }
 
             DB::SELECT("
-            INSERT INTO ReporteCalidad (id, evaluacion, color, codigo, indicador, total_cri, aprobado_cri, noAprobado_cri, noAplica_cri, promedio_cri, cumple_cri, total_exp, aprobado_exp, noAprobado_exp, promedio_exp, cumple_exp, fechaEvaluacion, day, dia, month, mes, anio, semana, clues, nombre, idCone, cone, jurisdiccion, municipio, zona) 
+            INSERT INTO ReporteCalidad (id, evaluacion, color, codigo, indicador, total_cri, aprobado_cri, noAprobado_cri, noAplica_cri, promedio_cri, cumple_cri, total_exp, aprobado_exp, noAprobado_exp, promedio_exp, cumple_exp, fechaEvaluacion, day, dia, month, mes, anio, semana, clues, nombre, idCone, cone, jurisdiccion, clave_jurisdiccion, municipio, clave_municipio, localidad, clave_localidad, zona) 
             values (
                     '$value->id',
                     '$value->evaluacion',
@@ -134,7 +138,11 @@ class ReporteCalidad extends Job implements SelfHandling, ShouldQueue
                     '$value->idCone',
                     '$value->cone',                    
                     '$value->jurisdiccion',
+                    '$value->clave_jurisdiccion',
                     '$value->municipio',
+                    '$value->clave_municipio',
+                    '$value->localidad',
+                    '$value->clave_localidad',
                     '$value->zona'
                 )
             ");
