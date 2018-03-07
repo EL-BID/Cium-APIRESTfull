@@ -214,6 +214,9 @@ Route::group(array('prefix' => 'v1', 'middleware' => 'oauth'), function()
 	Route::resource('EvaluacionCalidad', 'v1\Transacciones\EvaluacionCalidadController');	
 	Route::resource('EvaluacionCalidadCriterio', 'v1\Transacciones\EvaluacionCalidadCriterioController');
 	Route::resource('Hallazgo', 'v1\Transacciones\HallazgoController');	
+
+    Route::resource('EvaluacionRecursoResincronizacion', 'v1\Resincronizacion\EvaluacionRecursoResincronizacionController');   
+    Route::resource('EvaluacionCalidadResincronizacion', 'v1\Resincronizacion\EvaluacionCalidadResincronizacionController');   
 });
 
 /**

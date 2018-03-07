@@ -1,11 +1,11 @@
-<?php namespace App\Models\Transacciones;
+<?php namespace App\Models\Resincronizacion;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class EvaluacionRecursoRegistro extends Model 
 {
-   	protected $table = 'EvaluacionRecursoRegistro';
+   	protected $table = 'EvaluacionRecursoRegistroResincronizacion';
    	const CREATED_AT = 'creadoAl';    
     const UPDATED_AT = 'modificadoAl';
     const DELETED_AT = 'borradoAl';
@@ -15,7 +15,7 @@ class EvaluacionRecursoRegistro extends Model
 	
 	public function Registros()
     {
-        return $this->belongsTo('App\Models\Transacciones\EvaluacionRecurso','idEvaluacionRecursoRegistro');
+        return $this->belongsTo('App\Models\Resincronizacion\EvaluacionRecursoResincronizacion','idEvaluacionRecursoRegistro');
     } 
 }
 ?>

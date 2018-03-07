@@ -213,129 +213,142 @@ class EvaluacionRecursoController extends Controller
 						$item->idUsuario=$usuario->id;
 					
 					$usuario = Usuario::where('id', $item->idUsuario)->first();
-					$evaluacion = new EvaluacionRecurso ;
-					$evaluacion->clues = isset($item->clues) ? $item->clues : $evaluacion->clues;
-					$evaluacion->idUsuario = $item->idUsuario;
-					$evaluacion->fechaEvaluacion  = $item->fechaEvaluacion ;
-					$evaluacion->cerrado = $item->cerrado;
-					$evaluacion->firma = array_key_exists("firma",$item) ? $item->firma : '';
-					$evaluacion->responsable = array_key_exists("responsable",$item) ? $item->responsable : '';
-					$evaluacion->email = array_key_exists("email",$item) ? $item->email : '';
-					$evaluacion->enviado = 0;
+
+					// validar que no exista la evaluacion con la misma fecha
+					$fecha = $item->fechaEvaluacion;
+					$date = new \DateTime($fecha);
+					$fecha = $date->format('Y-m-d');
+
+					$existe_fecha = DB::table('EvaluacionRecurso')
+					->where(DB::raw("DATE_FORMAT(fechaEvaluacion, '%Y-%m-%d')"), $fecha)
+					->where("clues", $item->clues)->first();
 					
-					if ($evaluacion->save()) 
-					{
-						$success = true;
-						// si se guarda la evaluacion correctamente.
-						// extrae tosdos los criterios de la evaluación
-						$aprobado = 0; $noAprobado = 0; $noAplica = 0;
-						foreach($item->criterios as $criterio)
+					if(!$existe){
+
+						$evaluacion = new EvaluacionRecurso ;
+						$evaluacion->clues = isset($item->clues) ? $item->clues : $evaluacion->clues;
+						$evaluacion->idUsuario = $item->idUsuario;
+						$evaluacion->fechaEvaluacion  = $item->fechaEvaluacion ;
+						$evaluacion->cerrado = $item->cerrado;
+						$evaluacion->firma = array_key_exists("firma",$item) ? $item->firma : '';
+						$evaluacion->responsable = array_key_exists("responsable",$item) ? $item->responsable : '';
+						$evaluacion->email = array_key_exists("email",$item) ? $item->email : '';
+						$evaluacion->enviado = 0;
+						
+						if ($evaluacion->save()) 
 						{
-							$criterio = (object) $criterio;
-							$evaluacionCriterio = EvaluacionRecursoCriterio::where('idEvaluacionRecurso',$evaluacion->id)
-																	->where('idCriterio',$criterio->idCriterio)
-																	->where('idIndicador',$criterio->idIndicador)->first();
-							
-							if(!$evaluacionCriterio)
-								$evaluacionCriterio = new EvaluacionRecursoCriterio;
-							
-							$evaluacionCriterio->idEvaluacionRecurso = $evaluacion->id;
-							$evaluacionCriterio->idCriterio = $criterio->idCriterio;
-							$evaluacionCriterio->idIndicador = $criterio->idIndicador;
-							$evaluacionCriterio->aprobado = $criterio->aprobado;
-							
-							if ($evaluacionCriterio->save()) 
-							{								
-								$success = true;
-								if($criterio->aprobado == 1)
-									$aprobado++;
-								else if($criterio->aprobado == 0)
-									$noAprobado++;
-								else
-									$noAplica++;
-
-								$evaluacionRegistro = EvaluacionRecursoRegistro::where('idEvaluacionRecurso',$evaluacion->id)
-																	->where('idIndicador',$criterio->idIndicador)->first();
-								if(!$evaluacionRegistro)
-									$evaluacionRegistro = new EvaluacionRecursoRegistro;
-
-								$evaluacionRegistro->idEvaluacionRecurso = $evaluacion->id;
-								$evaluacionRegistro->idIndicador = $criterio->idIndicador;
-								$evaluacionRegistro->total = $aprobado + $noAprobado + $noAplica;
-								$evaluacionRegistro->aprobado = $aprobado;
-								$evaluacionRegistro->noAprobado = $noAprobado;
-								$evaluacionRegistro->noAplica = $noAplica;
-
-								$evaluacionRegistro->save();								
-							} 
-						}
-						// recorrer todos los halazgos encontrados por evaluación
-						foreach($item->hallazgos as $hs)
-						{
-							$hs = (object) $hs;
-							if(!array_key_exists("idUsuario",$hs))
-								$hs->idUsuario=$usuario->id;
-							if(!array_key_exists("idPlazoAccion",$hs))
-								$hs->idPlazoAccion=null;
-							if(!array_key_exists("resuelto",$hs))
-								$hs->resuelto=0;
-							$usuario = Usuario::where('id', $hs->idUsuario)->first();
-							$usuarioPendiente=$usuario->id;
-							
-							$hallazgo = Hallazgo::where('idIndicador',$hs->idIndicador)->where('idEvaluacion',$evaluacion->id)->first();
-							
-							if(!$hallazgo)							
-								$hallazgo = new Hallazgo;
-													
-							$hallazgo->idUsuario = $hs->idUsuario;
-							$hallazgo->idAccion = $hs->idAccion;
-							$hallazgo->idEvaluacion = $evaluacion->id;
-							$hallazgo->idIndicador = $hs->idIndicador;
-							$hallazgo->categoriaEvaluacion  = 'RECURSO';
-							$hallazgo->idPlazoAccion = $hs->idPlazoAccion;
-							$hallazgo->resuelto = $hs->resuelto;
-							$hallazgo->descripcion = $hs->descripcion;
-							
-							if($hallazgo->save())
+							$success = true;
+							// si se guarda la evaluacion correctamente.
+							// extrae tosdos los criterios de la evaluación
+							$aprobado = 0; $noAprobado = 0; $noAplica = 0;
+							foreach($item->criterios as $criterio)
 							{
-								$hayhallazgo = true;
-								$success=true;
-							}								
-						}
-						if(isset($item->criterio_respuestas))
-						foreach($item->criterio_respuestas as $valorcriterio){
-							
-							if(isset($valorcriterio)){
-								if(is_array($valorcriterio))
-									$valorcriterio = (object) $valorcriterio;
+								$criterio = (object) $criterio;
+								$evaluacionCriterio = EvaluacionRecursoCriterio::where('idEvaluacionRecurso',$evaluacion->id)
+																		->where('idCriterio',$criterio->idCriterio)
+																		->where('idIndicador',$criterio->idIndicador)->first();
 								
-								foreach($valorcriterio as $res){
-									if(is_array($res))
-										$res = (object) $res;
-									if($res){
-										$criterio_respuestas = CriterioValidacionRespuesta::where('tipo','RECURSO')
-																						  ->where('idEvaluacion',$evaluacion->id)
-																						  ->where('idCriterio',$res->idCriterio)
-																						  ->where('idCriterioValidacion',$res->idCriterioValidacion)
-																						  ->first();	
-																						
-										if(!$criterio_respuestas)							
-											$criterio_respuestas = new CriterioValidacionRespuesta;
-										
-										$criterio_respuestas->idEvaluacion = $evaluacion->id;
-										$criterio_respuestas->idCriterio = $res->idCriterio;
-										$criterio_respuestas->idCriterioValidacion  = $res->idCriterioValidacion;
-										$criterio_respuestas->tipo = 'RECURSO';
-										$criterio_respuestas->respuesta1 = $res->respuesta1;
-										$criterio_respuestas->respuesta2 = $res->respuesta2;
-										
-										$criterio_respuestas->save();
-									}									
-								}
-							}							
-						}						
-					} 
-					$respuesta[] = $evaluacion;
+								if(!$evaluacionCriterio)
+									$evaluacionCriterio = new EvaluacionRecursoCriterio;
+								
+								$evaluacionCriterio->idEvaluacionRecurso = $evaluacion->id;
+								$evaluacionCriterio->idCriterio = $criterio->idCriterio;
+								$evaluacionCriterio->idIndicador = $criterio->idIndicador;
+								$evaluacionCriterio->aprobado = $criterio->aprobado;
+								
+								if ($evaluacionCriterio->save()) 
+								{								
+									$success = true;
+									if($criterio->aprobado == 1)
+										$aprobado++;
+									else if($criterio->aprobado == 0)
+										$noAprobado++;
+									else
+										$noAplica++;
+
+									$evaluacionRegistro = EvaluacionRecursoRegistro::where('idEvaluacionRecurso',$evaluacion->id)
+																		->where('idIndicador',$criterio->idIndicador)->first();
+									if(!$evaluacionRegistro)
+										$evaluacionRegistro = new EvaluacionRecursoRegistro;
+
+									$evaluacionRegistro->idEvaluacionRecurso = $evaluacion->id;
+									$evaluacionRegistro->idIndicador = $criterio->idIndicador;
+									$evaluacionRegistro->total = $aprobado + $noAprobado + $noAplica;
+									$evaluacionRegistro->aprobado = $aprobado;
+									$evaluacionRegistro->noAprobado = $noAprobado;
+									$evaluacionRegistro->noAplica = $noAplica;
+
+									$evaluacionRegistro->save();								
+								} 
+							}
+							// recorrer todos los halazgos encontrados por evaluación
+							foreach($item->hallazgos as $hs)
+							{
+								$hs = (object) $hs;
+								if(!array_key_exists("idUsuario",$hs))
+									$hs->idUsuario=$usuario->id;
+								if(!array_key_exists("idPlazoAccion",$hs))
+									$hs->idPlazoAccion=null;
+								if(!array_key_exists("resuelto",$hs))
+									$hs->resuelto=0;
+								$usuario = Usuario::where('id', $hs->idUsuario)->first();
+								$usuarioPendiente=$usuario->id;
+								
+								$hallazgo = Hallazgo::where('idIndicador',$hs->idIndicador)->where('idEvaluacion',$evaluacion->id)->first();
+								
+								if(!$hallazgo)							
+									$hallazgo = new Hallazgo;
+														
+								$hallazgo->idUsuario = $hs->idUsuario;
+								$hallazgo->idAccion = $hs->idAccion;
+								$hallazgo->idEvaluacion = $evaluacion->id;
+								$hallazgo->idIndicador = $hs->idIndicador;
+								$hallazgo->categoriaEvaluacion  = 'RECURSO';
+								$hallazgo->idPlazoAccion = $hs->idPlazoAccion;
+								$hallazgo->resuelto = $hs->resuelto;
+								$hallazgo->descripcion = $hs->descripcion;
+								
+								if($hallazgo->save())
+								{
+									$hayhallazgo = true;
+									$success=true;
+								}								
+							}
+							if(isset($item->criterio_respuestas))
+							foreach($item->criterio_respuestas as $valorcriterio){
+								
+								if(isset($valorcriterio)){
+									if(is_array($valorcriterio))
+										$valorcriterio = (object) $valorcriterio;
+									
+									foreach($valorcriterio as $res){
+										if(is_array($res))
+											$res = (object) $res;
+										if($res){
+											$criterio_respuestas = CriterioValidacionRespuesta::where('tipo','RECURSO')
+																							  ->where('idEvaluacion',$evaluacion->id)
+																							  ->where('idCriterio',$res->idCriterio)
+																							  ->where('idCriterioValidacion',$res->idCriterioValidacion)
+																							  ->first();	
+																							
+											if(!$criterio_respuestas)							
+												$criterio_respuestas = new CriterioValidacionRespuesta;
+											
+											$criterio_respuestas->idEvaluacion = $evaluacion->id;
+											$criterio_respuestas->idCriterio = $res->idCriterio;
+											$criterio_respuestas->idCriterioValidacion  = $res->idCriterioValidacion;
+											$criterio_respuestas->tipo = 'RECURSO';
+											$criterio_respuestas->respuesta1 = $res->respuesta1;
+											$criterio_respuestas->respuesta2 = $res->respuesta2;
+											
+											$criterio_respuestas->save();
+										}									
+									}
+								}							
+							}						
+						} 
+						$respuesta[] = $evaluacion;
+					}
 				}				
 			}
 			// si la evaluación es un json de un solo formulario
@@ -347,21 +360,35 @@ class EvaluacionRecursoController extends Controller
 					$datos->idUsuario=$usuario->id;
 				if(!array_key_exists("fechaEvaluacion",$datos))
 					$datos->fechaEvaluacion =$date->format('Y-m-d H:i:s');
-				$evaluacion = new EvaluacionRecurso ;
-				$evaluacion->clues = $datos->clues;
-				$evaluacion->idUsuario = $datos->idUsuario;
-				$evaluacion->fechaEvaluacion  = $datos->fechaEvaluacion ;
-				if(array_key_exists("cerrado",$datos))
-					$evaluacion->cerrado = $datos->cerrado;
-				$evaluacion->firma = array_key_exists("firma",$datos) ? $datos->firma : '';
-				$evaluacion->responsable = array_key_exists("responsable",$datos) ? $datos->responsable : '';
-				$evaluacion->email = array_key_exists("email",$datos) ? $datos->email : '';
-				$evaluacion->enviado = 0;
 
-				if ($evaluacion->save()) 
-				{
-					$success = true;
-					$respuesta = $evaluacion;
+				// validar que no exista la evaluacion con la misma fecha
+				$fecha = $datos->fechaEvaluacion;
+				$date2 = new \DateTime($fecha);
+				$fecha = $date2->format('Y-m-d');
+
+				$existe_fecha = DB::table('EvaluacionRecurso')
+				->where(DB::raw("DATE_FORMAT(fechaEvaluacion, '%Y-%m-%d')"), $fecha)
+				->where("clues", $datos->clues)->first();
+				
+				if(!$existe){
+					$evaluacion = new EvaluacionRecurso ;
+					$evaluacion->clues = $datos->clues;
+					$evaluacion->idUsuario = $datos->idUsuario;
+					$evaluacion->fechaEvaluacion  = $datos->fechaEvaluacion ;
+					if(array_key_exists("cerrado",$datos))
+						$evaluacion->cerrado = $datos->cerrado;
+					$evaluacion->firma = array_key_exists("firma",$datos) ? $datos->firma : '';
+					$evaluacion->responsable = array_key_exists("responsable",$datos) ? $datos->responsable : '';
+					$evaluacion->email = array_key_exists("email",$datos) ? $datos->email : '';
+					$evaluacion->enviado = 0;
+
+					if ($evaluacion->save()) 
+					{
+						$success = true;
+						$respuesta = $evaluacion;
+					}
+				} else {
+					return Response::json(array("status"=>409,"messages"=>"Esta evaluacion no fue sincronizada debido a que ya existe una con la misma fecha","data"=>0),200);
 				}
 			}                        
         } 
