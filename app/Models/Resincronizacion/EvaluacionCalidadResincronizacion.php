@@ -3,9 +3,10 @@
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class EvaluacionCalidad extends Model 
+class EvaluacionCalidadResincronizacion extends Model 
 {
    	protected $table = 'EvaluacionCalidadResincronizacion';
+    protected $primaryKey = 'IdEvaluacionCalidad';
    	const CREATED_AT = 'creadoAl';    
     const UPDATED_AT = 'modificadoAl';
     const DELETED_AT = 'borradoAl';

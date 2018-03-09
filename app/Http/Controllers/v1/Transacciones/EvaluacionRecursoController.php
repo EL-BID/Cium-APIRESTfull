@@ -223,7 +223,7 @@ class EvaluacionRecursoController extends Controller
 					->where(DB::raw("DATE_FORMAT(fechaEvaluacion, '%Y-%m-%d')"), $fecha)
 					->where("clues", $item->clues)->first();
 					
-					if(!$existe){
+					if(!$existe_fecha){
 
 						$evaluacion = new EvaluacionRecurso ;
 						$evaluacion->clues = isset($item->clues) ? $item->clues : $evaluacion->clues;

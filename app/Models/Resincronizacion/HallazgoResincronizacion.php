@@ -3,9 +3,10 @@
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Hallazgo extends Model 
+class HallazgoResincronizacion extends Model 
 {
    	protected $table = 'HallazgoResincronizacion';
+    protected $primaryKey = 'IdHallazgo';
    	const CREATED_AT = 'creadoAl';    
     const UPDATED_AT = 'modificadoAl';
     const DELETED_AT = 'borradoAl';

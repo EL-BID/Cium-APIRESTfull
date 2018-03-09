@@ -18,8 +18,8 @@ use App\Models\Catalogos\ConeClues;
 
 use App\Models\Resincronizacion\HallazgoResincronizacion;
 use App\Models\Resincronizacion\EvaluacionRecursoResincronizacion;
-use App\Models\Resincronizacion\EvaluacionRecursoResincronizacionCriterio;
-use App\Models\Resincronizacion\EvaluacionRecursoResincronizacionRegistro;
+use App\Models\Resincronizacion\EvaluacionRecursoCriterioResincronizacion;
+use App\Models\Resincronizacion\EvaluacionRecursoRegistroResincronizacion;
 
 use App\Models\Catalogos\CriterioValidacionRespuesta;
 
@@ -203,12 +203,22 @@ class EvaluacionRecursoResincronizacionController extends Controller
 			// valida si el objeto json evaluaciones exista, esto es para los envios masivos de evaluaciones
 			$item = (object) $datos;
 			$respuesta = array();
-			if(array_key_exists("evaluaciones",$datos))
-			{				
+							
 				
-				if(!array_key_exists("idUsuario",$item))
-					$item->idUsuario=$usuario->id;
-				
+			if(!array_key_exists("idUsuario",$item))
+				$item->idUsuario=$usuario->id;
+			
+			// validar que no exista la evaluacion con la misma fecha
+			$fecha = $item->fechaEvaluacion;
+			$date = new \DateTime($fecha);
+			$fecha = $date->format('Y-m-d');
+
+			$existe_fecha = DB::table('EvaluacionRecursoResincronizacion')
+			->where(DB::raw("DATE_FORMAT(fechaEvaluacion, '%Y-%m-%d')"), $fecha)
+			->where("clues", $item->clues)->first();
+			
+			if(!$existe_fecha){
+
 				$usuario = Usuario::where('id', $item->idUsuario)->first();
 				$evaluacion = new EvaluacionRecursoResincronizacion ;
 				$evaluacion->clues = isset($item->clues) ? $item->clues : $evaluacion->clues;
@@ -229,14 +239,14 @@ class EvaluacionRecursoResincronizacionController extends Controller
 					foreach($item->criterios as $criterio)
 					{
 						$criterio = (object) $criterio;
-						$evaluacionCriterio = EvaluacionRecursoResincronizacionCriterio::where('idEvaluacionRecursoResincronizacion',$evaluacion->id)
+						$evaluacionCriterio = EvaluacionRecursoCriterioResincronizacion::where('idEvaluacionRecurso',$evaluacion->id)
 																->where('idCriterio',$criterio->idCriterio)
 																->where('idIndicador',$criterio->idIndicador)->first();
 						
 						if(!$evaluacionCriterio)
-							$evaluacionCriterio = new EvaluacionRecursoResincronizacionCriterio;
+							$evaluacionCriterio = new EvaluacionRecursoCriterioResincronizacion;
 						
-						$evaluacionCriterio->idEvaluacionRecursoResincronizacion = $evaluacion->id;
+						$evaluacionCriterio->idEvaluacionRecurso = $evaluacion->IdEvaluacionRecurso;
 						$evaluacionCriterio->idCriterio = $criterio->idCriterio;
 						$evaluacionCriterio->idIndicador = $criterio->idIndicador;
 						$evaluacionCriterio->aprobado = $criterio->aprobado;
@@ -251,12 +261,12 @@ class EvaluacionRecursoResincronizacionController extends Controller
 							else
 								$noAplica++;
 
-							$evaluacionRegistro = EvaluacionRecursoResincronizacionRegistro::where('idEvaluacionRecursoResincronizacion',$evaluacion->id)
+							$evaluacionRegistro = EvaluacionRecursoRegistroResincronizacion::where('idEvaluacionRecurso',$evaluacion->id)
 																->where('idIndicador',$criterio->idIndicador)->first();
 							if(!$evaluacionRegistro)
-								$evaluacionRegistro = new EvaluacionRecursoResincronizacionRegistro;
+								$evaluacionRegistro = new EvaluacionRecursoRegistroResincronizacion;
 
-							$evaluacionRegistro->idEvaluacionRecursoResincronizacion = $evaluacion->id;
+							$evaluacionRegistro->idEvaluacionRecurso = $evaluacion->IdEvaluacionRecurso;
 							$evaluacionRegistro->idIndicador = $criterio->idIndicador;
 							$evaluacionRegistro->total = $aprobado + $noAprobado + $noAplica;
 							$evaluacionRegistro->aprobado = $aprobado;
@@ -286,7 +296,7 @@ class EvaluacionRecursoResincronizacionController extends Controller
 												
 						$hallazgo->idUsuario = $hs->idUsuario;
 						$hallazgo->idAccion = $hs->idAccion;
-						$hallazgo->idEvaluacion = $evaluacion->id;
+						$hallazgo->idEvaluacion = $evaluacion->IdEvaluacionRecurso;
 						$hallazgo->idIndicador = $hs->idIndicador;
 						$hallazgo->categoriaEvaluacion  = 'RECURSO';
 						$hallazgo->idPlazoAccion = $hs->idPlazoAccion;
@@ -299,43 +309,49 @@ class EvaluacionRecursoResincronizacionController extends Controller
 							$success=true;
 						}								
 					}
-					if(isset($item->criterio_respuestas))
-					foreach($item->criterio_respuestas as $valorcriterio){
-						
-						if(isset($valorcriterio)){
-							if(is_array($valorcriterio))
-								$valorcriterio = (object) $valorcriterio;
+					if(isset($item->criterio_respuestas)){
+						foreach($item->criterio_respuestas as $valorcriterio){
 							
-							foreach($valorcriterio as $res){
-								if(is_array($res))
-									$res = (object) $res;
-								if($res){
-									$criterio_respuestas = CriterioValidacionRespuesta::where('tipo','RECURSO')
-																					  ->where('idEvaluacion',$evaluacion->id)
-																					  ->where('idCriterio',$res->idCriterio)
-																					  ->where('idCriterioValidacion',$res->idCriterioValidacion)
-																					  ->first();	
-																					
-									if(!$criterio_respuestas)							
-										$criterio_respuestas = new CriterioValidacionRespuesta;
-									
-									$criterio_respuestas->idEvaluacion = $evaluacion->id;
-									$criterio_respuestas->idCriterio = $res->idCriterio;
-									$criterio_respuestas->idCriterioValidacion  = $res->idCriterioValidacion;
-									$criterio_respuestas->tipo = 'RECURSO';
-									$criterio_respuestas->respuesta1 = $res->respuesta1;
-									$criterio_respuestas->respuesta2 = $res->respuesta2;
-									
-									$criterio_respuestas->save();
-								}									
-							}
-						}							
-					}						
-				} 								
-			}                       
+							if(isset($valorcriterio)){
+								if(is_array($valorcriterio))
+									$valorcriterio = (object) $valorcriterio;
+								
+								foreach($valorcriterio as $res){
+									if(is_array($res))
+										$res = (object) $res;
+									if($res){
+										$criterio_respuestas = CriterioValidacionRespuesta::where('tipo','RECURSO')
+																						  ->where('idEvaluacion',$evaluacion->id)
+																						  ->where('idCriterio',$res->idCriterio)
+																						  ->where('idCriterioValidacion',$res->idCriterioValidacion)
+																						  ->first();	
+																						
+										if(!$criterio_respuestas)							
+											$criterio_respuestas = new CriterioValidacionRespuesta;
+										
+										$criterio_respuestas->idEvaluacion = $evaluacion->IdEvaluacionRecurso;
+										$criterio_respuestas->idCriterio = $res->idCriterio;
+										$criterio_respuestas->idCriterioValidacion  = $res->idCriterioValidacion;
+										$criterio_respuestas->tipo = 'RECURSO';
+										$criterio_respuestas->respuesta1 = $res->respuesta1;
+										$criterio_respuestas->respuesta2 = $res->respuesta2;
+										
+										$criterio_respuestas->save();
+									}									
+								}
+							}							
+						}						
+					}
+				}				
+			}	
+			else{
+				return Response::json(array("status"=>409,"messages"=>"Existe","data"=>$existe_fecha),200);
+			}							
+			                       
         } 
 		catch (\Exception $e) 
 		{
+			DB::rollback();			
 			throw $e;
         }
         if ($success) 

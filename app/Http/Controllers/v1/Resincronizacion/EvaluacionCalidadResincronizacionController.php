@@ -17,8 +17,8 @@ use App\Models\Catalogos\Clues;
 use App\Models\Catalogos\ConeClues;
 
 use App\Models\Resincronizacion\EvaluacionCalidadResincronizacion;
-use App\Models\Resincronizacion\EvaluacionCalidadResincronizacionCriterio;
-use App\Models\Resincronizacion\EvaluacionCalidadResincronizacionRegistro;
+use App\Models\Resincronizacion\EvaluacionCalidadCriterioResincronizacion;
+use App\Models\Resincronizacion\EvaluacionCalidadRegistroResincronizacion;
 use App\Models\Resincronizacion\HallazgoResincronizacion;
 
 use App\Models\Catalogos\CriterioValidacionRespuesta;
@@ -199,170 +199,171 @@ class EvaluacionCalidadResincronizacionController extends Controller
 			$hayhallazgo = false;
 			$usuario = Usuario::where('email', Request::header('X-Usuario'))->first();
 			// valida si el objeto json evaluaciones exista, esto es para los envios masivos de evaluaciones
-			if(array_key_exists("evaluaciones",$datos))
-			{
-				$item = (object) $datos;
-				$respuesta = array();
-				
-				if(!array_key_exists("idUsuario",$item))
-					$item->idUsuario=$usuario->id;
-				// validar que no exista la evaluacion con la misma fecha
-				$fecha = $item->fechaEvaluacion;
-				$date = new \DateTime($fecha);
-				$fecha = $date->format('Y-m-d');
+			
+			$item = (object) $datos;
+			$respuesta = array();
+			
+			if(!array_key_exists("idUsuario",$item))
+				$item->idUsuario=$usuario->id;
+			// validar que no exista la evaluacion con la misma fecha
+			$fecha = $item->fechaEvaluacion;
+			$date = new \DateTime($fecha);
+			$fecha = $date->format('Y-m-d');
 
-				$existe_fecha = DB::table('EvaluacionRecurso')
-				->where(DB::raw("DATE_FORMAT(fechaEvaluacion, '%Y-%m-%d')"), $fecha)
-				->where("clues", $item->clues)->first();
-				
-				if(!$existe){
+			$existe_fecha = DB::table('EvaluacionCalidadResincronizacion')
+			->where(DB::raw("DATE_FORMAT(fechaEvaluacion, '%Y-%m-%d')"), $fecha)
+			->where("clues", $item->clues)->first();
+			
+			if(!$existe_fecha){
 
-					$evaluacion = new EvaluacionCalidadResincronizacion;
-					$evaluacion->clues = isset($item->clues) ? $item->clues : $evaluacion->clues;
-					$evaluacion->idUsuario = $item->idUsuario;
-					$evaluacion->fechaEvaluacion = $item->fechaEvaluacion;
-					$evaluacion->cerrado = $item->cerrado;
-					$evaluacion->firma = array_key_exists("firma",$item) ? $item->firma : '';
-					$evaluacion->responsable = array_key_exists("responsable",$item) ? $item->responsable : '';
-					$evaluacion->email = array_key_exists("email",$item) ? $item->email : '';
-					
-					if ($evaluacion->save()) 
+				$evaluacion = new EvaluacionCalidadResincronizacion;
+				$evaluacion->clues = isset($item->clues) ? $item->clues : $evaluacion->clues;
+				$evaluacion->idUsuario = $item->idUsuario;
+				$evaluacion->fechaEvaluacion = $item->fechaEvaluacion;
+				$evaluacion->cerrado = $item->cerrado;
+				$evaluacion->firma = array_key_exists("firma",$item) ? $item->firma : '';
+				$evaluacion->responsable = array_key_exists("responsable",$item) ? $item->responsable : '';
+				$evaluacion->email = array_key_exists("email",$item) ? $item->email : '';
+				
+				if ($evaluacion->save()) 
+				{
+					$success = true;
+					// si se guarda la evaluacion correctamente.
+					// extrae tosdos los registros (columna-expediente) de la evaluación
+					foreach($item->registros as $reg)
 					{
-						$success = true;
-						// si se guarda la evaluacion correctamente.
-						// extrae tosdos los registros (columna-expediente) de la evaluación
-						foreach($item->registros as $reg)
+						$reg = (object) $reg;
+						if(!array_key_exists("idUsuario",$reg))
+							$reg->idUsuario=$usuario->id;			
+						$registro = EvaluacionCalidadRegistroResincronizacion::where('idEvaluacionCalidad',$evaluacion->id)
+															 ->where('expediente',$reg->expediente)
+															 ->where('idIndicador',$reg->idIndicador)->first();
+						if(!$registro)
+							$registro = new EvaluacionCalidadRegistroResincronizacion;
+						
+						$registro->idEvaluacionCalidad = $evaluacion->IdEvaluacionCalidad;
+						$registro->idIndicador = $reg->idIndicador;
+						$registro->expediente = $reg->expediente;
+						$registro->columna = $reg->columna;
+						$registro->cumple = $reg->cumple;
+						$registro->promedio = $reg->promedio;
+						$registro->totalCriterio = $reg->totalCriterio;
+						
+						if($registro->save())
 						{
-							$reg = (object) $reg;
-							if(!array_key_exists("idUsuario",$reg))
-								$reg->idUsuario=$usuario->id;			
-							$registro = EvaluacionCalidadResincronizacionRegistro::where('idEvaluacionCalidadResincronizacion',$evaluacion->id)
-																 ->where('expediente',$reg->expediente)
-																 ->where('idIndicador',$reg->idIndicador)->first();
-							if(!$registro)
-								$registro = new EvaluacionCalidadResincronizacionRegistro;
-							
-							$registro->idEvaluacionCalidadResincronizacion = $evaluacion->id;
-							$registro->idIndicador = $reg->idIndicador;
-							$registro->expediente = $reg->expediente;
-							$registro->columna = $reg->columna;
-							$registro->cumple = $reg->cumple;
-							$registro->promedio = $reg->promedio;
-							$registro->totalCriterio = $reg->totalCriterio;
-							
-							if($registro->save())
+							// si se guarda la columna correctamente.
+							// extrae tosdos los criterios de la evaluación
+							foreach($reg->criterios as $criterio)
 							{
-								// si se guarda la columna correctamente.
-								// extrae tosdos los criterios de la evaluación
-								foreach($reg->criterios as $criterio)
-								{
-									$criterio = (object) $criterio;
-									$evaluacionCriterio = EvaluacionCalidadResincronizacionCriterio::where('idEvaluacionCalidadResincronizacion',$evaluacion->id)
-																			->where('idCriterio',$criterio->idCriterio)
-																			->where('idIndicador',$criterio->idIndicador)
-																			->where('idEvaluacionCalidadResincronizacionRegistro',$registro->id)->first();
-									
-									if(!$evaluacionCriterio)
-										$evaluacionCriterio = new EvaluacionCalidadResincronizacionCriterio;
-									
-									$evaluacionCriterio->idEvaluacionCalidadResincronizacion = $evaluacion->id;
-									$evaluacionCriterio->idEvaluacionCalidadResincronizacionRegistro = $registro->id;
-									$evaluacionCriterio->idCriterio = $criterio->idCriterio;
-									$evaluacionCriterio->idIndicador = $criterio->idIndicador;
-									$evaluacionCriterio->aprobado = $criterio->aprobado;
-									
-									if ($evaluacionCriterio->save()) 
-									{								
-										$success = true;
-									} 
-								}
+								$criterio = (object) $criterio;
+								$evaluacionCriterio = EvaluacionCalidadCriterioResincronizacion::where('idEvaluacionCalidad',$evaluacion->id)
+																		->where('idCriterio',$criterio->idCriterio)
+																		->where('idIndicador',$criterio->idIndicador)
+																		->where('idEvaluacionCalidadRegistroResincronizacion',$registro->id)->first();
+								
+								if(!$evaluacionCriterio)
+									$evaluacionCriterio = new EvaluacionCalidadCriterioResincronizacion;
+								
+								$evaluacionCriterio->idEvaluacionCalidad = $evaluacion->IdEvaluacionCalidad;
+								$evaluacionCriterio->idEvaluacionCalidadRegistroResincronizacion = $registro->id;
+								$evaluacionCriterio->idCriterio = $criterio->idCriterio;
+								$evaluacionCriterio->idIndicador = $criterio->idIndicador;
+								$evaluacionCriterio->aprobado = $criterio->aprobado;
+								
+								if ($evaluacionCriterio->save()) 
+								{								
+									$success = true;
+								} 
 							}
 						}
-						// recorrer todos los halazgos encontrados por evaluación
-						if(isset($item->hallazgos) && (is_object($item->hallazgos)|| is_array($item->hallazgos)))
-						foreach($item->hallazgos as $keyhs => $valhs )
-						{
-							if($valhs != null){
-								foreach($valhs as $ks => $hs){										
-									if($hs != null){$hs = (object) $hs;
-										if(!array_key_exists("idUsuario",$hs))
-											$hs->idUsuario=$usuario->id;
-										if(!array_key_exists("idPlazoAccion",$hs))
-											$hs->idPlazoAccion=null;
-										if(!array_key_exists("resuelto",$hs))
-											$hs->resuelto=0;
-										$usuario = Usuario::where('id', $hs->idUsuario)->first();
-										$usuarioPendiente=$usuario->id;
-										
-										$borrado = DB::table('HallazgoResincronizacion')					
-										->where('idIndicador',$keyhs)
-										->where('expediente',$ks)
-										->where('idEvaluacion',$evaluacion->id)
-										->update(['borradoAL' => NULL]);
-										
-										$hallazgo = HallazgoResincronizacion::where('idIndicador', $keyhs)->where('expediente', $ks)->where('idEvaluacion', $evaluacion->id)->first();
-						
-										if(!$hallazgo)							
-											$hallazgo = new HallazgoResincronizacion;										
-															
-										$hallazgo->idUsuario = $hs->idUsuario;
-										$hallazgo->idAccion = $hs->idAccion;
-										$hallazgo->idEvaluacion = $evaluacion->id;
-										$hallazgo->idIndicador = $keyhs;
-										$hallazgo->expediente = $ks;
-										$hallazgo->categoriaEvaluacion = 'CALIDAD';
-										$hallazgo->idPlazoAccion = $hs->idPlazoAccion;
-										$hallazgo->resuelto = $hs->resuelto;
-										$hallazgo->descripcion = $hs->descripcion;
-										
-										if($hallazgo->save())
-										{								
-											$hayhallazgo = true;
-											$success=true;								
+					}
+					// recorrer todos los halazgos encontrados por evaluación
+					if(isset($item->hallazgos) && (is_object($item->hallazgos)|| is_array($item->hallazgos)))
+					foreach($item->hallazgos as $keyhs => $valhs )
+					{
+						if($valhs != null){
+							foreach($valhs as $ks => $hs){										
+								if($hs != null){$hs = (object) $hs;
+									if(!array_key_exists("idUsuario",$hs))
+										$hs->idUsuario=$usuario->id;
+									if(!array_key_exists("idPlazoAccion",$hs))
+										$hs->idPlazoAccion=null;
+									if(!array_key_exists("resuelto",$hs))
+										$hs->resuelto=0;
+									$usuario = Usuario::where('id', $hs->idUsuario)->first();
+									$usuarioPendiente=$usuario->id;
+									
+									$borrado = DB::table('HallazgoResincronizacion')					
+									->where('idIndicador',$keyhs)
+									->where('expediente',$ks)
+									->where('idEvaluacion',$evaluacion->id)
+									->update(['borradoAL' => NULL]);
+									
+									$hallazgo = HallazgoResincronizacion::where('idIndicador', $keyhs)->where('expediente', $ks)->where('idEvaluacion', $evaluacion->id)->first();
+					
+									if(!$hallazgo)							
+										$hallazgo = new HallazgoResincronizacion;										
+														
+									$hallazgo->idUsuario = $hs->idUsuario;
+									$hallazgo->idAccion = $hs->idAccion;
+									$hallazgo->idEvaluacion = $evaluacion->IdEvaluacionCalidad;
+									$hallazgo->idIndicador = $keyhs;
+									$hallazgo->expediente = $ks;
+									$hallazgo->categoriaEvaluacion = 'CALIDAD';
+									$hallazgo->idPlazoAccion = $hs->idPlazoAccion;
+									$hallazgo->resuelto = $hs->resuelto;
+									$hallazgo->descripcion = $hs->descripcion;
+									
+									if($hallazgo->save())
+									{								
+										$hayhallazgo = true;
+										$success=true;								
+									}
+								}
+							}
+						}							
+					}
+					if(isset($item->criterio_respuestas))
+					foreach($item->criterio_respuestas as $valor){
+						if($valor){
+							foreach($valor as $valorcriterio){
+								if($valorcriterio){
+									if(is_array($valorcriterio))
+										$valorcriterio = (object) $valorcriterio;
+									foreach($valorcriterio as $res){
+										if(is_array($res))
+											$res = (object) $res;
+										if($res){
+											$criterio_respuestas = CriterioValidacionRespuesta::where('tipo','CALIDAD')
+																							  ->where('idEvaluacion',$evaluacion->id)
+																							  ->where('expediente',$res->expediente)
+																							  ->where('idCriterio',$res->idCriterio)
+																							  ->where('idCriterioValidacion',$res->idCriterioValidacion)
+																							  ->first();	
+																								
+											if(!$criterio_respuestas)							
+												$criterio_respuestas = new CriterioValidacionRespuesta;
+											
+											$criterio_respuestas->idEvaluacion = $evaluacion->IdEvaluacionCalidad;
+											$criterio_respuestas->idCriterio = $res->idCriterio;
+											$criterio_respuestas->expediente = $res->expediente;
+											$criterio_respuestas->idCriterioValidacion  = $res->idCriterioValidacion;
+											$criterio_respuestas->tipo = 'CALIDAD';
+											$criterio_respuestas->respuesta1 = $res->respuesta1;
+											$criterio_respuestas->respuesta2 = $res->respuesta2;
+											
+											$criterio_respuestas->save();
 										}
 									}
 								}
-							}							
-						}
-						if(isset($item->criterio_respuestas))
-						foreach($item->criterio_respuestas as $valor){
-							if($valor){
-								foreach($valor as $valorcriterio){
-									if($valorcriterio){
-										if(is_array($valorcriterio))
-											$valorcriterio = (object) $valorcriterio;
-										foreach($valorcriterio as $res){
-											if(is_array($res))
-												$res = (object) $res;
-											if($res){
-												$criterio_respuestas = CriterioValidacionRespuesta::where('tipo','CALIDAD')
-																								  ->where('idEvaluacion',$evaluacion->id)
-																								  ->where('expediente',$res->expediente)
-																								  ->where('idCriterio',$res->idCriterio)
-																								  ->where('idCriterioValidacion',$res->idCriterioValidacion)
-																								  ->first();	
-																									
-												if(!$criterio_respuestas)							
-													$criterio_respuestas = new CriterioValidacionRespuesta;
-												
-												$criterio_respuestas->idEvaluacion = $evaluacion->id;
-												$criterio_respuestas->idCriterio = $res->idCriterio;
-												$criterio_respuestas->expediente = $res->expediente;
-												$criterio_respuestas->idCriterioValidacion  = $res->idCriterioValidacion;
-												$criterio_respuestas->tipo = 'CALIDAD';
-												$criterio_respuestas->respuesta1 = $res->respuesta1;
-												$criterio_respuestas->respuesta2 = $res->respuesta2;
-												
-												$criterio_respuestas->save();
-											}
-										}
-									}
-								}
-							}							
-						}
-					} 
-				}							
-			}			
+							}
+						}							
+					}
+				} 
+			}							
+			else{
+				return Response::json(array("status"=>409,"messages"=>"Existe","data"=>$existe_fecha),200);
+			}				
         } 
 		catch (\Exception $e) 
 		{
