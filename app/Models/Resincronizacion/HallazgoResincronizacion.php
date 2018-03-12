@@ -6,7 +6,6 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class HallazgoResincronizacion extends Model 
 {
    	protected $table = 'HallazgoResincronizacion';
-    protected $primaryKey = 'IdHallazgo';
    	const CREATED_AT = 'creadoAl';    
     const UPDATED_AT = 'modificadoAl';
     const DELETED_AT = 'borradoAl';

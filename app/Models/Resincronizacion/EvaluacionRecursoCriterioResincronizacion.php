@@ -6,7 +6,6 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class EvaluacionRecursoCriterioResincronizacion extends Model 
 {
    	protected $table = 'EvaluacionRecursoCriterioResincronizacion';
-    protected $primaryKey = 'IdEvaluacionRecursoCriterio';
    	const CREATED_AT = 'creadoAl';    
     const UPDATED_AT = 'modificadoAl';
     const DELETED_AT = 'borradoAl';
