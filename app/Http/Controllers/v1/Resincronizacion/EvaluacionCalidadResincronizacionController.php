@@ -259,13 +259,13 @@ class EvaluacionCalidadResincronizacionController extends Controller
 								$evaluacionCriterio = EvaluacionCalidadCriterioResincronizacion::where('idEvaluacionCalidad',$evaluacion->id)
 																		->where('idCriterio',$criterio->idCriterio)
 																		->where('idIndicador',$criterio->idIndicador)
-																		->where('idEvaluacionCalidadRegistroResincronizacion',$registro->id)->first();
+																		->where('idEvaluacionCalidadRegistro',$registro->id)->first();
 								
 								if(!$evaluacionCriterio)
 									$evaluacionCriterio = new EvaluacionCalidadCriterioResincronizacion;
 								
 								$evaluacionCriterio->idEvaluacionCalidad = $evaluacion->id;
-								$evaluacionCriterio->idEvaluacionCalidadRegistroResincronizacion = $registro->id;
+								$evaluacionCriterio->idEvaluacionCalidadRegistro = $registro->id;
 								$evaluacionCriterio->idCriterio = $criterio->idCriterio;
 								$evaluacionCriterio->idIndicador = $criterio->idIndicador;
 								$evaluacionCriterio->aprobado = $criterio->aprobado;
