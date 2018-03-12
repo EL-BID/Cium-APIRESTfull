@@ -246,7 +246,7 @@ class EvaluacionRecursoResincronizacionController extends Controller
 						if(!$evaluacionCriterio)
 							$evaluacionCriterio = new EvaluacionRecursoCriterioResincronizacion;
 						
-						$evaluacionCriterio->idEvaluacionRecurso = $evaluacion->IdEvaluacionRecurso;
+						$evaluacionCriterio->idEvaluacionRecurso = $evaluacion->id;
 						$evaluacionCriterio->idCriterio = $criterio->idCriterio;
 						$evaluacionCriterio->idIndicador = $criterio->idIndicador;
 						$evaluacionCriterio->aprobado = $criterio->aprobado;
@@ -266,7 +266,7 @@ class EvaluacionRecursoResincronizacionController extends Controller
 							if(!$evaluacionRegistro)
 								$evaluacionRegistro = new EvaluacionRecursoRegistroResincronizacion;
 
-							$evaluacionRegistro->idEvaluacionRecurso = $evaluacion->IdEvaluacionRecurso;
+							$evaluacionRegistro->idEvaluacionRecurso = $evaluacion->id;
 							$evaluacionRegistro->idIndicador = $criterio->idIndicador;
 							$evaluacionRegistro->total = $aprobado + $noAprobado + $noAplica;
 							$evaluacionRegistro->aprobado = $aprobado;
@@ -296,7 +296,7 @@ class EvaluacionRecursoResincronizacionController extends Controller
 												
 						$hallazgo->idUsuario = $hs->idUsuario;
 						$hallazgo->idAccion = $hs->idAccion;
-						$hallazgo->idEvaluacion = $evaluacion->IdEvaluacionRecurso;
+						$hallazgo->idEvaluacion = $evaluacion->id;
 						$hallazgo->idIndicador = $hs->idIndicador;
 						$hallazgo->categoriaEvaluacion  = 'RECURSO';
 						$hallazgo->idPlazoAccion = $hs->idPlazoAccion;
@@ -329,7 +329,7 @@ class EvaluacionRecursoResincronizacionController extends Controller
 										if(!$criterio_respuestas)							
 											$criterio_respuestas = new CriterioValidacionRespuesta;
 										
-										$criterio_respuestas->idEvaluacion = $evaluacion->IdEvaluacionRecurso;
+										$criterio_respuestas->idEvaluacion = $evaluacion->id;
 										$criterio_respuestas->idCriterio = $res->idCriterio;
 										$criterio_respuestas->idCriterioValidacion  = $res->idCriterioValidacion;
 										$criterio_respuestas->tipo = 'RECURSO';

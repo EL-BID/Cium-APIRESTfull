@@ -241,7 +241,7 @@ class EvaluacionCalidadResincronizacionController extends Controller
 						if(!$registro)
 							$registro = new EvaluacionCalidadRegistroResincronizacion;
 						
-						$registro->idEvaluacionCalidad = $evaluacion->IdEvaluacionCalidad;
+						$registro->idEvaluacionCalidad = $evaluacion->id;
 						$registro->idIndicador = $reg->idIndicador;
 						$registro->expediente = $reg->expediente;
 						$registro->columna = $reg->columna;
@@ -264,7 +264,7 @@ class EvaluacionCalidadResincronizacionController extends Controller
 								if(!$evaluacionCriterio)
 									$evaluacionCriterio = new EvaluacionCalidadCriterioResincronizacion;
 								
-								$evaluacionCriterio->idEvaluacionCalidad = $evaluacion->IdEvaluacionCalidad;
+								$evaluacionCriterio->idEvaluacionCalidad = $evaluacion->id;
 								$evaluacionCriterio->idEvaluacionCalidadRegistroResincronizacion = $registro->id;
 								$evaluacionCriterio->idCriterio = $criterio->idCriterio;
 								$evaluacionCriterio->idIndicador = $criterio->idIndicador;
@@ -306,7 +306,7 @@ class EvaluacionCalidadResincronizacionController extends Controller
 														
 									$hallazgo->idUsuario = $hs->idUsuario;
 									$hallazgo->idAccion = $hs->idAccion;
-									$hallazgo->idEvaluacion = $evaluacion->IdEvaluacionCalidad;
+									$hallazgo->idEvaluacion = $evaluacion->id;
 									$hallazgo->idIndicador = $keyhs;
 									$hallazgo->expediente = $ks;
 									$hallazgo->categoriaEvaluacion = 'CALIDAD';
@@ -344,7 +344,7 @@ class EvaluacionCalidadResincronizacionController extends Controller
 											if(!$criterio_respuestas)							
 												$criterio_respuestas = new CriterioValidacionRespuesta;
 											
-											$criterio_respuestas->idEvaluacion = $evaluacion->IdEvaluacionCalidad;
+											$criterio_respuestas->idEvaluacion = $evaluacion->id;
 											$criterio_respuestas->idCriterio = $res->idCriterio;
 											$criterio_respuestas->expediente = $res->expediente;
 											$criterio_respuestas->idCriterioValidacion  = $res->idCriterioValidacion;
