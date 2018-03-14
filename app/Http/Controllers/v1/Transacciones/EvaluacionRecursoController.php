@@ -105,6 +105,10 @@ class EvaluacionRecursoController extends Controller
 			// si no existe buscar devolver las filas con el limite y la pagina correspondiente a la paginación
 			if(array_key_exists('buscar',$datos))
 			{
+				$fecha = $datos['hasta']; 
+				$nuevafecha = strtotime ( '+1 day' , strtotime ( $fecha ) ) ;
+				$hasta = date ( 'Y-m-d' , $nuevafecha );
+				
 				$columna = $datos['columna'];
 				$valor   = $datos['valor'];
 				$evaluacion = EvaluacionRecurso::with("cone","usuarios","cluess")
