@@ -226,6 +226,7 @@ Route::group(array('prefix' => 'v1', 'middleware' => 'oauth'), function()
 {	
 	Route::get('clues', 'v1\Catalogos\CluesController@index');
 	Route::get('Clues/{clues}', 'v1\Catalogos\CluesController@show');
+    Route::get('Jurisdiccion', 'v1\Catalogos\CluesController@jurisdiccion');
 	Route::get('CluesUsuario', 'v1\Catalogos\CluesController@CluesUsuario');
 	Route::get('Cone', 'v1\Catalogos\ConeController@index');
 	Route::get('Criterio', 'v1\Catalogos\CriterioController@index');
@@ -264,7 +265,9 @@ Route::group(array('prefix' => 'v1', 'middleware' => 'oauth'), function()
 	
     Route::get('PivotRecurso', 'v1\Transacciones\PivotController@Recurso');
     Route::get('PivotCalidad', 'v1\Transacciones\PivotController@Calidad');
+
     Route::get('ResetearReportes', 'v1\Transacciones\PivotController@ResetearReportes');
+    Route::get('ResetearResincronizacion', 'v1\Resincronizacion\ResetearResincronizacionController@index');
     
 	/*export
 	Route::post('Export', 'v1\ExportController@Export');

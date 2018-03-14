@@ -23,6 +23,7 @@ use App\Models\Resincronizacion\HallazgoResincronizacion;
 
 use App\Models\Catalogos\CriterioValidacionRespuesta;
 
+use App\Jobs\ResincronizacionCalidad;
 /**
 * Controlador Evaluación (calidad)
 * 
@@ -371,7 +372,8 @@ class EvaluacionCalidadResincronizacionController extends Controller
         }
         if ($success) 
 		{
-            DB::commit();            
+            DB::commit();  
+            $this->dispatch(new ResincronizacionCalidad($evaluacion));          
 			return Response::json(array("status"=>201,"messages"=>"Creado","data"=>$evaluacion),201);
         } 
 		else 

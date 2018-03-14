@@ -23,6 +23,7 @@ use App\Models\Resincronizacion\EvaluacionRecursoRegistroResincronizacion;
 
 use App\Models\Catalogos\CriterioValidacionRespuesta;
 
+use App\Jobs\ResincronizacionRecurso;
 /**
 * Controlador Evaluación (Recurso)
 * 
@@ -356,7 +357,8 @@ class EvaluacionRecursoResincronizacionController extends Controller
         }
         if ($success) 
 		{
-            DB::commit();            
+            DB::commit();     
+            $this->dispatch(new ResincronizacionRecurso($evaluacion));       
 			return Response::json(array("status"=>201,"messages"=>"Creado","data"=>$evaluacion),201);
         } 
 		else 

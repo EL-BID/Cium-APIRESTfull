@@ -105,30 +105,42 @@ class EvaluacionCalidadController extends Controller
 			// si no existe buscar devolver las filas con el limite y la pagina correspondiente a la paginación
 			if(array_key_exists('buscar',$datos))
 			{
+				
+				$fecha = $datos['hasta']; 
+				$nuevafecha = strtotime ( '+1 day' , strtotime ( $fecha ) ) ;
+				$hasta = date ( 'Y-m-d' , $nuevafecha );
+
 				$columna = $datos['columna'];
 				$valor   = $datos['valor'];
-				$evaluacion = EvaluacionCalidad::with("cone","usuarios","cluess")->distinct()->select("EvaluacionCalidad.id", "EvaluacionCalidad.idUsuario"
-					, "EvaluacionCalidad.clues", "EvaluacionCalidad.fechaEvaluacion", "EvaluacionCalidad.cerrado", "EvaluacionCalidad.firma"
-					, "EvaluacionCalidad.responsable", "EvaluacionCalidad.email", "EvaluacionCalidad.enviado", "EvaluacionCalidad.creadoAl"
-					, "EvaluacionCalidad.modificadoAl", "EvaluacionCalidad.borradoAl")
-												->leftJoin('Clues', 'Clues.clues', '=', 'EvaluacionCalidad.clues')
-												->leftJoin('usuarios', 'usuarios.id', '=', 'EvaluacionCalidad.idUsuario')
-												->whereIn('EvaluacionCalidad.clues',$cluesUsuario)->orderBy($order,$orden);
+				$evaluacion = EvaluacionCalidad::with("cone","usuarios","cluess")
+				->distinct()->select("EvaluacionCalidad.*")
+				->leftJoin('Clues', 'Clues.clues', '=', 'EvaluacionCalidad.clues')
+				->leftJoin('usuarios', 'usuarios.id', '=', 'EvaluacionCalidad.idUsuario')
+				->leftJoin('ConeClues AS cc', 'cc.clues', '=', 'EvaluacionCalidad.clues')
+				->leftJoin('Cone AS co', 'co.id', '=', 'cc.idCone')
+
+				->where('Clues.jurisdiccion', 'LIKE', '%'.$datos['jurisdiccion'].'%')
+				->where('usuarios.email', 'LIKE', '%'.$datos['email'].'%')
+				->where('co.nombre', 'LIKE', '%'.$datos['cone'].'%')				
+				->where('cerrado', $datos['cerrado'])
+				->whereIn('EvaluacionCalidad.clues',$cluesUsuario);
+
+				if($datos['desde'] != '' && $datos['hasta'] != '')
+				{
+					$evaluacion=$evaluacion->whereBetween('fechaEvaluacion', [$datos['desde'], $hasta]);
+				}
 				
 				$search = trim($valor);
 				$keyword = $search;
 				$evaluacion=$evaluacion->whereNested(function($query) use ($keyword)
 				{
-						$query->Where('Clues.clues', 'LIKE', '%'.$keyword.'%')
-						 ->orWhere('fechaEvaluacion', 'LIKE', '%'.$keyword.'%')
-						 ->orWhere('Clues.jurisdiccion', 'LIKE', '%'.$keyword.'%')
-						 ->orWhere('Clues.nombre', 'LIKE', '%'.$keyword.'%')
-						 ->orWhere('usuarios.email', 'LIKE', '%'.$keyword.'%')
-						 ->orWhere('cerrado', 'LIKE', '%'.$keyword.'%'); 
+					$query->Where('Clues.clues', 'LIKE', '%'.$keyword.'%')					 				
+					 ->orWhere('Clues.nombre', 'LIKE', '%'.$keyword.'%'); 
  
 				});
 				$total=$evaluacion->get();
-				$evaluacion = $evaluacion->skip($pagina-1)->take($datos['limite'])->get();
+				$evaluacion = $evaluacion->skip($pagina-1)->take($datos['limite'])
+				->orderBy($order,$orden)->get();
 			}
 			else
 			{
@@ -136,8 +148,8 @@ class EvaluacionCalidadController extends Controller
 					, "EvaluacionCalidad.clues", "EvaluacionCalidad.fechaEvaluacion", "EvaluacionCalidad.cerrado", "EvaluacionCalidad.firma"
 					, "EvaluacionCalidad.responsable", "EvaluacionCalidad.email", "EvaluacionCalidad.enviado", "EvaluacionCalidad.creadoAl"
 					, "EvaluacionCalidad.modificadoAl", "EvaluacionCalidad.borradoAl")
-												->leftJoin('Clues', 'Clues.clues', '=', 'EvaluacionCalidad.clues')
-												->leftJoin('usuarios', 'usuarios.id', '=', 'EvaluacionCalidad.idUsuario')
+					->leftJoin('Clues', 'Clues.clues', '=', 'EvaluacionCalidad.clues')
+					->leftJoin('usuarios', 'usuarios.id', '=', 'EvaluacionCalidad.idUsuario')
 				->whereIn('EvaluacionCalidad.clues',$cluesUsuario)->skip($pagina-1)->take($datos['limite'])->orderBy($order,$orden)->get();
 				$total=EvaluacionCalidad::with("cone","usuarios")->whereIn('EvaluacionCalidad.clues',$cluesUsuario)->get();
 			}

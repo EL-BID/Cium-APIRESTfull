@@ -107,28 +107,35 @@ class EvaluacionRecursoController extends Controller
 			{
 				$columna = $datos['columna'];
 				$valor   = $datos['valor'];
-				$evaluacion = EvaluacionRecurso::with("cone","usuarios","cluess")->distinct()->select("EvaluacionRecurso.id", "EvaluacionRecurso.idUsuario"
-					, "EvaluacionRecurso.clues", "EvaluacionRecurso.fechaEvaluacion", "EvaluacionRecurso.cerrado", "EvaluacionRecurso.firma"
-					, "EvaluacionRecurso.responsable", "EvaluacionRecurso.email", "EvaluacionRecurso.enviado", "EvaluacionRecurso.creadoAl"
-					, "EvaluacionRecurso.modificadoAl", "EvaluacionRecurso.borradoAl")
-												->leftJoin('Clues', 'Clues.clues', '=', 'EvaluacionRecurso.clues')
-												->leftJoin('usuarios', 'usuarios.id', '=', 'EvaluacionRecurso.idUsuario')
-												->whereIn('EvaluacionRecurso.clues',$cluesUsuario)->orderBy($order,$orden);
+				$evaluacion = EvaluacionRecurso::with("cone","usuarios","cluess")
+				->distinct()->select("EvaluacionRecurso.*")
+				->leftJoin('Clues', 'Clues.clues', '=', 'EvaluacionRecurso.clues')
+				->leftJoin('usuarios', 'usuarios.id', '=', 'EvaluacionRecurso.idUsuario')
+				->leftJoin('ConeClues AS cc', 'cc.clues', '=', 'EvaluacionRecurso.clues')
+				->leftJoin('Cone AS co', 'co.id', '=', 'cc.idCone')
+
+				->where('Clues.jurisdiccion', 'LIKE', '%'.$datos['jurisdiccion'].'%')
+				->where('usuarios.email', 'LIKE', '%'.$datos['email'].'%')
+				->where('co.nombre', 'LIKE', '%'.$datos['cone'].'%')				
+				->where('cerrado', $datos['cerrado'])
+				->whereIn('EvaluacionRecurso.clues',$cluesUsuario);
+
+				if($datos['desde'] != '' && $datos['hasta'] != '')
+				{
+					$evaluacion=$evaluacion->whereBetween('fechaEvaluacion', [$datos['desde'], $hasta]);
+				}
 				
 				$search = trim($valor);
 				$keyword = $search;
 				$evaluacion=$evaluacion->whereNested(function($query) use ($keyword)
 				{
-					
-					$query->Where('Clues.clues', 'LIKE', '%'.$keyword.'%')
-						 ->orWhere('fechaEvaluacion', 'LIKE', '%'.$keyword.'%')
-						 ->orWhere('Clues.jurisdiccion', 'LIKE', '%'.$keyword.'%')
-						 ->orWhere('Clues.nombre', 'LIKE', '%'.$keyword.'%')
-						 ->orWhere('usuarios.email', 'LIKE', '%'.$keyword.'%')
-						 ->orWhere('cerrado', 'LIKE', '%'.$keyword.'%'); 
+					$query->Where('Clues.clues', 'LIKE', '%'.$keyword.'%')					 				
+					 ->orWhere('Clues.nombre', 'LIKE', '%'.$keyword.'%'); 
+ 
 				});
-				$total = $evaluacion->get();
-				$evaluacion = $evaluacion->skip($pagina-1)->take($datos['limite'])->get();
+				$total=$evaluacion->get();
+				$evaluacion = $evaluacion->skip($pagina-1)->take($datos['limite'])
+				->orderBy($order,$orden)->get();
 				
 				
 			}
@@ -912,7 +919,7 @@ class EvaluacionRecursoController extends Controller
 		            ->select(array('z.nombre as zona','AS.email','AS.firma','AS.responsable','AS.fechaEvaluacion', 'AS.cerrado', 'AS.id','AS.clues', 'c.nombre', 'c.domicilio', 'c.codigoPostal', 'c.entidad', 'c.municipio', 'c.localidad', 'c.jurisdiccion', 'c.institucion', 'c.tipoUnidad', 'c.estatus', 'c.estado', 'c.tipologia','co.nombre as nivelCone', 'cc.idCone'))
 		            ->where('AS.id',"$id")->first();
 		    $data["evaluacion"] = $evaluacion;
-
+		    
 		    $indicatores = DB::select("select i.id,i.color,i.codigo,i.nombre from EvaluacionRecursoCriterio erc
 		                        left join Indicador as i on i.id= erc.idIndicador 
 		                        where erc.idEvaluacionRecurso = $id and i.borradoAl is null and erc.borradoAl is null order by i.codigo");
@@ -950,7 +957,7 @@ class EvaluacionRecursoController extends Controller
 	            if($hallazgo)
 	                $criterios["hallazgo"] = $hallazgo[0];
 	            
-	            $indicadores[$indicator->codigo] = $criterios;
+	            $indicatores[$indicator->codigo] = $criterios;
 	        } 
 	        //fin indicador 
 	        $estadistica = array();
