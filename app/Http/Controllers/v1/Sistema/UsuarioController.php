@@ -82,7 +82,7 @@ class UsuarioController extends Controller {
             $usuarios = $usuarios->skip(($pagina-1)*$elementos_por_pagina)
                         ->take($elementos_por_pagina)->get();
 
-            return Response::json(['data'=>$usuarios,'totales'=>$totales],200);
+            return Response::json(["status" => 200, 'data'=>$usuarios,'totales'=>$totales],200);
         }catch(Exception $ex){
             return Response::json(['error'=>$e->getMessage()],500);
         }

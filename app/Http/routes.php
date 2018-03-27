@@ -217,6 +217,10 @@ Route::group(array('prefix' => 'v1', 'middleware' => 'oauth'), function()
 
     Route::resource('RecursoResincronizacion', 'v1\Resincronizacion\EvaluacionRecursoResincronizacionController');   
     Route::resource('CalidadResincronizacion', 'v1\Resincronizacion\EvaluacionCalidadResincronizacionController');   
+
+
+    Route::resource('FormularioCaptura', 'v1\Formulario\FormularioCapturaController');
+    Route::resource('FormularioCapturaValor', 'v1\Formulario\FormularioCapturaValorController');
 });
 
 /**
@@ -268,6 +272,10 @@ Route::group(array('prefix' => 'v1', 'middleware' => 'oauth'), function()
 
     Route::get('ResetearReportes', 'v1\Transacciones\PivotController@ResetearReportes');
     Route::get('ResetearResincronizacion', 'v1\Resincronizacion\ResetearResincronizacionController@index');
+
+    Route::get('anio-captura/{id}', 'v1\Formulario\FormularioCapturaValorController@anio');
+
+    
     
 	/*export
 	Route::post('Export', 'v1\ExportController@Export');
