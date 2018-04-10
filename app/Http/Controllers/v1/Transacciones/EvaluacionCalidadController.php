@@ -101,11 +101,20 @@ class EvaluacionCalidadController extends Controller
 			{
 				$pagina = 1;
 			}
+
+
 			// si existe buscar se realiza esta linea para devolver las filas que en el campo que coincidan con el valor que el usuario escribio
 			// si no existe buscar devolver las filas con el limite y la pagina correspondiente a la paginación
 			if(array_key_exists('buscar',$datos))
 			{
-				
+				$indicadores = [];
+				if($datos['indicador'] != ''){
+					$variable = EvaluacionCalidadCriterio::select('idEvaluacionCalidad')->distinct()->where("idIndicador", $datos['indicador'])->get();
+					foreach ($variable as $key => $value) {
+						$indicadores[] = $value->idEvaluacionCalidad;
+					}
+				}
+					
 				$fecha = $datos['hasta']; 
 				$nuevafecha = strtotime ( '+1 day' , strtotime ( $fecha ) ) ;
 				$hasta = date ( 'Y-m-d' , $nuevafecha );
@@ -121,13 +130,15 @@ class EvaluacionCalidadController extends Controller
 
 				->where('Clues.jurisdiccion', 'LIKE', '%'.$datos['jurisdiccion'].'%')
 				->where('usuarios.email', 'LIKE', '%'.$datos['email'].'%')
-				->where('co.nombre', 'LIKE', '%'.$datos['cone'].'%')				
-				->where('cerrado', $datos['cerrado'])
+				->where('co.nombre', 'LIKE', '%'.$datos['cone'].'%')	
 				->whereIn('EvaluacionCalidad.clues',$cluesUsuario);
 
 				if($datos['desde'] != '' && $datos['hasta'] != '')
 				{
 					$evaluacion=$evaluacion->whereBetween('fechaEvaluacion', [$datos['desde'], $hasta]);
+				}
+				if(count($indicadores) > 0){
+					$evaluacion=$evaluacion->whereIn('EvaluacionCalidad.id',$indicadores);
 				}
 				
 				$search = trim($valor);
