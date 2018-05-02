@@ -940,7 +940,7 @@ class EvaluacionRecursoController extends Controller
 		                        left join Indicador as i on i.id= erc.idIndicador 
 		                        where erc.idEvaluacionRecurso = $id and i.borradoAl is null and erc.borradoAl is null order by i.codigo");
 		                        
-		            
+		    $indicadores = [];      
 	        $cone = $evaluacion->idCone;
 	        //inicia llenado de indicadores
 	        foreach($indicatores as $indicator)
@@ -972,7 +972,9 @@ class EvaluacionRecursoController extends Controller
 	            left join Accion a on a.id = h.idAccion WHERE h.idEvaluacion= $id and categoriaEvaluacion='RECURSO' and idIndicador = $indicator->id and h.borradoAl is null");
 	            if($hallazgo)
 	                $criterios["hallazgo"] = $hallazgo[0];
-	            
+	            if(!isset($indicatores[$indicator->codigo])){
+	            	$indicatores[$indicator->codigo] = [];
+	            }
 	            $indicatores[$indicator->codigo] = $criterios;
 	        } 
 	        //fin indicador 

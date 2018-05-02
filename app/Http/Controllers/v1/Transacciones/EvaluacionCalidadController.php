@@ -976,6 +976,7 @@ class EvaluacionCalidadController extends Controller
 		        left join Cone c on c.id = cc.idCone
 		        where e.id='$evaluacion' and er.borradoAl is null and e.borradoAl is null order by i.codigo";      
 		        $indicadores = DB::select($sql);
+		        
 		        $hallazgo = array();
 		        foreach($indicadores as $indicador)
 		        {
