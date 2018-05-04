@@ -939,7 +939,7 @@ class EvaluacionRecursoController extends Controller
 		    $indicatores = DB::select("select i.id,i.color,i.codigo,i.nombre from EvaluacionRecursoCriterio erc
 		                        left join Indicador as i on i.id= erc.idIndicador 
 		                        where erc.idEvaluacionRecurso = $id and i.borradoAl is null and erc.borradoAl is null order by i.codigo");
-		                        
+		             
 		    $indicadores = [];      
 	        $cone = $evaluacion->idCone;
 	        //inicia llenado de indicadores
@@ -978,71 +978,89 @@ class EvaluacionRecursoController extends Controller
 	            $indicatores[$indicator->codigo] = $criterios;
 	        } 
 	        //fin indicador 
-	        $estadistica = array();
-	        foreach($indicatores as $item)
-	        {
-	            if(!array_key_exists($item->codigo,$estadistica))
-	            {
-	                $indicador = $item->id;
-	                
-	                $total = DB::select("SELECT c.id,c.nombre  FROM ConeIndicadorCriterio cic                           
-	                        left join IndicadorCriterio ic on ic.id = cic.idIndicadorCriterio
-	                        left join Criterio c on c.id = ic.idCriterio
-	                        left join Indicador i on i.id = ic.idIndicador
-	                        left join LugarVerificacion lv on lv.id = ic.idlugarVerificacion        
-	                        WHERE cic.idCone = $cone and ic.idIndicador = '$indicador' 
-	                        and c.borradoAl is null and ic.borradoAl is null and cic.borradoAl is null and lv.borradoAl is null order by i.codigo");
-	                        
-	                $in=[];
-	                foreach($total as $c)
-	                {
-	                    $in[]=$c->id;
-	                }
-	                
-	                $aprobado = DB::table('EvaluacionRecursoCriterio')->select('idCriterio')
-	                            ->whereIN('idCriterio',$in)
-	                            ->where('idEvaluacionRecurso',$id)
-	                            ->where('idIndicador',$indicador)
-	                            ->where('borradoAl',null)->where('aprobado',1)->get();              
-	                $na = DB::table('EvaluacionRecursoCriterio')
-	                            ->select('idCriterio')
-	                            ->whereIN('idCriterio',$in)
-	                            ->where('idEvaluacionRecurso',$id)
-	                            ->where('aprobado',2)
-	                            ->where('borradoAl',null)->get();               
-	                
-	                $totalPorciento = number_format((count($aprobado)/(count($total)-count($na)))*100, 2, '.', '');
-	                
-	                $item->indicadores["totalCriterios"] = count($total);
-	                $item->indicadores["totalAprobados"] = count($aprobado);
-	                $item->indicadores["totalNoAplica"] = count($na);
-	                $item->indicadores["totalPorciento"] = $totalPorciento;
-	                $micolor=DB::select("SELECT a.color FROM IndicadorAlerta ia 
-	                                       left join Alerta a on a.id=ia.idAlerta
-	                                       where ia.idIndicador = $indicador  and $totalPorciento between ia.minimo and ia.maximo");
-	                if($micolor)
-	                    $micolor=$micolor[0]->color;
-	                else
-	                    $micolor="rgb(200,200,200)";
-	                $item->indicadores["totalColor"] = $micolor;
-	                
-	                $estadistica[$item->codigo] = $item;                
-	            }               
+	        $estadistica = array();	        
+	        try{
+		        foreach($indicatores as $item)
+		        {
+		        	if(is_object($item)){
+		        		if(property_exists($item, 'codigo'))
+			            if(!array_key_exists($item->codigo, $estadistica))
+			            {
+			            	$indicador = $item->id;		            	               
+			                
+			                $total = DB::select("SELECT c.id,c.nombre  FROM ConeIndicadorCriterio cic                           
+			                        left join IndicadorCriterio ic on ic.id = cic.idIndicadorCriterio
+			                        left join Criterio c on c.id = ic.idCriterio
+			                        left join Indicador i on i.id = ic.idIndicador
+			                        left join LugarVerificacion lv on lv.id = ic.idlugarVerificacion        
+			                        WHERE cic.idCone = $cone and ic.idIndicador = '$indicador' 
+			                        and c.borradoAl is null and ic.borradoAl is null and cic.borradoAl is null and lv.borradoAl is null order by i.codigo");
+			                        
+			                $in=[];
+			                foreach($total as $c)
+			                {
+			                	if(property_exists($c, 'id'))
+			                    	$in[]=$c->id;
+			                }
+			                
+			                $aprobado = DB::table('EvaluacionRecursoCriterio')->select('idCriterio')
+			                            ->whereIn('idCriterio',$in)
+			                            ->where('idEvaluacionRecurso',$id)
+			                            ->where('idIndicador',$indicador)
+			                            ->where('borradoAl',null)->where('aprobado',1)->get();              
+			                $na = DB::table('EvaluacionRecursoCriterio')
+			                            ->select('idCriterio')
+			                            ->whereIn('idCriterio',$in)
+			                            ->where('idEvaluacionRecurso',$id)
+			                            ->where('aprobado',2)
+			                            ->where('borradoAl',null)->get();               
+			                
+			                $totalPorciento = number_format((count($aprobado)/(count($total)-count($na)))*100, 2, '.', '');
+			                
+			                $item->indicadores = [];
+			                $item->indicadores["totalCriterios"] = count($total);
+			                $item->indicadores["totalAprobados"] = count($aprobado);
+			                $item->indicadores["totalNoAplica"] = count($na);
+			                $item->indicadores["totalPorciento"] = $totalPorciento;
+			                $micolor=DB::select("SELECT a.color FROM IndicadorAlerta ia 
+			                                       left join Alerta a on a.id=ia.idAlerta
+			                                       where ia.idIndicador = $indicador  and $totalPorciento between ia.minimo and ia.maximo");		                
+			                
+			                if(is_array($micolor)){
+			                	if(isset($micolor[0])){
+			                		if(property_exists($micolor[0], 'color')){
+			                    		$micolor=$micolor[0]->color;
+			                		}else{
+			                			$micolor="rgb(200,200,200)";
+			                		}
+			                	}else{
+			                		$micolor="rgb(200,200,200)";
+			                	}
+			                }	                
+			                $item->indicadores["totalColor"] = $micolor;		                
+			                $estadistica[$item->codigo] = $item;
+			            }  
+			        }            
+		        }
+		    }
+		    catch (\Exception $e) 
+			{
+				return Response::json(["status" => 500, 'error1' => $e->getMessage()], 500);
 	        }
-	        
 	        $data["indicadores"] = $indicadores;
 	        $data["estadistica"] = $estadistica;
+	        
 		    \Mail::send('emails.recurso', $data, function($message) use($data){
 		        $message->to($data["evaluacion"]->email, "Evaluacion Recurso")->subject('CIUM');
 		    });
 		    $envio = EvaluacionRecurso::find($id);
 		    $envio->enviado = 1;
 		    $envio->save();
+		    echo 7;
 		}		
 	    catch (\Exception $e) 
 		{
-			$success = false;
-			throw $e;
+			return Response::json(["status" => 500, 'error' => $e->getMessage()], 500);
         }
 	    if ($success) 
 		{
