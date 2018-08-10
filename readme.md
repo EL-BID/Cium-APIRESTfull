@@ -107,7 +107,7 @@ Puedes ver el código de conducta para este proyecto en el siguiente archivo [CO
 > - Salud Mesoamerica 2015 SM2015
 > - akira.redwolf@gmail.com 
 > - h.cortes@gmail.com 
-> - ramirez.esquinca@gmail.com
+> * **[Eliecer Ramirez Esquinca](https://github.com/checherman "Github")**
 
 ### Información adicional
 ---
