@@ -1055,8 +1055,7 @@ class EvaluacionRecursoController extends Controller
 		    });
 		    $envio = EvaluacionRecurso::find($id);
 		    $envio->enviado = 1;
-		    $envio->save();
-		    echo 7;
+		    $envio->save();		    
 		}		
 	    catch (\Exception $e) 
 		{
