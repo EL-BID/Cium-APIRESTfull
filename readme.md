@@ -71,7 +71,6 @@ El resto del proceso es sencillo.
         CLIENT_ID=1A2BCA76XY0
         CLIENT_SECRET=YESIDRUN
        
-    * ***Opcional*** Si va a usar pusher debe crear una cuenta [Aquí](https://pusher.com/)
     
 * **APP_KEY**: Clave de encriptación para laravel.
 * **APP_DEBUG**: `true` o `false` dependiento si desea o no tener opciones de debug en el código.
