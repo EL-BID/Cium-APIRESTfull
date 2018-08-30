@@ -4,8 +4,7 @@
 
   
 
-[![Build Status](https://travis-ci.org/laravel/framework.svg)]
-[![License](https://poser.pugx.org/laravel/framework/license.svg)]
+[![Build Status](https://travis-ci.org/checherman/Cium-APIRESTfull.svg?branch=master)]
 
 ### Descripción y contexto
 ---
@@ -116,7 +115,7 @@ Para usar el sistema completo con una interfaz web y/o movil y no solo realizar 
 
 ### Licencia 
 ---
-Los detalles de licencia para este código fuente se encuentran en el archivo  [LICENSE.md](https://github.com/checherman/Cium-APIRESTfull/blob/master/LICENSE.md)
+La Documentación de Soporte y Uso del software se encuentra licenciada bajo Creative Commons IGO 3.0 Atribución-NoComercial-SinObraDerivada (CC-IGO 3.0 BY-NC-ND)  [LICENSE.md](https://github.com/checherman/Cium-APIRESTfull/blob/master/LICENSE.md)
 
 ## Limitación de responsabilidades
 
