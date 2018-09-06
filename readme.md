@@ -3,8 +3,7 @@
 ## API del Sistema CIUM (Captura de Indicadores en Unidades Médicas).
 
   
-
-[![Build Status](https://travis-ci.org/checherman/Cium-APIRESTfull.svg?branch=master)]
+[![Build Status](https://travis-ci.org/checherman/Cium-APIRESTfull.svg?branch=master)](https://travis-ci.org/checherman/Cium-APIRESTfull)
 
 ### Descripción y contexto
 ---
