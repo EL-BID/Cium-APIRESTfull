@@ -3,7 +3,7 @@
 ## API del Sistema CIUM (Captura de Indicadores en Unidades Médicas).
 
   
-[![Build Status](https://travis-ci.org/checherman/Cium-APIRESTfull.svg?branch=master)](https://travis-ci.org/checherman/Cium-APIRESTfull)
+[![Build Status](https://travis-ci.org/EL-BID/Cium-APIRESTfull.svg?branch=master)](https://travis-ci.org/EL-BID/Cium-APIRESTfull)
 
 ### Descripción y contexto
 ---
@@ -48,7 +48,7 @@ Para poder instalar y utilizar esta API, deberá asegurarse de que su servidor c
 Guia de Instalación Oficial de Laravel 5.4 [Aquí](https://laravel.com/docs/5.4/installation)
 ##### Proyecto (API)
 El resto del proceso es sencillo.
-1. Clonar el repositorio con: `git clone https://github.com/checherman/Cium-APIRESTfull.git`
+1. Clonar el repositorio con: `git clone https://github.com/EL-BID/Cium-APIRESTfull.git`
 2. Instalar dependencias: `composer install`
 3. Renombrar el archivo `base.env` a `.env` ubicado en la raiz del directorio de instalación y editarlo.
        
@@ -109,12 +109,12 @@ Puedes ver el código de conducta para este proyecto en el siguiente archivo [CO
 ### Información adicional
 ---
 Para usar el sistema completo con una interfaz web y/o movil y no solo realizar las peticiones HTTP REST, debe tener configurado el siguiente proyecto:
-* **[Cliente WEB CIUM](https://github.com/checherman/Cium-Cliente-Web "Proyecto WEB que complenta el sistema")**
+* **[Cliente WEB CIUM](https://github.com/EL-BID/Cium-Cliente-Web "Proyecto WEB que complenta el sistema")**
 * **[Cliente ANDROID CIUM](https://github.com/joramdeveloper/CIUM_movil "Proyecto WEB que complenta el sistema")**
 
 ### Licencia 
 ---
-La Documentación de Soporte y Uso del software se encuentra licenciada bajo Creative Commons IGO 3.0 Atribución-NoComercial-SinObraDerivada (CC-IGO 3.0 BY-NC-ND)  [LICENSE.md](https://github.com/checherman/Cium-APIRESTfull/blob/master/LICENSE.md)
+La Documentación de Soporte y Uso del software se encuentra licenciada bajo Creative Commons IGO 3.0 Atribución-NoComercial-SinObraDerivada (CC-IGO 3.0 BY-NC-ND)  [LICENSE.md](https://github.com/EL-BID/Cium-APIRESTfull/blob/master/LICENSE.md)
 
 ## Limitación de responsabilidades
 
